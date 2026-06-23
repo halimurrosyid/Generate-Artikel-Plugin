@@ -212,23 +212,54 @@ $campaigns = AAAG_Campaign::get_all();
 					$current_model = isset($edit_camp->ai_model) && !empty($edit_camp->ai_model) ? $edit_camp->ai_model : 'anthropic:claude-3-5-haiku-20241022';
 					?>
 					<select name="ai_model" id="ai_model" style="min-width:300px;">
+						<?php
+						$anthropic_connected = get_option( 'aaag_anthropic_connected', 0 );
+						$openai_connected    = get_option( 'aaag_openai_connected', 0 );
+						$gemini_connected    = get_option( 'aaag_gemini_connected', 0 );
+						$has_any = false;
+						
+						if ( $anthropic_connected && ! empty( get_option( 'aaag_api_key' ) ) ) :
+							$has_any = true;
+						?>
 						<optgroup label="Anthropic (Claude)">
-							<option value="anthropic:claude-3-5-haiku-20241022" <?php selected($current_model, 'anthropic:claude-3-5-haiku-20241022'); ?>>Claude 3.5 Haiku (Sangat Cepat & Murah)</option>
-							<option value="anthropic:claude-3-5-sonnet-20241022" <?php selected($current_model, 'anthropic:claude-3-5-sonnet-20241022'); ?>>Claude 3.5 Sonnet</option>
-							<option value="anthropic:claude-3-7-sonnet-20250219" <?php selected($current_model, 'anthropic:claude-3-7-sonnet-20250219'); ?>>Claude 3.7 Sonnet (Terbaru & Pintar)</option>
-							<option value="anthropic:claude-3-opus-20240229" <?php selected($current_model, 'anthropic:claude-3-opus-20240229'); ?>>Claude 3 Opus (Premium/Mahal)</option>
+							<option value="anthropic:claude-sonnet-4-6" <?php selected($current_model, 'anthropic:claude-sonnet-4-6'); ?>>Claude 4.6 Sonnet (Terverifikasi & Rekomendasi Akun Anda)</option>
+							<option value="anthropic:claude-3-5-sonnet-latest" <?php selected($current_model, 'anthropic:claude-3-5-sonnet-latest'); ?>>Claude 3.5 Sonnet (Latest Alias)</option>
+							<option value="anthropic:claude-3-5-haiku-latest" <?php selected($current_model, 'anthropic:claude-3-5-haiku-latest'); ?>>Claude 3.5 Haiku (Latest Alias)</option>
+							<option value="anthropic:claude-haiku-4-5" <?php selected($current_model, 'anthropic:claude-haiku-4-5'); ?>>Claude 4.5 Haiku (Sangat Cepat)</option>
+							<option value="anthropic:claude-3-7-sonnet-20250219" <?php selected($current_model, 'anthropic:claude-3-7-sonnet-20250219'); ?>>Claude 3.7 Sonnet</option>
+							<option value="anthropic:claude-3-opus-latest" <?php selected($current_model, 'anthropic:claude-3-opus-latest'); ?>>Claude 3 Opus (Premium)</option>
 						</optgroup>
+						<?php 
+						endif;
+						
+						if ( $openai_connected && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
+							$has_any = true;
+						?>
 						<optgroup label="OpenAI (ChatGPT)">
 							<option value="openai:gpt-4o-mini" <?php selected($current_model, 'openai:gpt-4o-mini'); ?>>GPT-4o Mini (Sangat Cepat & Murah)</option>
 							<option value="openai:gpt-4o" <?php selected($current_model, 'openai:gpt-4o'); ?>>GPT-4o (Sangat Pintar)</option>
 							<option value="openai:o1-mini" <?php selected($current_model, 'openai:o1-mini'); ?>>o1-mini (Super Logis)</option>
 							<option value="openai:o3-mini" <?php selected($current_model, 'openai:o3-mini'); ?>>o3-mini (Terbaru & Pintar)</option>
 						</optgroup>
+						<?php 
+						endif;
+						
+						if ( $gemini_connected && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
+							$has_any = true;
+						?>
 						<optgroup label="Google Gemini">
+							<option value="gemini:gemini-3.5-flash" <?php selected($current_model, 'gemini:gemini-3.5-flash'); ?>>Gemini 3.5 Flash (Terbaru & Cepat)</option>
+							<option value="gemini:gemini-3.1-pro" <?php selected($current_model, 'gemini:gemini-3.1-pro'); ?>>Gemini 3.1 Pro (Pintar)</option>
 							<option value="gemini:gemini-1.5-flash" <?php selected($current_model, 'gemini:gemini-1.5-flash'); ?>>Gemini 1.5 Flash (Sangat Murah)</option>
-							<option value="gemini:gemini-1.5-pro" <?php selected($current_model, 'gemini:gemini-1.5-pro'); ?>>Gemini 1.5 Pro (Pintar)</option>
-							<option value="gemini:gemini-2.0-flash" <?php selected($current_model, 'gemini:gemini-2.0-flash'); ?>>Gemini 2.0 Flash (Terbaru & Cepat)</option>
+							<option value="gemini:gemini-1.5-pro" <?php selected($current_model, 'gemini:gemini-1.5-pro'); ?>>Gemini 1.5 Pro</option>
 						</optgroup>
+						<?php 
+						endif;
+						
+						if ( ! $has_any ) :
+						?>
+						<option value="">-- Silakan isi API Key & jalankan "Test Connection" di menu Settings --</option>
+						<?php endif; ?>
 					</select>
 					<p class="description">Mengubah model di sini akan berlaku untuk semua antrean (Jobs) di Campaign ini yang belum diproses.</p>
 				</td>
