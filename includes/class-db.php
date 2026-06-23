@@ -20,7 +20,7 @@ class AAAG_DB {
 			name varchar(255) NOT NULL,
 			prompt text NOT NULL,
 			knowledge_base longtext NOT NULL,
-			ai_model varchar(100) NOT NULL DEFAULT 'anthropic:claude-3-haiku-20240307',
+			ai_model varchar(100) NOT NULL DEFAULT 'anthropic:claude-3-5-haiku-20241022',
 			status varchar(20) NOT NULL DEFAULT 'active',
 			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			PRIMARY KEY  (id)

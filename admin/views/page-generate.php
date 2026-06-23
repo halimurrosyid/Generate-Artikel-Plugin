@@ -128,8 +128,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 				<td>
 					<select name="ai_model" id="ai_model" style="min-width:300px;">
 						<optgroup label="Anthropic (Claude)">
-							<option value="anthropic:claude-3-haiku-20240307" selected>Claude 3 Haiku (Sangat Cepat & Murah)</option>
-							<option value="anthropic:claude-3-5-haiku-20241022">Claude 3.5 Haiku (Terbaru)</option>
+							<option value="anthropic:claude-3-5-haiku-20241022" selected>Claude 3.5 Haiku (Sangat Cepat & Murah)</option>
 							<option value="anthropic:claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
 							<option value="anthropic:claude-3-7-sonnet-20250219">Claude 3.7 Sonnet (Terbaru & Pintar)</option>
 							<option value="anthropic:claude-3-opus-20240229">Claude 3 Opus (Premium/Mahal)</option>
