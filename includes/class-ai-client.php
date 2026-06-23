@@ -194,52 +194,7 @@ class AAAG_AI_Client {
 		return $data['candidates'][0]['content']['parts'][0]['text'];
 	}
 
-	public static function test_anthropic_connection() {
-		try {
-			$api_key = get_option( 'aaag_api_key' );
-			if ( empty( $api_key ) ) {
-				return array( 'success' => false, 'message' => 'API Key is missing.' );
-			}
-			
-			$models_to_try = array(
-				'claude-3-5-sonnet-latest',
-				'claude-3-5-haiku-latest',
-				'claude-3-5-sonnet-20241022',
-				'claude-3-5-haiku-20241022',
-				'claude-3-7-sonnet-20250219',
-				'claude-3-opus-latest',
-				'claude-3-opus-20240229',
-				'claude-3-haiku-20240307',
-				'claude-sonnet-4-6',
-				'claude-haiku-4-5',
-				'claude-fable-5'
-			);
 
-			$last_error = '';
-			foreach ( $models_to_try as $model ) {
-				$url = 'https://api.anthropic.com/v1/messages';
-				$body = array(
-					'model'      => $model,
-					'max_tokens' => 10,
-					'messages'   => array(
-						array( 'role' => 'user', 'content' => 'Hello' )
-					)
-				);
-				$args = array(
-					'body'    => wp_json_encode( $body ),
-					'headers' => array(
-						'x-api-key'         => $api_key,
-						'anthropic-version' => '2023-06-01',
-						'content-type'      => 'application/json',
-					),
-					'timeout' => 15,
-				);
-				$response = wp_remote_post( $url, $args );
-				if ( is_wp_error( $response ) ) {
-					return array( 'success' => false, 'message' => $response->get_error_message() );
-				}
-				$response_code = wp_remote_retrieve_response_code( $response );
-				$response_body = wp_remote_retrieve_body( $response );
 	public static function test_anthropic_connection() {
 		try {
 			$api_key = get_option( 'aaag_api_key' );
