@@ -21,10 +21,11 @@ class AAAG_Logger {
 		$wpdb->insert(
 			$table_name,
 			array(
-				'job_id'  => $job_id,
-				'message' => $message,
+				'job_id'     => $job_id,
+				'message'    => $message,
+				'created_at' => current_time( 'mysql' ),
 			),
-			array( '%d', '%s' )
+			array( '%d', '%s', '%s' )
 		);
 	}
 

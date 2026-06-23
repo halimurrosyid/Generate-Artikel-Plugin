@@ -35,12 +35,13 @@ $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 						<td><?php echo esc_html( $job->title ); ?></td>
 						<td>
 							<?php 
-							$status_class = '';
-							if ($job->status == 'completed') $status_class = 'aaag-status-success';
-							if ($job->status == 'failed') $status_class = 'aaag-status-error';
-							if ($job->status == 'processing') $status_class = 'aaag-status-processing';
+							$status_class = 'status-draft';
+							if ($job->status == 'completed') $status_class = 'status-active';
+							if ($job->status == 'failed') $status_class = 'status-error';
+							if ($job->status == 'processing') $status_class = 'status-paused';
+							if ($job->status == 'pending') $status_class = 'status-draft';
 							?>
-							<span class="<?php echo $status_class; ?>"><?php echo esc_html( strtoupper( $job->status ) ); ?></span>
+							<span class="aaag-badge <?php echo $status_class; ?>"><?php echo esc_html( strtoupper( $job->status ) ); ?></span>
 						</td>
 						<td><?php echo esc_html( $job->schedule_time ? $job->schedule_time : '-' ); ?></td>
 						<td><?php echo esc_html( $job->attempts ); ?></td>

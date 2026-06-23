@@ -21,8 +21,10 @@ class AAAG_Job {
 				'max_words'         => $data['max_words'],
 				'schedule_time'     => isset($data['schedule_time']) ? $data['schedule_time'] : null,
 				'status'            => 'pending',
+				'created_at'        => current_time( 'mysql' ),
+				'updated_at'        => current_time( 'mysql' ),
 			),
-			array( '%d', '%s', '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%s' )
+			array( '%d', '%s', '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s' )
 		);
 		
 		return $wpdb->insert_id;
