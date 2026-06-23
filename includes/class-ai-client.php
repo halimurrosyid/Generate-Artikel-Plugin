@@ -233,12 +233,13 @@ class AAAG_AI_Client {
 					return array( 'success' => false, 'message' => $response->get_error_message() );
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
 					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
 				} else {
-					$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					$body_data = json_decode( $response_body, true );
 					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-					$last_error = "API Error ($response_code): $err";
+					$last_error = "API Error ($response_code) for $model: $err (Raw: " . esc_html(substr($response_body, 0, 300)) . ")";
 					// If not a 404 (model not found/not enabled for user key), break because key or other settings are incorrect.
 					if ( $response_code !== 404 ) {
 						break;
@@ -286,12 +287,13 @@ class AAAG_AI_Client {
 					return array( 'success' => false, 'message' => $response->get_error_message() );
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
 					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
 				} else {
-					$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					$body_data = json_decode( $response_body, true );
 					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-					$last_error = "API Error ($response_code): $err";
+					$last_error = "API Error ($response_code) for $model: $err (Raw: " . esc_html(substr($response_body, 0, 300)) . ")";
 					if ( $response_code !== 404 ) {
 						break;
 					}
@@ -343,12 +345,13 @@ class AAAG_AI_Client {
 					return array( 'success' => false, 'message' => $response->get_error_message() );
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
 					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
 				} else {
-					$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					$body_data = json_decode( $response_body, true );
 					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-					$last_error = "API Error ($response_code): $err";
+					$last_error = "API Error ($response_code) for $model: $err (Raw: " . esc_html(substr($response_body, 0, 300)) . ")";
 					if ( $response_code !== 404 ) {
 						break;
 					}
