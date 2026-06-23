@@ -241,6 +241,7 @@ class AAAG_AI_Client {
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
+					update_option( 'aaag_anthropic_connected', 1 );
 					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
 				} else {
 					$body_data = json_decode( $response_body, true );
@@ -252,8 +253,10 @@ class AAAG_AI_Client {
 					}
 				}
 			}
+			update_option( 'aaag_anthropic_connected', 0 );
 			return array( 'success' => false, 'message' => $last_error );
 		} catch (Exception $e) {
+			update_option( 'aaag_anthropic_connected', 0 );
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
 	}
@@ -262,6 +265,7 @@ class AAAG_AI_Client {
 		try {
 			$api_key = get_option( 'aaag_openai_api_key' );
 			if ( empty( $api_key ) ) {
+				update_option( 'aaag_openai_connected', 0 );
 				return array( 'success' => false, 'message' => 'OpenAI API Key is missing.' );
 			}
 			
@@ -290,11 +294,13 @@ class AAAG_AI_Client {
 				);
 				$response = wp_remote_post( $url, $args );
 				if ( is_wp_error( $response ) ) {
+					update_option( 'aaag_openai_connected', 0 );
 					return array( 'success' => false, 'message' => $response->get_error_message() );
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
+					update_option( 'aaag_openai_connected', 1 );
 					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
 				} else {
 					$body_data = json_decode( $response_body, true );
@@ -305,8 +311,10 @@ class AAAG_AI_Client {
 					}
 				}
 			}
+			update_option( 'aaag_openai_connected', 0 );
 			return array( 'success' => false, 'message' => $last_error );
 		} catch (Exception $e) {
+			update_option( 'aaag_openai_connected', 0 );
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
 	}
@@ -315,6 +323,7 @@ class AAAG_AI_Client {
 		try {
 			$api_key = get_option( 'aaag_gemini_api_key' );
 			if ( empty( $api_key ) ) {
+				update_option( 'aaag_gemini_connected', 0 );
 				return array( 'success' => false, 'message' => 'Gemini API Key is missing.' );
 			}
 			
@@ -348,11 +357,13 @@ class AAAG_AI_Client {
 				);
 				$response = wp_remote_post( $url, $args );
 				if ( is_wp_error( $response ) ) {
+					update_option( 'aaag_gemini_connected', 0 );
 					return array( 'success' => false, 'message' => $response->get_error_message() );
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
+					update_option( 'aaag_gemini_connected', 1 );
 					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
 				} else {
 					$body_data = json_decode( $response_body, true );
@@ -363,8 +374,10 @@ class AAAG_AI_Client {
 					}
 				}
 			}
+			update_option( 'aaag_gemini_connected', 0 );
 			return array( 'success' => false, 'message' => $last_error );
 		} catch (Exception $e) {
+			update_option( 'aaag_gemini_connected', 0 );
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
 	}

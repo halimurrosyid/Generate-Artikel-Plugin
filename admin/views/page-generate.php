@@ -127,6 +127,15 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 				<th scope="row"><label for="ai_model">Model AI</label></th>
 				<td>
 					<select name="ai_model" id="ai_model" style="min-width:300px;">
+						<?php
+						$anthropic_connected = get_option( 'aaag_anthropic_connected', 0 );
+						$openai_connected    = get_option( 'aaag_openai_connected', 0 );
+						$gemini_connected    = get_option( 'aaag_gemini_connected', 0 );
+						$has_any = false;
+						
+						if ( $anthropic_connected && ! empty( get_option( 'aaag_api_key' ) ) ) :
+							$has_any = true;
+						?>
 						<optgroup label="Anthropic (Claude)">
 							<option value="anthropic:claude-sonnet-4-6" selected>Claude 4.6 Sonnet (Terverifikasi & Rekomendasi Akun Anda)</option>
 							<option value="anthropic:claude-3-5-sonnet-latest">Claude 3.5 Sonnet (Latest Alias)</option>
@@ -135,18 +144,37 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 							<option value="anthropic:claude-3-7-sonnet-20250219">Claude 3.7 Sonnet</option>
 							<option value="anthropic:claude-3-opus-latest">Claude 3 Opus (Premium)</option>
 						</optgroup>
+						<?php 
+						endif;
+						
+						if ( $openai_connected && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
+							$has_any = true;
+						?>
 						<optgroup label="OpenAI (ChatGPT)">
 							<option value="openai:gpt-4o-mini" selected>GPT-4o Mini (Sangat Cepat & Murah)</option>
 							<option value="openai:gpt-4o">GPT-4o (Sangat Pintar)</option>
 							<option value="openai:o1-mini">o1-mini (Super Logis)</option>
 							<option value="openai:o3-mini">o3-mini (Terbaru & Pintar)</option>
 						</optgroup>
+						<?php 
+						endif;
+						
+						if ( $gemini_connected && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
+							$has_any = true;
+						?>
 						<optgroup label="Google Gemini">
 							<option value="gemini:gemini-3.5-flash">Gemini 3.5 Flash (Terbaru & Cepat)</option>
 							<option value="gemini:gemini-3.1-pro">Gemini 3.1 Pro (Pintar)</option>
 							<option value="gemini:gemini-1.5-flash">Gemini 1.5 Flash (Sangat Murah)</option>
 							<option value="gemini:gemini-1.5-pro">Gemini 1.5 Pro</option>
 						</optgroup>
+						<?php 
+						endif;
+						
+						if ( ! $has_any ) :
+						?>
+						<option value="">-- Silakan isi API Key & jalankan "Test Connection" di menu Settings --</option>
+						<?php endif; ?>
 					</select>
 					<p class="description">Pilih model yang akan menulis artikel di Campaign ini. Pastikan Anda sudah memasukkan API Key yang sesuai di halaman Settings.</p>
 				</td>
