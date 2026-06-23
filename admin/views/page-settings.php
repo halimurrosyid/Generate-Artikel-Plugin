@@ -16,8 +16,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				<td>
 					<input type="password" name="aaag_api_key" id="aaag_api_key" class="regular-text" value="<?php echo esc_attr( get_option( 'aaag_api_key' ) ); ?>">
 					<p class="description">Diperlukan jika Anda memilih model Anthropic Claude.</p>
-					<button type="button" id="aaag_test_connection" class="button">Test Anthropic Connection</button>
-					<span id="aaag_test_result"></span>
+					<button type="button" id="aaag_test_connection" class="button aaag-test-conn-btn" data-provider="anthropic">Test Anthropic Connection</button>
+					<span id="aaag_test_result_anthropic"></span>
 				</td>
 			</tr>
 			<tr>
@@ -25,6 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				<td>
 					<input type="password" name="aaag_openai_api_key" id="aaag_openai_api_key" class="regular-text" value="<?php echo esc_attr( get_option( 'aaag_openai_api_key' ) ); ?>">
 					<p class="description">Diperlukan jika Anda memilih model OpenAI (GPT-4o, dsb).</p>
+					<button type="button" class="button aaag-test-conn-btn" data-provider="openai">Test OpenAI Connection</button>
+					<span id="aaag_test_result_openai"></span>
 				</td>
 			</tr>
 			<tr>
@@ -32,6 +34,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				<td>
 					<input type="password" name="aaag_gemini_api_key" id="aaag_gemini_api_key" class="regular-text" value="<?php echo esc_attr( get_option( 'aaag_gemini_api_key' ) ); ?>">
 					<p class="description">Diperlukan jika Anda memilih model Google Gemini.</p>
+					<button type="button" class="button aaag-test-conn-btn" data-provider="gemini">Test Gemini Connection</button>
+					<span id="aaag_test_result_gemini"></span>
 				</td>
 			</tr>
 

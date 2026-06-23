@@ -111,7 +111,16 @@ class AAAG_Admin_Menu {
 			wp_send_json_error( 'Unauthorized' );
 		}
 		
-		$result = AAAG_AI_Client::test_anthropic_connection();
+		$provider = isset( $_POST['provider'] ) ? sanitize_text_field( $_POST['provider'] ) : 'anthropic';
+		
+		if ( $provider === 'openai' ) {
+			$result = AAAG_AI_Client::test_openai_connection();
+		} elseif ( $provider === 'gemini' ) {
+			$result = AAAG_AI_Client::test_gemini_connection();
+		} else {
+			$result = AAAG_AI_Client::test_anthropic_connection();
+		}
+		
 		if ( $result['success'] ) {
 			wp_send_json_success( $result['message'] );
 		} else {

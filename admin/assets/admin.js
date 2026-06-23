@@ -22,27 +22,33 @@ jQuery(document).ready(function($) {
 	}).trigger('change');
 
 	// Test API Connection
-	$('#aaag_test_connection').on('click', function() {
+	$('.aaag-test-conn-btn, #aaag_test_connection').on('click', function() {
 		var $btn = $(this);
-		var $result = $('#aaag_test_result');
+		var provider = $btn.data('provider') || 'anthropic';
+		var $result = $('#aaag_test_result_' + provider);
+		if (!$result.length) {
+			$result = $('#aaag_test_result');
+		}
 		
-		$btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation: spin 2s linear infinite;"></span> Testing...');
+		var originalText = $btn.html();
+		$btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation: spin 2s linear infinite; vertical-align: middle;"></span> Testing...');
 		$result.html('');
 		
 		$.post(aaagAjax.ajaxurl, {
 			action: 'aaag_test_connection',
-			nonce: aaagAjax.nonce
+			nonce: aaagAjax.nonce,
+			provider: provider
 		}, function(response) {
-			$btn.prop('disabled', false).html('<span class="dashicons dashicons-admin-network"></span> Test API Connection');
+			$btn.prop('disabled', false).html(originalText);
 			if (response.success) {
 				Swal.fire('Berhasil!', response.data, 'success');
-				$result.html('<span style="color:#46b450; font-weight:bold;">' + response.data + '</span>');
+				$result.html('<span style="color:#46b450; font-weight:bold; margin-left: 10px; vertical-align: middle;">' + response.data + '</span>');
 			} else {
 				Swal.fire('Gagal!', response.data, 'error');
-				$result.html('<span style="color:#dc3232; font-weight:bold;">' + response.data + '</span>');
+				$result.html('<span style="color:#dc3232; font-weight:bold; margin-left: 10px; vertical-align: middle;">' + response.data + '</span>');
 			}
 		}).fail(function() {
-			$btn.prop('disabled', false).html('<span class="dashicons dashicons-admin-network"></span> Test API Connection');
+			$btn.prop('disabled', false).html(originalText);
 			Swal.fire('Error', 'Request failed (Server Error)', 'error');
 		});
 	});

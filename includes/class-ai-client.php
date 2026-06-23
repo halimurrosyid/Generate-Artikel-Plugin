@@ -200,35 +200,161 @@ class AAAG_AI_Client {
 			if ( empty( $api_key ) ) {
 				return array( 'success' => false, 'message' => 'API Key is missing.' );
 			}
-			$url = 'https://api.anthropic.com/v1/messages';
-			$body = array(
-				'model'      => 'claude-3-5-haiku-20241022',
-				'max_tokens' => 10,
-				'messages'   => array(
-					array( 'role' => 'user', 'content' => 'Hello' )
-				)
+			
+			$models_to_try = array(
+				'claude-3-5-haiku-20241022',
+				'claude-3-5-sonnet-20241022',
+				'claude-3-7-sonnet-20250219',
+				'claude-3-opus-20240229',
+				'claude-3-haiku-20240307'
 			);
-			$args = array(
-				'body'    => wp_json_encode( $body ),
-				'headers' => array(
-					'x-api-key'         => $api_key,
-					'anthropic-version' => '2023-06-01',
-					'content-type'      => 'application/json',
-				),
-				'timeout' => 15,
+
+			$last_error = '';
+			foreach ( $models_to_try as $model ) {
+				$url = 'https://api.anthropic.com/v1/messages';
+				$body = array(
+					'model'      => $model,
+					'max_tokens' => 10,
+					'messages'   => array(
+						array( 'role' => 'user', 'content' => 'Hello' )
+					)
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'x-api-key'         => $api_key,
+						'anthropic-version' => '2023-06-01',
+						'content-type'      => 'application/json',
+					),
+					'timeout' => 15,
+				);
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					return array( 'success' => false, 'message' => $response->get_error_message() );
+				}
+				$response_code = wp_remote_retrieve_response_code( $response );
+				if ( $response_code === 200 ) {
+					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
+				} else {
+					$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
+					$last_error = "API Error ($response_code): $err";
+					// If not a 404 (model not found/not enabled for user key), break because key or other settings are incorrect.
+					if ( $response_code !== 404 ) {
+						break;
+					}
+				}
+			}
+			return array( 'success' => false, 'message' => $last_error );
+		} catch (Exception $e) {
+			return array( 'success' => false, 'message' => $e->getMessage() );
+		}
+	}
+
+	public static function test_openai_connection() {
+		try {
+			$api_key = get_option( 'aaag_openai_api_key' );
+			if ( empty( $api_key ) ) {
+				return array( 'success' => false, 'message' => 'OpenAI API Key is missing.' );
+			}
+			
+			$models_to_try = array(
+				'gpt-4o-mini',
+				'gpt-4o'
 			);
-			$response = wp_remote_post( $url, $args );
-			if ( is_wp_error( $response ) ) {
-				return array( 'success' => false, 'message' => $response->get_error_message() );
+
+			$last_error = '';
+			foreach ( $models_to_try as $model ) {
+				$url = 'https://api.openai.com/v1/chat/completions';
+				$body = array(
+					'model'      => $model,
+					'max_tokens' => 10,
+					'messages'   => array(
+						array( 'role' => 'user', 'content' => 'Hello' )
+					)
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'Authorization' => 'Bearer ' . $api_key,
+						'Content-Type'  => 'application/json',
+					),
+					'timeout' => 15,
+				);
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					return array( 'success' => false, 'message' => $response->get_error_message() );
+				}
+				$response_code = wp_remote_retrieve_response_code( $response );
+				if ( $response_code === 200 ) {
+					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
+				} else {
+					$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
+					$last_error = "API Error ($response_code): $err";
+					if ( $response_code !== 404 ) {
+						break;
+					}
+				}
 			}
-			$response_code = wp_remote_retrieve_response_code( $response );
-			if ( $response_code === 200 ) {
-				return array( 'success' => true, 'message' => 'Connection successful!' );
-			} else {
-				$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
-				$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-				return array( 'success' => false, 'message' => "API Error ($response_code): $err" );
+			return array( 'success' => false, 'message' => $last_error );
+		} catch (Exception $e) {
+			return array( 'success' => false, 'message' => $e->getMessage() );
+		}
+	}
+
+	public static function test_gemini_connection() {
+		try {
+			$api_key = get_option( 'aaag_gemini_api_key' );
+			if ( empty( $api_key ) ) {
+				return array( 'success' => false, 'message' => 'Gemini API Key is missing.' );
 			}
+			
+			$models_to_try = array(
+				'gemini-1.5-flash',
+				'gemini-1.5-pro',
+				'gemini-2.0-flash'
+			);
+
+			$last_error = '';
+			foreach ( $models_to_try as $model ) {
+				$url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
+				$body = array(
+					'contents' => array(
+						array(
+							'parts' => array(
+								array( 'text' => 'Hello' )
+							)
+						)
+					),
+					'generationConfig' => array(
+						'maxOutputTokens' => 10
+					)
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'Content-Type' => 'application/json',
+					),
+					'timeout' => 15,
+				);
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					return array( 'success' => false, 'message' => $response->get_error_message() );
+				}
+				$response_code = wp_remote_retrieve_response_code( $response );
+				if ( $response_code === 200 ) {
+					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
+				} else {
+					$body_data = json_decode( wp_remote_retrieve_body( $response ), true );
+					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
+					$last_error = "API Error ($response_code): $err";
+					if ( $response_code !== 404 ) {
+						break;
+					}
+				}
+			}
+			return array( 'success' => false, 'message' => $last_error );
 		} catch (Exception $e) {
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
