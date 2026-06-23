@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_generate_action', 'aaag_generate_nonce' ) ) {
 	$campaign_name     = isset( $_POST['campaign_name'] ) ? sanitize_text_field( $_POST['campaign_name'] ) : 'Untitled Campaign';
-	$ai_model          = isset( $_POST['ai_model'] ) ? sanitize_text_field( $_POST['ai_model'] ) : 'anthropic:claude-3-5-haiku-latest';
+	$ai_model          = isset( $_POST['ai_model'] ) ? sanitize_text_field( $_POST['ai_model'] ) : 'anthropic:claude-sonnet-4-6';
 	$prompt            = isset( $_POST['prompt'] ) ? wp_unslash( $_POST['prompt'] ) : '';
 	$knowledge_base    = isset( $_POST['knowledge_base'] ) ? wp_unslash( $_POST['knowledge_base'] ) : '';
 	
@@ -128,21 +128,24 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 				<td>
 					<select name="ai_model" id="ai_model" style="min-width:300px;">
 						<optgroup label="Anthropic (Claude)">
-							<option value="anthropic:claude-3-5-haiku-20241022" selected>Claude 3.5 Haiku (Sangat Cepat & Murah)</option>
-							<option value="anthropic:claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-							<option value="anthropic:claude-3-7-sonnet-20250219">Claude 3.7 Sonnet (Terbaru & Pintar)</option>
-							<option value="anthropic:claude-3-opus-20240229">Claude 3 Opus (Premium/Mahal)</option>
+							<option value="anthropic:claude-sonnet-4-6" selected>Claude 4.6 Sonnet (Terverifikasi & Rekomendasi Akun Anda)</option>
+							<option value="anthropic:claude-3-5-sonnet-latest">Claude 3.5 Sonnet (Latest Alias)</option>
+							<option value="anthropic:claude-3-5-haiku-latest">Claude 3.5 Haiku (Latest Alias)</option>
+							<option value="anthropic:claude-haiku-4-5">Claude 4.5 Haiku (Sangat Cepat)</option>
+							<option value="anthropic:claude-3-7-sonnet-20250219">Claude 3.7 Sonnet</option>
+							<option value="anthropic:claude-3-opus-latest">Claude 3 Opus (Premium)</option>
 						</optgroup>
 						<optgroup label="OpenAI (ChatGPT)">
-							<option value="openai:gpt-4o-mini">GPT-4o Mini (Sangat Cepat & Murah)</option>
+							<option value="openai:gpt-4o-mini" selected>GPT-4o Mini (Sangat Cepat & Murah)</option>
 							<option value="openai:gpt-4o">GPT-4o (Sangat Pintar)</option>
 							<option value="openai:o1-mini">o1-mini (Super Logis)</option>
 							<option value="openai:o3-mini">o3-mini (Terbaru & Pintar)</option>
 						</optgroup>
 						<optgroup label="Google Gemini">
+							<option value="gemini:gemini-3.5-flash">Gemini 3.5 Flash (Terbaru & Cepat)</option>
+							<option value="gemini:gemini-3.1-pro">Gemini 3.1 Pro (Pintar)</option>
 							<option value="gemini:gemini-1.5-flash">Gemini 1.5 Flash (Sangat Murah)</option>
-							<option value="gemini:gemini-1.5-pro">Gemini 1.5 Pro (Pintar)</option>
-							<option value="gemini:gemini-2.0-flash">Gemini 2.0 Flash (Terbaru & Cepat)</option>
+							<option value="gemini:gemini-1.5-pro">Gemini 1.5 Pro</option>
 						</optgroup>
 					</select>
 					<p class="description">Pilih model yang akan menulis artikel di Campaign ini. Pastikan Anda sudah memasukkan API Key yang sesuai di halaman Settings.</p>

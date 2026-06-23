@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Auto Article Generator
  * Description: Generates automatic articles using Anthropic Claude API based on provided titles, templates, and knowledge bases.
- * Version: 4.1.0
+ * Version: 4.1.1
  * Author: AI Assistant
  * Requires PHP: 8.0
  * Requires at least: 6.0
@@ -19,7 +19,7 @@ if ( ! defined( 'AAAG_PLUGIN_URL' ) ) {
 	define( 'AAAG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 if ( ! defined( 'AAAG_VERSION' ) ) {
-	define( 'AAAG_VERSION', '4.1.0' );
+	define( 'AAAG_VERSION', '4.1.1' );
 }
 
 // Include core classes
