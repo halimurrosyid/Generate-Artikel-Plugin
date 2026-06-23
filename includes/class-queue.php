@@ -74,7 +74,7 @@ class AAAG_Queue {
 
 			$prompt = self::compile_prompt( $prompt_text, $job, $knowledge_base_content );
 			
-			$ai_model_str = isset($campaign->ai_model) && !empty($campaign->ai_model) ? $campaign->ai_model : 'anthropic:claude-3-5-haiku-latest';
+			$ai_model_str = isset($campaign->ai_model) && !empty($campaign->ai_model) ? $campaign->ai_model : 'anthropic:claude-3-5-haiku-20241022';
 			$content = AAAG_AI_Client::generate_content( $prompt, $ai_model_str );
 			
 			$post_id = AAAG_Post_Creator::create_post( $job, $content );

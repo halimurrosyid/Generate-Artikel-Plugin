@@ -9,7 +9,7 @@ class AAAG_AI_Client {
 		// $ai_model_str is format "provider:model" e.g., "openai:gpt-4o-mini"
 		$parts = explode( ':', $ai_model_str );
 		$provider = isset( $parts[0] ) ? $parts[0] : 'anthropic';
-		$model    = isset( $parts[1] ) ? $parts[1] : 'claude-3-5-haiku-latest';
+		$model    = isset( $parts[1] ) ? $parts[1] : 'claude-3-5-haiku-20241022';
 		
 		$max_tokens  = (int) get_option( 'aaag_max_tokens', 8192 );
 		$temperature = (float) get_option( 'aaag_temperature', 0.7 );
@@ -199,7 +199,7 @@ class AAAG_AI_Client {
 			}
 			$url = 'https://api.anthropic.com/v1/messages';
 			$body = array(
-				'model'      => 'claude-3-5-haiku-latest',
+				'model'      => 'claude-3-5-haiku-20241022',
 				'max_tokens' => 10,
 				'messages'   => array(
 					array( 'role' => 'user', 'content' => 'Hello' )
