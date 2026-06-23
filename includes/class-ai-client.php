@@ -89,13 +89,16 @@ class AAAG_AI_Client {
 		// OpenAI standard max_tokens parameter handles output limit
 		$body = array(
 			'model'       => $model,
-			// GPT-4o often requires max_tokens or limits to 4096 depending on endpoint
 			'max_tokens'  => min($max_tokens, 16384),
-			'temperature' => $temperature,
 			'messages'    => array(
 				array( 'role' => 'user', 'content' => $prompt )
 			)
 		);
+		
+		// o1 and o3 models do not support temperature parameter
+		if ( strpos( $model, 'o1' ) !== 0 && strpos( $model, 'o3' ) !== 0 ) {
+			$body['temperature'] = $temperature;
+		}
 
 		$args = array(
 			'body'        => wp_json_encode( $body ),

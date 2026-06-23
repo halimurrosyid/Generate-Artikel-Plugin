@@ -228,7 +228,6 @@ $campaigns = AAAG_Campaign::get_all();
 							<option value="gemini:gemini-1.5-flash" <?php selected($current_model, 'gemini:gemini-1.5-flash'); ?>>Gemini 1.5 Flash (Sangat Murah)</option>
 							<option value="gemini:gemini-1.5-pro" <?php selected($current_model, 'gemini:gemini-1.5-pro'); ?>>Gemini 1.5 Pro (Pintar)</option>
 							<option value="gemini:gemini-2.0-flash" <?php selected($current_model, 'gemini:gemini-2.0-flash'); ?>>Gemini 2.0 Flash (Terbaru & Cepat)</option>
-							<option value="gemini:gemini-2.5-flash" <?php selected($current_model, 'gemini:gemini-2.5-flash'); ?>>Gemini 2.5 Flash (Eksperimental)</option>
 						</optgroup>
 					</select>
 					<p class="description">Mengubah model di sini akan berlaku untuk semua antrean (Jobs) di Campaign ini yang belum diproses.</p>

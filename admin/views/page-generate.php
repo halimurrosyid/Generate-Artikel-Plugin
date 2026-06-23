@@ -143,7 +143,6 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 							<option value="gemini:gemini-1.5-flash">Gemini 1.5 Flash (Sangat Murah)</option>
 							<option value="gemini:gemini-1.5-pro">Gemini 1.5 Pro (Pintar)</option>
 							<option value="gemini:gemini-2.0-flash">Gemini 2.0 Flash (Terbaru & Cepat)</option>
-							<option value="gemini:gemini-2.5-flash">Gemini 2.5 Flash (Eksperimental)</option>
 						</optgroup>
 					</select>
 					<p class="description">Pilih model yang akan menulis artikel di Campaign ini. Pastikan Anda sudah memasukkan API Key yang sesuai di halaman Settings.</p>
