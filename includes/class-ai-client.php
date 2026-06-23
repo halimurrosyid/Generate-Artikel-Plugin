@@ -240,23 +240,78 @@ class AAAG_AI_Client {
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
+	public static function test_anthropic_connection() {
+		try {
+			$api_key = get_option( 'aaag_api_key' );
+			if ( empty( $api_key ) ) {
+				update_option( 'aaag_anthropic_connected', 0 );
+				update_option( 'aaag_verified_anthropic_models', array() );
+				return array( 'success' => false, 'message' => 'API Key is missing.' );
+			}
+			
+			$models_to_try = array(
+				'claude-sonnet-4-6',
+				'claude-haiku-4-5',
+				'claude-3-5-sonnet-latest',
+				'claude-3-5-haiku-latest',
+				'claude-3-5-sonnet-20241022',
+				'claude-3-5-haiku-20241022',
+				'claude-3-7-sonnet-20250219',
+				'claude-3-opus-latest',
+				'claude-3-opus-20240229',
+				'claude-3-haiku-20240307',
+				'claude-fable-5'
+			);
+
+			$verified_models = array();
+			$errors = array();
+
+			foreach ( $models_to_try as $model ) {
+				$url = 'https://api.anthropic.com/v1/messages';
+				$body = array(
+					'model'      => $model,
+					'max_tokens' => 10,
+					'messages'   => array(
+						array( 'role' => 'user', 'content' => 'Hello' )
+					)
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'x-api-key'         => $api_key,
+						'anthropic-version' => '2023-06-01',
+						'content-type'      => 'application/json',
+					),
+					'timeout' => 15,
+				);
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					$errors[] = "$model: " . $response->get_error_message();
+					continue;
+				}
+				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
-					update_option( 'aaag_anthropic_connected', 1 );
-					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
+					$verified_models[] = $model;
 				} else {
 					$body_data = json_decode( $response_body, true );
 					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-					$last_error = "API Error ($response_code) for $model: $err (Raw: " . esc_html(substr($response_body, 0, 300)) . ")";
-					// If not a 404 (model not found/not enabled for user key), break because key or other settings are incorrect.
-					if ( $response_code !== 404 ) {
-						break;
-					}
+					$errors[] = "$model: API Error ($response_code): $err";
 				}
 			}
-			update_option( 'aaag_anthropic_connected', 0 );
-			return array( 'success' => false, 'message' => $last_error );
+
+			update_option( 'aaag_verified_anthropic_models', $verified_models );
+			
+			if ( ! empty( $verified_models ) ) {
+				update_option( 'aaag_anthropic_connected', 1 );
+				return array( 'success' => true, 'message' => "Connection successful! Verified models: " . implode( ', ', $verified_models ) );
+			} else {
+				update_option( 'aaag_anthropic_connected', 0 );
+				return array( 'success' => false, 'message' => "Failed to connect to any model. Errors: " . implode( ' | ', array_slice( $errors, 0, 3 ) ) );
+			}
 		} catch (Exception $e) {
 			update_option( 'aaag_anthropic_connected', 0 );
+			update_option( 'aaag_verified_anthropic_models', array() );
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
 	}
@@ -266,15 +321,20 @@ class AAAG_AI_Client {
 			$api_key = get_option( 'aaag_openai_api_key' );
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_openai_connected', 0 );
+				update_option( 'aaag_verified_openai_models', array() );
 				return array( 'success' => false, 'message' => 'OpenAI API Key is missing.' );
 			}
 			
 			$models_to_try = array(
 				'gpt-4o-mini',
-				'gpt-4o'
+				'gpt-4o',
+				'o1-mini',
+				'o3-mini'
 			);
 
-			$last_error = '';
+			$verified_models = array();
+			$errors = array();
+
 			foreach ( $models_to_try as $model ) {
 				$url = 'https://api.openai.com/v1/chat/completions';
 				$body = array(
@@ -294,27 +354,32 @@ class AAAG_AI_Client {
 				);
 				$response = wp_remote_post( $url, $args );
 				if ( is_wp_error( $response ) ) {
-					update_option( 'aaag_openai_connected', 0 );
-					return array( 'success' => false, 'message' => $response->get_error_message() );
+					$errors[] = "$model: " . $response->get_error_message();
+					continue;
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
-					update_option( 'aaag_openai_connected', 1 );
-					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
+					$verified_models[] = $model;
 				} else {
 					$body_data = json_decode( $response_body, true );
 					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-					$last_error = "API Error ($response_code) for $model: $err (Raw: " . esc_html(substr($response_body, 0, 300)) . ")";
-					if ( $response_code !== 404 ) {
-						break;
-					}
+					$errors[] = "$model: API Error ($response_code): $err";
 				}
 			}
-			update_option( 'aaag_openai_connected', 0 );
-			return array( 'success' => false, 'message' => $last_error );
+
+			update_option( 'aaag_verified_openai_models', $verified_models );
+
+			if ( ! empty( $verified_models ) ) {
+				update_option( 'aaag_openai_connected', 1 );
+				return array( 'success' => true, 'message' => "Connection successful! Verified models: " . implode( ', ', $verified_models ) );
+			} else {
+				update_option( 'aaag_openai_connected', 0 );
+				return array( 'success' => false, 'message' => "Failed to connect to any model. Errors: " . implode( ' | ', array_slice( $errors, 0, 3 ) ) );
+			}
 		} catch (Exception $e) {
 			update_option( 'aaag_openai_connected', 0 );
+			update_option( 'aaag_verified_openai_models', array() );
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
 	}
@@ -324,16 +389,20 @@ class AAAG_AI_Client {
 			$api_key = get_option( 'aaag_gemini_api_key' );
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_gemini_connected', 0 );
+				update_option( 'aaag_verified_gemini_models', array() );
 				return array( 'success' => false, 'message' => 'Gemini API Key is missing.' );
 			}
 			
 			$models_to_try = array(
+				'gemini-3.5-flash',
+				'gemini-3.1-pro',
 				'gemini-1.5-flash',
-				'gemini-1.5-pro',
-				'gemini-2.0-flash'
+				'gemini-1.5-pro'
 			);
 
-			$last_error = '';
+			$verified_models = array();
+			$errors = array();
+
 			foreach ( $models_to_try as $model ) {
 				$url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
 				$body = array(
@@ -357,27 +426,32 @@ class AAAG_AI_Client {
 				);
 				$response = wp_remote_post( $url, $args );
 				if ( is_wp_error( $response ) ) {
-					update_option( 'aaag_gemini_connected', 0 );
-					return array( 'success' => false, 'message' => $response->get_error_message() );
+					$errors[] = "$model: " . $response->get_error_message();
+					continue;
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
 				if ( $response_code === 200 ) {
-					update_option( 'aaag_gemini_connected', 1 );
-					return array( 'success' => true, 'message' => "Connection successful! (Model tested: $model)" );
+					$verified_models[] = $model;
 				} else {
 					$body_data = json_decode( $response_body, true );
 					$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Unknown error';
-					$last_error = "API Error ($response_code) for $model: $err (Raw: " . esc_html(substr($response_body, 0, 300)) . ")";
-					if ( $response_code !== 404 ) {
-						break;
-					}
+					$errors[] = "$model: API Error ($response_code): $err";
 				}
 			}
-			update_option( 'aaag_gemini_connected', 0 );
-			return array( 'success' => false, 'message' => $last_error );
+
+			update_option( 'aaag_verified_gemini_models', $verified_models );
+
+			if ( ! empty( $verified_models ) ) {
+				update_option( 'aaag_gemini_connected', 1 );
+				return array( 'success' => true, 'message' => "Connection successful! Verified models: " . implode( ', ', $verified_models ) );
+			} else {
+				update_option( 'aaag_gemini_connected', 0 );
+				return array( 'success' => false, 'message' => "Failed to connect to any model. Errors: " . implode( ' | ', array_slice( $errors, 0, 3 ) ) );
+			}
 		} catch (Exception $e) {
 			update_option( 'aaag_gemini_connected', 0 );
+			update_option( 'aaag_verified_gemini_models', array() );
 			return array( 'success' => false, 'message' => $e->getMessage() );
 		}
 	}

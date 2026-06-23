@@ -128,45 +128,79 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 				<td>
 					<select name="ai_model" id="ai_model" style="min-width:300px;">
 						<?php
-						$anthropic_connected = get_option( 'aaag_anthropic_connected', 0 );
-						$openai_connected    = get_option( 'aaag_openai_connected', 0 );
-						$gemini_connected    = get_option( 'aaag_gemini_connected', 0 );
+						$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
+						$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
+						$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
+						$current_model      = 'anthropic:claude-sonnet-4-6';
+						
+						$anthropic_names = array(
+							'claude-sonnet-4-6' => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
+							'claude-haiku-4-5' => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
+							'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest Alias)',
+							'claude-3-5-haiku-latest' => 'Claude 3.5 Haiku (Latest Alias)',
+							'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (20241022)',
+							'claude-3-5-haiku-20241022' => 'Claude 3.5 Haiku (20241022)',
+							'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (20250219)',
+							'claude-3-opus-latest' => 'Claude 3 Opus (Latest Alias)',
+							'claude-3-opus-20240229' => 'Claude 3 Opus (20240229)',
+							'claude-3-haiku-20240307' => 'Claude 3 Haiku (20240307)',
+							'claude-fable-5' => 'Claude 5 Fable (Premium)'
+						);
+
+						$openai_names = array(
+							'gpt-4o-mini' => 'GPT-4o Mini (Sangat Cepat & Murah)',
+							'gpt-4o' => 'GPT-4o (Sangat Pintar)',
+							'o1-mini' => 'o1-mini (Super Logis)',
+							'o3-mini' => 'o3-mini (Terbaru & Pintar)'
+						);
+
+						$gemini_names = array(
+							'gemini-3.5-flash' => 'Gemini 3.5 Flash (Terbaru & Cepat)',
+							'gemini-3.1-pro' => 'Gemini 3.1 Pro (Pintar)',
+							'gemini-1.5-flash' => 'Gemini 1.5 Flash (Sangat Murah)',
+							'gemini-1.5-pro' => 'Gemini 1.5 Pro'
+						);
+
 						$has_any = false;
 						
-						if ( $anthropic_connected && ! empty( get_option( 'aaag_api_key' ) ) ) :
+						if ( ! empty( $anthropic_verified ) && ! empty( get_option( 'aaag_api_key' ) ) ) :
 							$has_any = true;
 						?>
 						<optgroup label="Anthropic (Claude)">
-							<option value="anthropic:claude-sonnet-4-6" selected>Claude 4.6 Sonnet (Terverifikasi & Rekomendasi Akun Anda)</option>
-							<option value="anthropic:claude-3-5-sonnet-latest">Claude 3.5 Sonnet (Latest Alias)</option>
-							<option value="anthropic:claude-3-5-haiku-latest">Claude 3.5 Haiku (Latest Alias)</option>
-							<option value="anthropic:claude-haiku-4-5">Claude 4.5 Haiku (Sangat Cepat)</option>
-							<option value="anthropic:claude-3-7-sonnet-20250219">Claude 3.7 Sonnet</option>
-							<option value="anthropic:claude-3-opus-latest">Claude 3 Opus (Premium)</option>
+							<?php foreach ( $anthropic_verified as $model ) : 
+								$label = isset($anthropic_names[$model]) ? $anthropic_names[$model] : $model;
+								$val = "anthropic:" . $model;
+							?>
+								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
 						</optgroup>
 						<?php 
 						endif;
 						
-						if ( $openai_connected && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
+						if ( ! empty( $openai_verified ) && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
 							$has_any = true;
 						?>
 						<optgroup label="OpenAI (ChatGPT)">
-							<option value="openai:gpt-4o-mini" selected>GPT-4o Mini (Sangat Cepat & Murah)</option>
-							<option value="openai:gpt-4o">GPT-4o (Sangat Pintar)</option>
-							<option value="openai:o1-mini">o1-mini (Super Logis)</option>
-							<option value="openai:o3-mini">o3-mini (Terbaru & Pintar)</option>
+							<?php foreach ( $openai_verified as $model ) : 
+								$label = isset($openai_names[$model]) ? $openai_names[$model] : $model;
+								$val = "openai:" . $model;
+							?>
+								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
 						</optgroup>
 						<?php 
 						endif;
 						
-						if ( $gemini_connected && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
+						if ( ! empty( $gemini_verified ) && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
 							$has_any = true;
 						?>
 						<optgroup label="Google Gemini">
-							<option value="gemini:gemini-3.5-flash">Gemini 3.5 Flash (Terbaru & Cepat)</option>
-							<option value="gemini:gemini-3.1-pro">Gemini 3.1 Pro (Pintar)</option>
-							<option value="gemini:gemini-1.5-flash">Gemini 1.5 Flash (Sangat Murah)</option>
-							<option value="gemini:gemini-1.5-pro">Gemini 1.5 Pro</option>
+							<?php foreach ( $gemini_verified as $model ) : 
+								$label = isset($gemini_names[$model]) ? $gemini_names[$model] : $model;
+								$val = "gemini:" . $model;
+							?>
+								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+							<?php endforeach; ?>
 						</optgroup>
 						<?php 
 						endif;
