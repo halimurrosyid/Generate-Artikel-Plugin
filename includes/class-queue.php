@@ -10,6 +10,10 @@ class AAAG_Queue {
 
 	public static function process_queue() {
 		global $wpdb;
+		
+		// Auto-clean logs older than 7 days to keep database lightweight
+		AAAG_Logger::clear_old_logs( 7 );
+
 		$table_name = AAAG_DB::get_table_name('jobs');
 		
 		$fifteen_mins_ago = gmdate( 'Y-m-d H:i:s', time() - ( 15 * 60 ) );
@@ -38,7 +42,7 @@ class AAAG_Queue {
 		}
 		
 		$in_clause = implode( ',', array_map( 'intval', $valid_campaign_ids ) );
-		$job = $wpdb->get_row( "SELECT * FROM $table_name WHERE campaign_id IN ($in_clause) AND (status = 'pending' OR (status = 'failed' AND attempts < 3)) ORDER BY id ASC LIMIT 1" );
+		$job = $wpdb->get_row( "SELECT * FROM $table_name WHERE campaign_id IN ($in_clause) AND (status = 'pending' OR (status = 'failed' AND attempts < 3)) ORDER BY CASE WHEN schedule_time IS NULL THEN 0 ELSE 1 END ASC, schedule_time ASC, id ASC LIMIT 1" );
 
 		if ( ! $job ) {
 			return; 
@@ -165,8 +169,9 @@ class AAAG_Queue {
 			}
 		}
 		
-		// Batasi maksimal 15 rekomendasi terbaik agar hemat token
-		$related_posts = array_slice( $related_posts, 0, 15 );
+		// Batasi maksimal rekomendasi terbaik berdasarkan pengaturan (default: 5) agar hemat token dan seimbang
+		$max_internal_links = (int) get_option( 'aaag_max_internal_links', 5 );
+		$related_posts = array_slice( $related_posts, 0, $max_internal_links );
 		
 		$links_text = "";
 		foreach($related_posts as $p) {

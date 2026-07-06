@@ -46,28 +46,30 @@ $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 						<td><?php echo esc_html( $job->schedule_time ? $job->schedule_time : '-' ); ?></td>
 						<td><?php echo esc_html( $job->attempts ); ?></td>
 						<td><?php echo esc_html( $job->error_message ? $job->error_message : '-' ); ?></td>
-						<td>
-							<?php if ( in_array( $job->status, array('pending', 'failed') ) ) : ?>
-								<button class="button aaag-run-job-btn" data-id="<?php echo esc_attr( $job->id ); ?>">Run Now</button>
-							<?php endif; ?>
-							<?php 
-							if ( $job->status === 'completed' ) {
-								global $wpdb;
-								$post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_ai_article_job_id' AND meta_value = %d LIMIT 1", $job->id ) );
-								if ( $post_id ) {
-									echo '<a href="' . get_edit_post_link( $post_id ) . '" class="button" target="_blank">Edit</a> ';
-									$preview_url = get_permalink( $post_id );
-									$post_status = get_post_status( $post_id );
-									if ( in_array( $post_status, array( 'draft', 'pending', 'future' ) ) ) {
-										// Generate a preview link that works even if not published
-										$preview_url = set_url_scheme( get_permalink( $post_id ) );
-										$preview_url = add_query_arg( 'preview', 'true', $preview_url );
+						<td style="white-space: nowrap; width: 220px;">
+							<div style="display: flex; gap: 6px; align-items: center;">
+								<?php if ( in_array( $job->status, array('pending', 'failed') ) ) : ?>
+									<button class="button aaag-run-job-btn" data-id="<?php echo esc_attr( $job->id ); ?>" style="margin: 0;">Run Now</button>
+								<?php endif; ?>
+								<?php 
+								if ( $job->status === 'completed' ) {
+									global $wpdb;
+									$post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_ai_article_job_id' AND meta_value = %d LIMIT 1", $job->id ) );
+									if ( $post_id ) {
+										echo '<a href="' . get_edit_post_link( $post_id ) . '" class="button" target="_blank" style="margin: 0;">Edit</a>';
+										$preview_url = get_permalink( $post_id );
+										$post_status = get_post_status( $post_id );
+										if ( in_array( $post_status, array( 'draft', 'pending', 'future' ) ) ) {
+											// Generate a preview link that works even if not published
+											$preview_url = set_url_scheme( get_permalink( $post_id ) );
+											$preview_url = add_query_arg( 'preview', 'true', $preview_url );
+										}
+										echo '<a href="' . esc_url( $preview_url ) . '" class="button button-primary" target="_blank" style="margin: 0;">Preview</a>';
 									}
-									echo '<a href="' . esc_url( $preview_url ) . '" class="button button-primary" target="_blank">Preview</a> ';
 								}
-							}
-							?>
-							<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=aaag-jobs&action=delete&job_id=' . $job->id), 'delete_job_' . $job->id ); ?>" class="button button-link-delete aaag-delete-job" data-id="<?php echo esc_attr( $job->id ); ?>"><span class="dashicons dashicons-trash"></span> Hapus</a>
+								?>
+								<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=aaag-jobs&action=delete&job_id=' . $job->id), 'delete_job_' . $job->id ); ?>" class="button button-link-delete aaag-delete-job" data-id="<?php echo esc_attr( $job->id ); ?>" style="margin: 0;"><span class="dashicons dashicons-trash"></span> Hapus</a>
+							</div>
 						</td>
 					</tr>
 				<?php endforeach; ?>

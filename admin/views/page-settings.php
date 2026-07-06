@@ -85,6 +85,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 				</td>
 			</tr>
 			<tr>
+				<th scope="row"><label for="aaag_max_internal_links">Jumlah Maksimal Internal Link</label></th>
+				<td>
+					<input type="number" name="aaag_max_internal_links" id="aaag_max_internal_links" style="width: 100px;" value="<?php echo esc_attr( get_option( 'aaag_max_internal_links', 5 ) ); ?>" min="0" max="20">
+					<p class="description">Batasi berapa banyak rekomendasi link artikel lama Anda yang boleh dimasukkan oleh AI ke dalam artikel baru. Disarankan antara 3-5 link agar terlihat natural dan disukai Google.</p>
+				</td>
+			</tr>
+			<tr>
 				<th scope="row"><label for="aaag_delete_data_uninstall">Hapus Data Saat Uninstall?</label></th>
 				<td>
 					<select name="aaag_delete_data_uninstall" id="aaag_delete_data_uninstall">

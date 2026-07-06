@@ -34,10 +34,21 @@ jQuery(document).ready(function($) {
 		$btn.prop('disabled', true).html('<span class="dashicons dashicons-update" style="animation: spin 2s linear infinite; vertical-align: middle;"></span> Testing...');
 		$result.html('');
 		
+		// Grab currently typed API key to test without forcing user to save first
+		var apiKey = '';
+		if (provider === 'anthropic') {
+			apiKey = $('#aaag_api_key').val();
+		} else if (provider === 'openai') {
+			apiKey = $('#aaag_openai_api_key').val();
+		} else if (provider === 'gemini') {
+			apiKey = $('#aaag_gemini_api_key').val();
+		}
+		
 		$.post(aaagAjax.ajaxurl, {
 			action: 'aaag_test_connection',
 			nonce: aaagAjax.nonce,
-			provider: provider
+			provider: provider,
+			api_key: apiKey
 		}, function(response) {
 			$btn.prop('disabled', false).html(originalText);
 			if (response.success) {

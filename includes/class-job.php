@@ -37,7 +37,26 @@ class AAAG_Job {
 		if ( $campaign_id > 0 ) {
 			$where = $wpdb->prepare( " WHERE campaign_id = %d ", $campaign_id );
 		}
-		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table $where ORDER BY id DESC LIMIT %d OFFSET %d", $limit, $offset ) );
+		// Sort: Active/Pending/Failed processing queue at the top (with closest schedule time first), completed/history at the bottom (newest first)
+		$order_by = "ORDER BY 
+			CASE 
+				WHEN status = 'processing' THEN 1 
+				WHEN status = 'pending' THEN 2 
+				WHEN status = 'failed' AND attempts < 3 THEN 3 
+				ELSE 4 
+			END ASC,
+			CASE 
+				WHEN status IN ('pending', 'processing', 'failed') THEN 
+					CASE WHEN schedule_time IS NULL THEN 0 ELSE 1 END
+				ELSE 1
+			END ASC,
+			CASE 
+				WHEN status IN ('pending', 'processing', 'failed') THEN schedule_time 
+				ELSE NULL 
+			END ASC,
+			id DESC";
+			
+		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table $where $order_by LIMIT %d OFFSET %d", $limit, $offset ) );
 	}
 	
 	public static function count_all() {

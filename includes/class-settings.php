@@ -20,6 +20,7 @@ class AAAG_Settings {
 			'sanitize_callback' => array( __CLASS__, 'sanitize_array' )
 		) );
 		register_setting( 'aaag_options', 'aaag_delete_data_uninstall', 'absint' ); // 1 or 0
+		register_setting( 'aaag_options', 'aaag_max_internal_links', 'absint' );
 		
 		// Set defaults if not exist
 		// aaag_model is now saved per-campaign in DB, no longer a global setting
@@ -38,6 +39,9 @@ class AAAG_Settings {
 		}
 		if ( false === get_option( 'aaag_delete_data_uninstall' ) ) {
 			add_option( 'aaag_delete_data_uninstall', 0 ); // Default false (don't delete)
+		}
+		if ( false === get_option( 'aaag_max_internal_links' ) ) {
+			add_option( 'aaag_max_internal_links', 5 );
 		}
 	}
 	

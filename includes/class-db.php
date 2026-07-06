@@ -66,7 +66,7 @@ class AAAG_DB {
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			job_id bigint(20) unsigned DEFAULT NULL,
 			message text NOT NULL,
-			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 			PRIMARY KEY  (id)
 		) $charset_collate;";
 
@@ -75,5 +75,33 @@ class AAAG_DB {
 
 	public static function upgrade() {
 		self::create_tables();
+
+		// Robust verification: Ensure columns exist in case dbDelta failed
+		global $wpdb;
+		$jobs_table = self::get_table_name('jobs');
+		
+		$wpdb->suppress_errors();
+		$post_type_exists   = $wpdb->query( "SELECT post_type FROM $jobs_table LIMIT 1" ) !== false;
+		$post_status_exists = $wpdb->query( "SELECT post_status FROM $jobs_table LIMIT 1" ) !== false;
+		$min_words_exists   = $wpdb->query( "SELECT min_words FROM $jobs_table LIMIT 1" ) !== false;
+		$max_words_exists   = $wpdb->query( "SELECT max_words FROM $jobs_table LIMIT 1" ) !== false;
+		$wpdb->suppress_errors( false );
+
+		if ( ! $post_type_exists ) {
+			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN post_type varchar(50) NOT NULL DEFAULT 'post'" );
+		}
+		if ( ! $post_status_exists ) {
+			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN post_status varchar(20) NOT NULL DEFAULT 'draft'" );
+		}
+		if ( ! $min_words_exists ) {
+			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN min_words int(11) NOT NULL DEFAULT 500" );
+		}
+		if ( ! $max_words_exists ) {
+			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN max_words int(11) NOT NULL DEFAULT 1000" );
+		}
+
+		// Ensure logs table created_at defaults to CURRENT_TIMESTAMP
+		$logs_table = self::get_table_name('logs');
+		$wpdb->query( "ALTER TABLE $logs_table MODIFY COLUMN created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL" );
 	}
 }

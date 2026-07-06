@@ -69,7 +69,8 @@ class AAAG_Admin_Menu {
 	}
 
 	public static function enqueue_assets( $hook ) {
-		if ( strpos( $hook, 'aaag-' ) === false ) {
+		$page = isset( $_GET['page'] ) ? sanitize_text_field( $_GET['page'] ) : '';
+		if ( strpos( $page, 'aaag-' ) !== 0 ) {
 			return;
 		}
 
@@ -112,19 +113,24 @@ class AAAG_Admin_Menu {
 		}
 		
 		$provider = isset( $_POST['provider'] ) ? sanitize_text_field( $_POST['provider'] ) : 'anthropic';
+		$api_key  = isset( $_POST['api_key'] ) ? sanitize_text_field( $_POST['api_key'] ) : '';
 		
 		if ( $provider === 'openai' ) {
-			$result = AAAG_AI_Client::test_openai_connection();
+			$result = AAAG_AI_Client::test_openai_connection( $api_key );
 		} elseif ( $provider === 'gemini' ) {
-			$result = AAAG_AI_Client::test_gemini_connection();
+			$result = AAAG_AI_Client::test_gemini_connection( $api_key );
 		} else {
-			$result = AAAG_AI_Client::test_anthropic_connection();
+			$result = AAAG_AI_Client::test_anthropic_connection( $api_key );
 		}
 		
 		if ( $result['success'] ) {
 			wp_send_json_success( $result['message'] );
 		} else {
-			wp_send_json_error( $result['message'] );
+			$err_msg = $result['message'];
+			if ( empty($api_key) ) {
+				$err_msg .= ' Silakan masukkan API Key dan klik Simpan Perubahan terlebih dahulu, atau test key yang baru Anda ketik.';
+			}
+			wp_send_json_error( $err_msg );
 		}
 	}
 	

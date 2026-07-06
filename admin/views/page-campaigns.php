@@ -1,6 +1,12 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// Display success message if redirected from campaign creation
+if ( isset( $_GET['msg'] ) && $_GET['msg'] === 'created' ) {
+	$count = isset($_GET['count']) ? intval($_GET['count']) : 0;
+	echo '<div class="notice notice-success"><p>' . $count . ' Judul berhasil dimasukkan ke dalam Campaign.</p></div>';
+}
+
 // Handle Actions (Pause, Resume, Delete)
 if ( isset( $_GET['action'] ) && isset( $_GET['id'] ) && $_GET['action'] !== 'edit' ) {
 	$id = absint( $_GET['id'] );
@@ -190,175 +196,197 @@ $campaigns = AAAG_Campaign::get_all();
 <?php else : ?>
 <div class="wrap aaag-wrap">
 	<h1>Edit Campaign</h1>
-	<p>Mengubah instruksi atau referensi akan mempengaruhi semua antrean yang belum dijalankan (Pending) di dalam Campaign ini.</p>
-	<a href="<?php echo admin_url('admin.php?page=aaag-campaigns'); ?>" class="button">&laquo; Kembali ke Daftar</a>
-	<hr>
+	<p class="description">Mengubah instruksi atau referensi akan mempengaruhi semua antrean yang belum dijalankan (Pending) di dalam Campaign ini.</p>
+	<a href="<?php echo admin_url('admin.php?page=aaag-campaigns'); ?>" class="button" style="margin-bottom: 20px;">&laquo; Kembali ke Daftar</a>
 	
 	<form method="post" action="<?php echo admin_url('admin.php?page=aaag-campaigns'); ?>">
 		<?php wp_nonce_field( 'campaign_edit_action', 'campaign_edit_nonce' ); ?>
 		<input type="hidden" name="campaign_id" value="<?php echo esc_attr( $edit_camp->id ); ?>">
 		
-		<table class="form-table">
-			<tr>
-				<th scope="row"><label for="campaign_name">Nama Campaign</label></th>
-				<td>
-					<input type="text" name="campaign_name" id="campaign_name" class="regular-text" required value="<?php echo esc_attr( $edit_camp->name ); ?>">
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="ai_model">Model AI</label></th>
-				<td>
-					<?php 
-					$current_model = isset($edit_camp->ai_model) && !empty($edit_camp->ai_model) ? $edit_camp->ai_model : 'anthropic:claude-3-5-haiku-20241022';
-					?>
-					<select name="ai_model" id="ai_model" style="min-width:300px;">
-						<?php
-						$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
-						$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
-						$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
-						
-						$anthropic_names = array(
-							'claude-sonnet-4-6' => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
-							'claude-haiku-4-5' => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
-							'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest Alias)',
-							'claude-3-5-haiku-latest' => 'Claude 3.5 Haiku (Latest Alias)',
-							'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (20241022)',
-							'claude-3-5-haiku-20241022' => 'Claude 3.5 Haiku (20241022)',
-							'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (20250219)',
-							'claude-3-opus-latest' => 'Claude 3 Opus (Latest Alias)',
-							'claude-3-opus-20240229' => 'Claude 3 Opus (20240229)',
-							'claude-3-haiku-20240307' => 'Claude 3 Haiku (20240307)',
-							'claude-fable-5' => 'Claude 5 Fable (Premium)'
-						);
-
-						$openai_names = array(
-							'gpt-4o-mini' => 'GPT-4o Mini (Sangat Cepat & Murah)',
-							'gpt-4o' => 'GPT-4o (Sangat Pintar)',
-							'o1-mini' => 'o1-mini (Super Logis)',
-							'o3-mini' => 'o3-mini (Terbaru & Pintar)'
-						);
-
-						$gemini_names = array(
-							'gemini-3.5-flash' => 'Gemini 3.5 Flash (Terbaru & Cepat)',
-							'gemini-3.1-pro' => 'Gemini 3.1 Pro (Pintar)',
-							'gemini-1.5-flash' => 'Gemini 1.5 Flash (Sangat Murah)',
-							'gemini-1.5-pro' => 'Gemini 1.5 Pro'
-						);
-
-						$has_any = false;
-						
-						if ( ! empty( $anthropic_verified ) && ! empty( get_option( 'aaag_api_key' ) ) ) :
-							$has_any = true;
-						?>
-						<optgroup label="Anthropic (Claude)">
-							<?php foreach ( $anthropic_verified as $model ) : 
-								$label = isset($anthropic_names[$model]) ? $anthropic_names[$model] : $model;
-								$val = "anthropic:" . $model;
+		<div class="aaag-dashboard-grid">
+			<!-- Left Column: Main Settings (Card) -->
+			<div class="aaag-main-card">
+				<div class="aaag-card-header">
+					<h2><span class="dashicons dashicons-admin-generic"></span> Edit Detail Campaign & AI</h2>
+				</div>
+				<div class="aaag-card-body">
+					<div class="aaag-form-row" style="margin-bottom: 24px;">
+						<div class="aaag-form-col">
+							<label for="campaign_name" class="aaag-label">Nama Campaign</label>
+							<input type="text" name="campaign_name" id="campaign_name" class="aaag-input-full" required value="<?php echo esc_attr( $edit_camp->name ); ?>">
+						</div>
+						<div class="aaag-form-col">
+							<label for="ai_model" class="aaag-label">Model AI</label>
+							<?php 
+							$current_model = isset($edit_camp->ai_model) && !empty($edit_camp->ai_model) ? $edit_camp->ai_model : 'anthropic:claude-3-5-haiku-20241022';
 							?>
-								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-						</optgroup>
-						<?php 
-						endif;
-						
-						if ( ! empty( $openai_verified ) && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
-							$has_any = true;
-						?>
-						<optgroup label="OpenAI (ChatGPT)">
-							<?php foreach ( $openai_verified as $model ) : 
-								$label = isset($openai_names[$model]) ? $openai_names[$model] : $model;
-								$val = "openai:" . $model;
-							?>
-								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-						</optgroup>
-						<?php 
-						endif;
-						
-						if ( ! empty( $gemini_verified ) && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
-							$has_any = true;
-						?>
-						<optgroup label="Google Gemini">
-							<?php foreach ( $gemini_verified as $model ) : 
-								$label = isset($gemini_names[$model]) ? $gemini_names[$model] : $model;
-								$val = "gemini:" . $model;
-							?>
-								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-						</optgroup>
-						<?php 
-						endif;
-						
-						if ( ! $has_any ) :
-						?>
-						<option value="">-- Silakan isi API Key & jalankan "Test Connection" di menu Settings --</option>
-						<?php endif; ?>
-					</select>
-					<p class="description">Mengubah model di sini akan berlaku untuk semua antrean (Jobs) di Campaign ini yang belum diproses.</p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="prompt">AI Prompt (Instruksi)</label></th>
-				<td>
-					<textarea name="prompt" id="prompt" rows="8" class="large-text" required><?php echo esc_textarea( $edit_camp->prompt ); ?></textarea>
-					<p class="description">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>.</p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="knowledge_base">Knowledge Base / Referensi</label></th>
-				<td>
-					<textarea name="knowledge_base" id="knowledge_base" rows="8" class="large-text"><?php echo esc_textarea( $edit_camp->knowledge_base ); ?></textarea>
-					<p class="description">Teks yang diketik di sini akan dipaksa masuk ke otak AI setiap kali judul dalam Campaign ini diproses.</p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">Reschedule (Atur Ulang Jadwal)</th>
-				<td>
-					<label style="font-weight:bold; color:#d63638;">
-						<input type="checkbox" name="reschedule_jobs" id="reschedule_jobs" value="1"> 
-						Ya, saya ingin mengatur ulang jadwal untuk seluruh artikel yang BELUM diterbitkan di Campaign ini.
-					</label>
-					<p class="description">Jadwal baru di bawah ini hanya akan aktif jika kotak di atas Anda centang.</p>
+							<select name="ai_model" id="ai_model" class="aaag-select-full">
+								<?php
+								$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
+								$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
+								$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
+								
+								$anthropic_names = array(
+									'claude-sonnet-4-6' => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
+									'claude-haiku-4-5' => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
+									'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest Alias)',
+									'claude-3-5-haiku-latest' => 'Claude 3.5 Haiku (Latest Alias)',
+									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (20241022)',
+									'claude-3-5-haiku-20241022' => 'Claude 3.5 Haiku (20241022)',
+									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (20250219)',
+									'claude-3-opus-latest' => 'Claude 3 Opus (Latest Alias)',
+									'claude-3-opus-20240229' => 'Claude 3 Opus (20240229)',
+									'claude-3-haiku-20240307' => 'Claude 3 Haiku (20240307)',
+									'claude-fable-5' => 'Claude 5 Fable (Premium)'
+								);
+
+								$openai_names = array(
+									'gpt-4o-mini' => 'GPT-4o Mini (Sangat Cepat & Murah)',
+									'gpt-4o' => 'GPT-4o (Sangat Pintar)',
+									'o1-mini' => 'o1-mini (Super Logis)',
+									'o3-mini' => 'o3-mini (Terbaru & Pintar)'
+								);
+
+								$gemini_names = array(
+									'gemini-2.5-flash' => 'Gemini 2.5 Flash (Terbaru & Sangat Cepat)',
+									'gemini-2.5-pro' => 'Gemini 2.5 Pro (Sangat Pintar)',
+									'gemini-2.0-flash' => 'Gemini 2.0 Flash',
+									'gemini-1.5-flash' => 'Gemini 1.5 Flash (Stabil & Hemat)',
+									'gemini-1.5-pro' => 'Gemini 1.5 Pro'
+								);
+
+								$has_any = false;
+								
+								if ( ! empty( $anthropic_verified ) && ! empty( get_option( 'aaag_api_key' ) ) ) :
+									$has_any = true;
+								?>
+								<optgroup label="Anthropic (Claude)">
+									<?php foreach ( $anthropic_verified as $model ) : 
+										$label = isset($anthropic_names[$model]) ? $anthropic_names[$model] : $model;
+										$val = "anthropic:" . $model;
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php 
+								endif;
+								
+								if ( ! empty( $openai_verified ) && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
+									$has_any = true;
+								?>
+								<optgroup label="OpenAI (ChatGPT)">
+									<?php foreach ( $openai_verified as $model ) : 
+										$label = isset($openai_names[$model]) ? $openai_names[$model] : $model;
+										$val = "openai:" . $model;
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php 
+								endif;
+								
+								if ( ! empty( $gemini_verified ) && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
+									$has_any = true;
+								?>
+								<optgroup label="Google Gemini">
+									<?php foreach ( $gemini_verified as $model ) : 
+										$label = isset($gemini_names[$model]) ? $gemini_names[$model] : $model;
+										$val = "gemini:" . $model;
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php 
+								endif;
+								
+								if ( ! $has_any ) :
+								?>
+								<option value="">-- Silakan isi API Key & jalankan "Test Connection" di menu Settings --</option>
+								<?php endif; ?>
+							</select>
+							<p class="aaag-help-text">Model AI yang digunakan untuk campaign ini.</p>
+						</div>
+					</div>
+
+					<div class="aaag-form-group">
+						<label for="prompt" class="aaag-label">AI Prompt (Instruksi)</label>
+						<textarea name="prompt" id="prompt" rows="8" class="aaag-textarea-full" required><?php echo esc_textarea( $edit_camp->prompt ); ?></textarea>
+						<p class="aaag-help-text">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>.</p>
+					</div>
+
+					<div class="aaag-form-group">
+						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi</label>
+						<textarea name="knowledge_base" id="knowledge_base" rows="8" class="aaag-textarea-full"><?php echo esc_textarea( $edit_camp->knowledge_base ); ?></textarea>
+						<p class="aaag-help-text">Teks yang diketik di sini akan dipaksa masuk ke otak AI setiap kali judul dalam Campaign ini diproses.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column: Reschedule & Actions (Card) -->
+			<div class="aaag-sidebar-card">
+				<div class="aaag-card-header">
+					<h2><span class="dashicons dashicons-calendar-alt"></span> Reschedule & Simpan</h2>
+				</div>
+				<div class="aaag-card-body">
+					<div class="aaag-form-group" style="background:#fff3f2; border: 1px solid #fee2e2; padding: 20px; border-radius: var(--aaag-radius-md);">
+						<label style="font-weight:bold; color:#d63638; display:flex; align-items:start; gap: 8px;">
+							<input type="checkbox" name="reschedule_jobs" id="reschedule_jobs" value="1" style="margin-top: 3px;"> 
+							<span>Ya, saya ingin mengatur ulang jadwal untuk seluruh artikel yang BELUM diterbitkan di Campaign ini.</span>
+						</label>
+						<p class="aaag-help-text" style="color: #991b1b; margin-top:10px;">Jadwal baru di bawah ini hanya akan aktif jika kotak di atas Anda centang.</p>
+					</div>
 					
-					<div id="wrap_reschedule_options" style="display:none; margin-top:15px; padding:20px; background:#fff; border:1px solid #ccd0d4; box-shadow:0 1px 1px rgba(0,0,0,.04);">
-						<h3 style="margin-top:0;">Pengaturan Jadwal Baru</h3>
-						<table class="form-table" style="margin-top:0;">
-							<tr>
-								<th scope="row" style="padding-top:0;"><label for="schedule_mode">Metode Penjadwalan:</label></th>
-								<td style="padding-top:0;">
-									<select name="schedule_mode" id="schedule_mode">
-										<option value="daily">1 Artikel Sehari (Tanggal Berurutan, Jam Diacak)</option>
-										<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
-									</select>
-								</td>
-							</tr>
-							<tr>
-								<th scope="row"><label for="schedule_date">Mulai Tanggal / Posting Pertama:</label></th>
-								<td>
-									<input type="datetime-local" name="schedule_date" id="schedule_date" required disabled>
-								</td>
-							</tr>
-							<tr id="wrap_schedule_daily">
-								<th scope="row">Rentang Jam Posting (Format 24 Jam):</th>
-								<td>
-									Mulai dari jam <input type="number" name="daily_min" value="12" min="0" max="23" class="small-text"> s/d jam 
-									<input type="number" name="daily_max" value="14" min="0" max="23" class="small-text">
-									<p class="description">Artikel akan diterbitkan **setiap hari secara berurutan** (tidak akan ada hari yang bolong/acak). Sistem memposting 1 artikel per hari, jam diacak dalam rentang di atas.</p>
-								</td>
-							</tr>
-							<tr id="wrap_schedule_interval" style="display:none;">
-								<th scope="row">Jarak antar posting:</th>
-								<td>
-									<input type="number" name="min_gap" value="2" min="1" class="small-text"> s/d
-									<input type="number" name="max_gap" value="6" min="1" class="small-text">
-									<select name="gap_unit">
+					<div id="wrap_reschedule_options" class="aaag-schedule-box" style="display:none; margin-top:20px;">
+						<h3 style="margin-top:0; font-size:14px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:var(--aaag-primary);">Pengaturan Jadwal Baru</h3>
+						
+						<div class="aaag-form-row" style="margin-bottom: 15px;">
+							<div class="aaag-form-col">
+								<label for="schedule_mode" class="aaag-label">Metode Penjadwalan</label>
+								<select name="schedule_mode" id="schedule_mode" class="aaag-select-full">
+									<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
+									<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
+								</select>
+							</div>
+							<div class="aaag-form-col">
+								<label for="schedule_date" class="aaag-label">Mulai Tanggal / Posting Pertama</label>
+								<input type="datetime-local" name="schedule_date" id="schedule_date" class="aaag-input-full" required disabled>
+							</div>
+						</div>
+
+						<div id="wrap_schedule_daily">
+							<div class="aaag-form-row">
+								<div class="aaag-form-col">
+									<label class="aaag-label">Min Jam (24h)</label>
+									<input type="number" name="daily_min" value="12" min="0" max="23" class="aaag-input-full">
+								</div>
+								<div class="aaag-form-col">
+									<label class="aaag-label">Max Jam (24h)</label>
+									<input type="number" name="daily_max" value="14" min="0" max="23" class="aaag-input-full">
+								</div>
+							</div>
+							<p class="aaag-help-text">Sistem memposting 1 artikel per hari, jam diacak dalam rentang di atas.</p>
+						</div>
+
+						<div id="wrap_schedule_interval" style="display:none;">
+							<div class="aaag-form-row">
+								<div class="aaag-form-col">
+									<label class="aaag-label">Min Jarak</label>
+									<input type="number" name="min_gap" value="2" min="1" class="aaag-input-full">
+								</div>
+								<div class="aaag-form-col">
+									<label class="aaag-label">Max Jarak</label>
+									<input type="number" name="max_gap" value="6" min="1" class="aaag-input-full">
+								</div>
+								<div class="aaag-form-col">
+									<label class="aaag-label">Satuan</label>
+									<select name="gap_unit" class="aaag-select-full">
 										<option value="hours">Jam</option>
 										<option value="minutes">Menit</option>
 									</select>
-									<p class="description">Tips: Jarak akan diacak. Jika ingin jarak pasti/tetap, isi angka yang sama: <code>12 s/d 12 Jam</code>.</p>
-								</td>
-							</tr>
-						</table>
+								</div>
+							</div>
+							<p class="aaag-help-text">Jarak akan diacak dalam rentang di atas.</p>
+						</div>
 					</div>
 					
 					<script>
@@ -384,13 +412,13 @@ $campaigns = AAAG_Campaign::get_all();
 						}).trigger('change');
 					});
 					</script>
-				</td>
-			</tr>
-		</table>
-		
-		<p class="submit">
-			<input type="submit" name="aaag_campaign_edit_submit" class="button button-primary" value="Simpan Perubahan Campaign">
-		</p>
+					
+					<div class="aaag-submit-box" style="margin-top: 30px;">
+						<input type="submit" name="aaag_campaign_edit_submit" class="button button-primary aaag-btn-submit-full" value="Simpan Perubahan Campaign">
+					</div>
+				</div>
+			</div>
+		</div>
 	</form>
 </div>
 <?php endif; ?>

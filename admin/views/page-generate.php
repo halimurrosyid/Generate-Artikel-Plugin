@@ -84,8 +84,8 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 			$jobs_added++;
 		}
 		
-		// Redirect to avoid duplicate submission on refresh
-		wp_redirect( admin_url('admin.php?page=aaag-jobs&campaign_id=' . $campaign_id . '&msg=created&count=' . $jobs_added) );
+		// Redirect to avoid duplicate submission on refresh using JS (replace URL to aaag-campaigns)
+		echo '<script type="text/javascript">window.location.replace("' . admin_url('admin.php?page=aaag-campaigns&msg=created&count=' . $jobs_added) . '");</script>';
 		exit;
 	}
 }
@@ -111,201 +111,232 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 ?>
 <div class="wrap aaag-wrap">
 	<h1>Buat Campaign Artikel</h1>
-	<p>Semua pengaturan untuk satu grup antrean (Campaign) diatur di halaman ini.</p>
+	<p class="description">Semua pengaturan untuk satu grup antrean (Campaign) diatur di halaman ini.</p>
 	
 	<form method="post" action="">
 		<?php wp_nonce_field( 'aaag_generate_action', 'aaag_generate_nonce' ); ?>
 		
-		<table class="form-table">
-			<tr>
-				<th scope="row"><label for="campaign_name">Nama Campaign</label></th>
-				<td>
-					<input type="text" name="campaign_name" id="campaign_name" class="regular-text" required placeholder="Contoh: Batch Artikel Wisata Bali">
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="ai_model">Model AI</label></th>
-				<td>
-					<select name="ai_model" id="ai_model" style="min-width:300px;">
-						<?php
-						$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
-						$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
-						$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
-						$current_model      = 'anthropic:claude-sonnet-4-6';
-						
-						$anthropic_names = array(
-							'claude-sonnet-4-6' => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
-							'claude-haiku-4-5' => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
-							'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest Alias)',
-							'claude-3-5-haiku-latest' => 'Claude 3.5 Haiku (Latest Alias)',
-							'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (20241022)',
-							'claude-3-5-haiku-20241022' => 'Claude 3.5 Haiku (20241022)',
-							'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (20250219)',
-							'claude-3-opus-latest' => 'Claude 3 Opus (Latest Alias)',
-							'claude-3-opus-20240229' => 'Claude 3 Opus (20240229)',
-							'claude-3-haiku-20240307' => 'Claude 3 Haiku (20240307)',
-							'claude-fable-5' => 'Claude 5 Fable (Premium)'
-						);
+		<div class="aaag-dashboard-grid">
+			<!-- Left Column: Main Settings (Card) -->
+			<div class="aaag-main-card">
+				<div class="aaag-card-header">
+					<h2><span class="dashicons dashicons-admin-generic"></span> Pengaturan Campaign & AI</h2>
+				</div>
+				<div class="aaag-card-body">
+					<div class="aaag-form-row" style="margin-bottom: 24px;">
+						<div class="aaag-form-col">
+							<label for="campaign_name" class="aaag-label">Nama Campaign</label>
+							<input type="text" name="campaign_name" id="campaign_name" class="regular-text aaag-input-full" required placeholder="Contoh: Batch Artikel Wisata Bali">
+							<p class="aaag-help-text">Gunakan nama yang mudah dikenali untuk mengelompokkan artikel Anda.</p>
+						</div>
+						<div class="aaag-form-col">
+							<label for="ai_model" class="aaag-label">Model AI Utama</label>
+							<select name="ai_model" id="ai_model" class="aaag-select-full">
+								<?php
+								$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
+								$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
+								$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
+								$current_model      = 'anthropic:claude-sonnet-4-6';
+								
+								$anthropic_names = array(
+									'claude-sonnet-4-6' => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
+									'claude-haiku-4-5' => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
+									'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest Alias)',
+									'claude-3-5-haiku-latest' => 'Claude 3.5 Haiku (Latest Alias)',
+									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (20241022)',
+									'claude-3-5-haiku-20241022' => 'Claude 3.5 Haiku (20241022)',
+									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (20250219)',
+									'claude-3-opus-latest' => 'Claude 3 Opus (Latest Alias)',
+									'claude-3-opus-20240229' => 'Claude 3 Opus (20240229)',
+									'claude-3-haiku-20240307' => 'Claude 3 Haiku (20240307)',
+									'claude-fable-5' => 'Claude 5 Fable (Premium)'
+								);
 
-						$openai_names = array(
-							'gpt-4o-mini' => 'GPT-4o Mini (Sangat Cepat & Murah)',
-							'gpt-4o' => 'GPT-4o (Sangat Pintar)',
-							'o1-mini' => 'o1-mini (Super Logis)',
-							'o3-mini' => 'o3-mini (Terbaru & Pintar)'
-						);
+								$openai_names = array(
+									'gpt-4o-mini' => 'GPT-4o Mini (Sangat Cepat & Murah)',
+									'gpt-4o' => 'GPT-4o (Sangat Pintar)',
+									'o1-mini' => 'o1-mini (Super Logis)',
+									'o3-mini' => 'o3-mini (Terbaru & Pintar)'
+								);
 
-						$gemini_names = array(
-							'gemini-3.5-flash' => 'Gemini 3.5 Flash (Terbaru & Cepat)',
-							'gemini-3.1-pro' => 'Gemini 3.1 Pro (Pintar)',
-							'gemini-1.5-flash' => 'Gemini 1.5 Flash (Sangat Murah)',
-							'gemini-1.5-pro' => 'Gemini 1.5 Pro'
-						);
+								$gemini_names = array(
+									'gemini-2.5-flash' => 'Gemini 2.5 Flash (Terbaru & Sangat Cepat)',
+									'gemini-2.5-pro' => 'Gemini 2.5 Pro (Sangat Pintar)',
+									'gemini-2.0-flash' => 'Gemini 2.0 Flash',
+									'gemini-1.5-flash' => 'Gemini 1.5 Flash (Stabil & Hemat)',
+									'gemini-1.5-pro' => 'Gemini 1.5 Pro'
+								);
 
-						$has_any = false;
-						
-						if ( ! empty( $anthropic_verified ) && ! empty( get_option( 'aaag_api_key' ) ) ) :
-							$has_any = true;
-						?>
-						<optgroup label="Anthropic (Claude)">
-							<?php foreach ( $anthropic_verified as $model ) : 
-								$label = isset($anthropic_names[$model]) ? $anthropic_names[$model] : $model;
-								$val = "anthropic:" . $model;
-							?>
-								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-						</optgroup>
-						<?php 
-						endif;
-						
-						if ( ! empty( $openai_verified ) && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
-							$has_any = true;
-						?>
-						<optgroup label="OpenAI (ChatGPT)">
-							<?php foreach ( $openai_verified as $model ) : 
-								$label = isset($openai_names[$model]) ? $openai_names[$model] : $model;
-								$val = "openai:" . $model;
-							?>
-								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-						</optgroup>
-						<?php 
-						endif;
-						
-						if ( ! empty( $gemini_verified ) && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
-							$has_any = true;
-						?>
-						<optgroup label="Google Gemini">
-							<?php foreach ( $gemini_verified as $model ) : 
-								$label = isset($gemini_names[$model]) ? $gemini_names[$model] : $model;
-								$val = "gemini:" . $model;
-							?>
-								<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
-							<?php endforeach; ?>
-						</optgroup>
-						<?php 
-						endif;
-						
-						if ( ! $has_any ) :
-						?>
-						<option value="">-- Silakan isi API Key & jalankan "Test Connection" di menu Settings --</option>
-						<?php endif; ?>
-					</select>
-					<p class="description">Pilih model yang akan menulis artikel di Campaign ini. Pastikan Anda sudah memasukkan API Key yang sesuai di halaman Settings.</p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="prompt">AI Prompt (Instruksi)</label></th>
-				<td>
-					<textarea name="prompt" id="prompt" rows="6" class="large-text" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
-					<p class="description">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>. Opsional: <code>{{site_name}}</code>, <code>{{current_date}}</code>.</p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="knowledge_base">Knowledge Base (Opsional)</label></th>
-				<td>
-					<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
-					<p class="description">AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini. Anda <strong>TIDAK PERLU</strong> memasukkan kode apapun ke dalam prompt, sistem akan menyuntikkannya otomatis.</p>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="post_type">Post Type Tujuan</label></th>
-				<td>
-					<select name="post_type" id="post_type">
-						<?php foreach ( $post_types as $pt ) : ?>
-							<option value="<?php echo esc_attr( $pt->name ); ?>"><?php echo esc_html( $pt->label ); ?></option>
-						<?php endforeach; ?>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row">Jumlah Kata (Per Artikel)</th>
-				<td>
-					<input type="number" name="min_words" id="min_words" value="500" min="100" class="small-text"> s/d
-					<input type="number" name="max_words" id="max_words" value="1000" min="100" class="small-text">
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="post_status">Status Artikel</label></th>
-				<td>
-					<select name="post_status" id="post_status">
-						<option value="draft">Draft</option>
-						<option value="pending">Pending</option>
-						<option value="publish">Publish</option>
-						<option value="future">Schedule (Posting Terjadwal)</option>
-					</select>
-				</td>
-			</tr>
-			<tr id="schedule_options" style="display:none;">
-				<th scope="row">Jadwal Auto Posting</th>
-				<td>
-					<p>
-						<label for="schedule_mode">Metode Penjadwalan:</label><br>
-						<select name="schedule_mode" id="schedule_mode" style="margin-bottom: 15px;">
-							<option value="daily">1 Artikel Sehari (Tanggal Berurutan, Jam Diacak)</option>
-							<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
-						</select>
-					</p>
-					
-					<p>
-						<label for="schedule_date">Mulai Tanggal / Posting Pertama:</label><br>
-						<input type="datetime-local" name="schedule_date" id="schedule_date">
-					</p>
-					
-					<div id="wrap_schedule_daily">
-						<p>
-							Rentang Jam Posting (Format 24 Jam):<br>
-							Mulai dari jam <input type="number" name="daily_min" value="12" min="0" max="23" class="small-text"> s/d jam 
-							<input type="number" name="daily_max" value="14" min="0" max="23" class="small-text">
-						</p>
-						<p class="description">Artikel akan diterbitkan **setiap hari secara berurutan** (tidak akan ada hari yang bolong/acak). Sistem akan memposting 1 artikel per hari, namun jam terbitnya akan diacak di antara rentang waktu di atas agar terlihat natural.</p>
-					</div>
-
-					<div id="wrap_schedule_interval" style="display:none;">
-						<p>
-							Jarak antar posting: 
-							<input type="number" name="min_gap" value="2" min="1" class="small-text"> s/d
-							<input type="number" name="max_gap" value="6" min="1" class="small-text">
-							<select name="gap_unit">
-								<option value="hours">Jam</option>
-								<option value="minutes">Menit</option>
+								$has_any = false;
+								$anthropic_key = get_option( 'aaag_api_key' );
+								$openai_key    = get_option( 'aaag_openai_api_key' );
+								$gemini_key    = get_option( 'aaag_gemini_api_key' );
+								
+								if ( ! empty( $anthropic_verified ) && ! empty( $anthropic_key ) ) :
+									$has_any = true;
+								?>
+								<optgroup label="Anthropic (Claude)">
+									<?php foreach ( $anthropic_verified as $model ) : 
+										$label = isset($anthropic_names[$model]) ? $anthropic_names[$model] : $model;
+										$val = "anthropic:" . $model;
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php 
+								endif;
+								
+								if ( ! empty( $openai_verified ) && ! empty( $openai_key ) ) :
+									$has_any = true;
+								?>
+								<optgroup label="OpenAI (ChatGPT)">
+									<?php foreach ( $openai_verified as $model ) : 
+										$label = isset($openai_names[$model]) ? $openai_names[$model] : $model;
+										$val = "openai:" . $model;
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php 
+								endif;
+								
+								if ( ! empty( $gemini_verified ) && ! empty( $gemini_key ) ) :
+									$has_any = true;
+								?>
+								<optgroup label="Google Gemini">
+									<?php foreach ( $gemini_verified as $model ) : 
+										$label = isset($gemini_names[$model]) ? $gemini_names[$model] : $model;
+										$val = "gemini:" . $model;
+									?>
+										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
+									<?php endforeach; ?>
+								</optgroup>
+								<?php 
+								endif;
+								
+								if ( ! $has_any ) :
+								?>
+								<option value="">-- Silakan isi API Key & jalankan "Test Connection" di menu Settings --</option>
+								<?php endif; ?>
 							</select>
-						</p>
-						<p class="description">Tips: Jarak waktu akan diacak. Jika Anda ingin jarak waktu yang <strong>pasti/tetap</strong> (misal persis 12 jam), silakan isi angka yang sama: <code>12 s/d 12 Jam</code>.</p>
+							<p class="aaag-help-text">Model AI yang akan menulis artikel.</p>
+						</div>
 					</div>
-				</td>
-			</tr>
-			<tr>
-				<th scope="row"><label for="titles">Daftar Judul Artikel</label></th>
-				<td>
-					<textarea name="titles" id="titles" rows="10" class="large-text" required placeholder="Masukkan satu judul per baris..."></textarea>
-					<p class="description">Setiap baris akan menjadi 1 artikel dalam Campaign ini.</p>
-					<div id="token_estimation" style="margin-top: 10px; font-weight: bold; color: #0073aa;">Estimasi Token per Artikel: 0 token</div>
-				</td>
-			</tr>
-		</table>
-		
-		<p class="submit">
-			<input type="submit" name="aaag_generate_submit" class="button button-primary" value="Buat Campaign & Mulai Antrean">
-		</p>
+
+					<div class="aaag-form-group">
+						<label for="prompt" class="aaag-label">AI Prompt (Instruksi)</label>
+						<textarea name="prompt" id="prompt" rows="8" class="large-text aaag-textarea-full" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
+						<p class="aaag-help-text">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>. Opsional: <code>{{site_name}}</code>, <code>{{current_date}}</code>.</p>
+					</div>
+
+					<div class="aaag-form-group">
+						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi (Opsional)</label>
+						<textarea name="knowledge_base" id="knowledge_base" rows="5" class="large-text aaag-textarea-full" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
+						<p class="aaag-help-text">AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right Column: Settings & Actions (Card) -->
+			<div class="aaag-sidebar-card">
+				<div class="aaag-card-header">
+					<h2><span class="dashicons dashicons-admin-post"></span> Format Post & Jadwal</h2>
+				</div>
+				<div class="aaag-card-body">
+					<div class="aaag-form-row" style="margin-bottom: 20px;">
+						<div class="aaag-form-col">
+							<label for="post_type" class="aaag-label">Post Type Tujuan</label>
+							<select name="post_type" id="post_type" class="aaag-select-full">
+								<?php foreach ( $post_types as $pt ) : ?>
+									<option value="<?php echo esc_attr( $pt->name ); ?>"><?php echo esc_html( $pt->label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+						<div class="aaag-form-col">
+							<label for="post_status" class="aaag-label">Status Artikel</label>
+							<select name="post_status" id="post_status" class="aaag-select-full">
+								<option value="draft">Draft</option>
+								<option value="pending">Pending</option>
+								<option value="publish">Publish</option>
+								<option value="future">Schedule (Posting Terjadwal)</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="aaag-form-row" style="margin-bottom: 20px;">
+						<div class="aaag-form-col">
+							<label for="min_words" class="aaag-label">Min Kata</label>
+							<input type="number" name="min_words" id="min_words" value="500" min="100" class="aaag-input-full">
+						</div>
+						<div class="aaag-form-col">
+							<label for="max_words" class="aaag-label">Max Kata</label>
+							<input type="number" name="max_words" id="max_words" value="1000" min="100" class="aaag-input-full">
+						</div>
+					</div>
+
+					<div id="schedule_options" class="aaag-schedule-box" style="display:none; margin-bottom: 20px;">
+						<div class="aaag-form-row" style="margin-bottom: 15px;">
+							<div class="aaag-form-col">
+								<label for="schedule_mode" class="aaag-label">Metode Penjadwalan</label>
+								<select name="schedule_mode" id="schedule_mode" class="aaag-select-full">
+									<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
+									<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
+								</select>
+							</div>
+							<div class="aaag-form-col">
+								<label for="schedule_date" class="aaag-label">Mulai Tanggal / Posting Pertama</label>
+								<input type="datetime-local" name="schedule_date" id="schedule_date" class="aaag-input-full">
+							</div>
+						</div>
+						
+						<div id="wrap_schedule_daily">
+							<div class="aaag-form-row">
+								<div class="aaag-form-col">
+									<label class="aaag-label">Min Jam (24h)</label>
+									<input type="number" name="daily_min" value="12" min="0" max="23" class="aaag-input-full">
+								</div>
+								<div class="aaag-form-col">
+									<label class="aaag-label">Max Jam (24h)</label>
+									<input type="number" name="daily_max" value="14" min="0" max="23" class="aaag-input-full">
+								</div>
+							</div>
+							<p class="aaag-help-text">Sistem memposting 1 artikel per hari, jam diacak dalam rentang di atas.</p>
+						</div>
+
+						<div id="wrap_schedule_interval" style="display:none;">
+							<div class="aaag-form-row">
+								<div class="aaag-form-col">
+									<label class="aaag-label">Min Jarak</label>
+									<input type="number" name="min_gap" value="2" min="1" class="aaag-input-full">
+								</div>
+								<div class="aaag-form-col">
+									<label class="aaag-label">Max Jarak</label>
+									<input type="number" name="max_gap" value="6" min="1" class="aaag-input-full">
+								</div>
+								<div class="aaag-form-col">
+									<label class="aaag-label">Satuan</label>
+									<select name="gap_unit" class="aaag-select-full">
+										<option value="hours">Jam</option>
+										<option value="minutes">Menit</option>
+									</select>
+								</div>
+							</div>
+							<p class="aaag-help-text">Jarak antar posting akan diacak dalam rentang ini.</p>
+						</div>
+					</div>
+
+					<div class="aaag-form-group" style="margin-top: 25px;">
+						<label for="titles" class="aaag-label">Daftar Judul Artikel</label>
+						<textarea name="titles" id="titles" rows="8" class="large-text aaag-textarea-full" required placeholder="Masukkan satu judul per baris..."></textarea>
+						<p class="aaag-help-text">Setiap baris akan menjadi 1 artikel dalam Campaign ini.</p>
+						<div id="token_estimation" style="margin-top: 10px; font-weight: bold; color: #0073aa;">Estimasi Token per Artikel: 0 token</div>
+					</div>
+
+					<div class="aaag-submit-box" style="margin-top: 30px;">
+						<input type="submit" name="aaag_generate_submit" class="button button-primary aaag-btn-submit-full" value="Buat Campaign & Mulai Antrean">
+					</div>
+				</div>
+			</div>
+		</div>
 	</form>
 </div>

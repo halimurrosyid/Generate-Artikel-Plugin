@@ -195,9 +195,9 @@ class AAAG_AI_Client {
 	}
 
 
-	public static function test_anthropic_connection() {
+	public static function test_anthropic_connection( $passed_key = '' ) {
 		try {
-			$api_key = get_option( 'aaag_api_key' );
+			$api_key = ! empty( $passed_key ) ? $passed_key : get_option( 'aaag_api_key' );
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_anthropic_connected', 0 );
 				update_option( 'aaag_verified_anthropic_models', array() );
@@ -246,7 +246,7 @@ class AAAG_AI_Client {
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
-				if ( $response_code === 200 ) {
+				if ( $response_code === 200 || $response_code === 429 ) {
 					$verified_models[] = $model;
 				} else {
 					$body_data = json_decode( $response_body, true );
@@ -271,9 +271,9 @@ class AAAG_AI_Client {
 		}
 	}
 
-	public static function test_openai_connection() {
+	public static function test_openai_connection( $passed_key = '' ) {
 		try {
-			$api_key = get_option( 'aaag_openai_api_key' );
+			$api_key = ! empty( $passed_key ) ? $passed_key : get_option( 'aaag_openai_api_key' );
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_openai_connected', 0 );
 				update_option( 'aaag_verified_openai_models', array() );
@@ -314,7 +314,7 @@ class AAAG_AI_Client {
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
-				if ( $response_code === 200 ) {
+				if ( $response_code === 200 || $response_code === 429 ) {
 					$verified_models[] = $model;
 				} else {
 					$body_data = json_decode( $response_body, true );
@@ -339,9 +339,9 @@ class AAAG_AI_Client {
 		}
 	}
 
-	public static function test_gemini_connection() {
+	public static function test_gemini_connection( $passed_key = '' ) {
 		try {
-			$api_key = get_option( 'aaag_gemini_api_key' );
+			$api_key = ! empty( $passed_key ) ? $passed_key : get_option( 'aaag_gemini_api_key' );
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_gemini_connected', 0 );
 				update_option( 'aaag_verified_gemini_models', array() );
@@ -349,8 +349,9 @@ class AAAG_AI_Client {
 			}
 			
 			$models_to_try = array(
-				'gemini-3.5-flash',
-				'gemini-3.1-pro',
+				'gemini-2.5-flash',
+				'gemini-2.5-pro',
+				'gemini-2.0-flash',
 				'gemini-1.5-flash',
 				'gemini-1.5-pro'
 			);
@@ -386,7 +387,7 @@ class AAAG_AI_Client {
 				}
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
-				if ( $response_code === 200 ) {
+				if ( $response_code === 200 || $response_code === 429 ) {
 					$verified_models[] = $model;
 				} else {
 					$body_data = json_decode( $response_body, true );

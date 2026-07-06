@@ -2,8 +2,9 @@
 /**
  * Plugin Name: AI Auto Article Generator
  * Description: Generates automatic articles using Anthropic Claude API based on provided titles, templates, and knowledge bases.
- * Version: 4.1.6
- * Author: AI Assistant
+ * Version: 4.3.3
+ * Author: Mujaddid Halimurrosyid
+ * Author URI: https://indahweb.com
  * Requires PHP: 8.0
  * Requires at least: 6.0
  */
@@ -19,7 +20,7 @@ if ( ! defined( 'AAAG_PLUGIN_URL' ) ) {
 	define( 'AAAG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 if ( ! defined( 'AAAG_VERSION' ) ) {
-	define( 'AAAG_VERSION', '4.1.6' );
+	define( 'AAAG_VERSION', '4.3.3' );
 }
 
 // Include core classes
@@ -35,6 +36,7 @@ require_once AAAG_PLUGIN_DIR . 'includes/class-queue.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-ai-client.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-post-creator.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-admin-menu.php';
+require_once AAAG_PLUGIN_DIR . 'includes/class-updater.php';
 
 // Register activation hook
 register_activation_hook( __FILE__, array( 'AAAG_Activator', 'activate' ) );
@@ -46,11 +48,19 @@ if ( ! function_exists( 'aaag_init_plugin' ) ) {
 		AAAG_Admin_Menu::init();
 		AAAG_Queue::init();
 		
+		// Initialize Auto-updater
+		new AAAG_Updater( __FILE__, AAAG_VERSION );
+		
 		// DB Upgrade Check
 		$installed_ver = get_option( 'aaag_db_version' );
 		if ( $installed_ver != AAAG_VERSION ) {
 			AAAG_DB::upgrade();
 			update_option( 'aaag_db_version', AAAG_VERSION );
+		}
+
+		// Self-healing: Ensure cron is scheduled (in case of manual updates/file replacement)
+		if ( ! wp_next_scheduled( 'aaag_process_queue_hook' ) ) {
+			wp_schedule_event( time(), 'aaag_every_five_minutes', 'aaag_process_queue_hook' );
 		}
 	}
 }
