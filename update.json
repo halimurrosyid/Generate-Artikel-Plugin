@@ -1,5 +1,5 @@
 {
-  "version": "4.3.3",
+  "version": "4.3.4",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "Updated plugin author details to Mujaddid Halimurrosyid and Author URL to Indahweb.com."
+  "changelog": "Added 'Reset All Failed' button to reset all failed jobs and clear attempts count."
 }

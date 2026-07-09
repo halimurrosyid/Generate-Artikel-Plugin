@@ -6,12 +6,25 @@ if ( isset( $_GET['action'] ) && $_GET['action'] == 'delete' && isset( $_GET['jo
 	echo '<div class="notice notice-success"><p>Job berhasil dihapus.</p></div>';
 }
 
+if ( isset( $_GET['action'] ) && $_GET['action'] == 'reset_all_failed' ) {
+	$campaign_id = isset( $_GET['campaign_id'] ) ? absint( $_GET['campaign_id'] ) : 0;
+	if ( check_admin_referer( 'reset_all_failed_action' ) ) {
+		$reset_count = AAAG_Job::reset_failed( $campaign_id );
+		echo '<div class="notice notice-success"><p>' . intval( $reset_count ) . ' job yang gagal berhasil di-reset menjadi pending.</p></div>';
+	}
+}
+
 $campaign_id = isset( $_GET['campaign_id'] ) ? absint( $_GET['campaign_id'] ) : 0;
 $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 ?>
 <div class="wrap aaag-wrap">
 	<h1>Daftar Job Antrean</h1>
 	<p>Proses WP-Cron berjalan setiap 5 menit dan memproses 1 job berstatus "pending". Anda juga bisa menjalankan secara manual.</p>
+	
+	<div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+		<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=aaag-jobs&action=reset_all_failed&campaign_id=' . $campaign_id), 'reset_all_failed_action' ); ?>" class="button button-secondary" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1;" onclick="return confirm('Apakah Anda yakin ingin mereset semua job yang gagal?');">Reset Semua Job Gagal</a>
+		<span style="font-size: 12px; color: #64748b; font-style: italic;">*Gunakan ini setelah mengisi token/API key agar antrean yang gagal otomatis berjalan kembali.</span>
+	</div>
 	
 	<table class="wp-list-table widefat fixed striped">
 		<thead>

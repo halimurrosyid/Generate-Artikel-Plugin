@@ -103,4 +103,14 @@ class AAAG_Job {
 		$table_name = AAAG_DB::get_table_name('jobs');
 		return $wpdb->delete( $table_name, array( 'id' => $id ), array( '%d' ) );
 	}
+
+	public static function reset_failed( $campaign_id = 0 ) {
+		global $wpdb;
+		$table_name = AAAG_DB::get_table_name('jobs');
+		$where = " WHERE status = 'failed'";
+		if ( $campaign_id > 0 ) {
+			$where .= $wpdb->prepare( " AND campaign_id = %d", $campaign_id );
+		}
+		return $wpdb->query( "UPDATE $table_name SET status = 'pending', attempts = 0, error_message = NULL $where" );
+	}
 }
