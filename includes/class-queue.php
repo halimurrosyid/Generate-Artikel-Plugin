@@ -9,6 +9,7 @@ class AAAG_Queue {
 	}
 
 	public static function process_queue() {
+		@set_time_limit( 300 );
 		global $wpdb;
 		
 		// Auto-clean logs older than 7 days to keep database lightweight
@@ -42,24 +43,55 @@ class AAAG_Queue {
 		}
 		
 		$in_clause = implode( ',', array_map( 'intval', $valid_campaign_ids ) );
-		$job = $wpdb->get_row( "SELECT * FROM $table_name WHERE campaign_id IN ($in_clause) AND (status = 'pending' OR (status = 'failed' AND attempts < 3)) ORDER BY CASE WHEN schedule_time IS NULL THEN 0 ELSE 1 END ASC, schedule_time ASC, id ASC LIMIT 1" );
+		
+		// Select top candidate ID
+		$candidate = $wpdb->get_row( "SELECT id FROM $table_name WHERE campaign_id IN ($in_clause) AND (status = 'pending' OR (status = 'failed' AND attempts < 3)) ORDER BY CASE WHEN schedule_time IS NULL THEN 0 ELSE 1 END ASC, schedule_time ASC, id ASC LIMIT 1" );
 
-		if ( ! $job ) {
+		if ( ! $candidate ) {
 			return; 
 		}
 
-		AAAG_Job::update_status( $job->id, 'processing' );
+		// Atomically lock the row to prevent concurrent race condition duplicate runs
+		$current_time = current_time( 'mysql' );
+		$locked = $wpdb->query( $wpdb->prepare(
+			"UPDATE $table_name SET status = 'processing', locked_at = %s WHERE id = %d AND (status = 'pending' OR (status = 'failed' AND attempts < 3))",
+			$current_time,
+			$candidate->id
+		) );
+
+		if ( ! $locked ) {
+			return; // Row was grabbed by another thread/request
+		}
+
+		// Fetch the full locked job details
+		$job = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $candidate->id ) );
+		if ( ! $job ) {
+			return;
+		}
+
 		self::execute_job( $job );
 	}
 
 	public static function process_job_manual( $job_id ) {
+		@set_time_limit( 300 );
 		global $wpdb;
 		$table_name = AAAG_DB::get_table_name('jobs');
 		
+		// Atomically lock the row
+		$current_time = current_time( 'mysql' );
+		$locked = $wpdb->query( $wpdb->prepare(
+			"UPDATE $table_name SET status = 'processing', locked_at = %s WHERE id = %d AND status IN ('pending', 'failed')",
+			$current_time,
+			$job_id
+		) );
+
+		if ( ! $locked ) {
+			return false;
+		}
+
 		$job = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_name WHERE id = %d", $job_id ) );
-		if ( ! $job || $job->status === 'processing' || $job->status === 'completed' ) return false;
+		if ( ! $job ) return false;
 		
-		AAAG_Job::update_status( $job->id, 'processing' );
 		self::execute_job( $job );
 		return true;
 	}
