@@ -80,7 +80,7 @@ class AAAG_Queue {
 		// Atomically lock the row
 		$current_time = current_time( 'mysql' );
 		$locked = $wpdb->query( $wpdb->prepare(
-			"UPDATE $table_name SET status = 'processing', locked_at = %s WHERE id = %d AND status IN ('pending', 'failed')",
+			"UPDATE $table_name SET status = 'processing', locked_at = %s WHERE id = %d AND status IN ('pending', 'failed', 'skipped')",
 			$current_time,
 			$job_id
 		) );
@@ -99,6 +99,20 @@ class AAAG_Queue {
 	private static function execute_job( $job ) {
 		try {
 			AAAG_Logger::log( "Starting job ID: {$job->id} for title: {$job->title}", $job->id );
+			
+			// Pengecekan apakah judul artikel sudah ada sebelumnya di WordPress (berdasarkan post_type target)
+			global $wpdb;
+			$post_exists = $wpdb->get_var( $wpdb->prepare(
+				"SELECT ID FROM $wpdb->posts WHERE post_title = %s AND post_type = %s AND post_status IN ('publish', 'future', 'draft', 'pending', 'private') LIMIT 1",
+				$job->title,
+				$job->post_type
+			) );
+
+			if ( $post_exists ) {
+				AAAG_Job::update_status( $job->id, 'skipped', 'Skipped: Judul artikel sudah terbit atau terdaftar di WordPress (Duplicate).' );
+				AAAG_Logger::log( "Job ID {$job->id} di-skip karena judul duplikat pada post type '{$job->post_type}': {$job->title}", $job->id );
+				return;
+			}
 			
 			$campaign = AAAG_Campaign::get( $job->campaign_id );
 			if ( ! $campaign ) {

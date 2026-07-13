@@ -37,6 +37,9 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.3.6
+- **Pencegahan Judul Duplikat**: Otomatis mengecek apakah judul artikel sudah terdaftar di WordPress (pada *post type* target). Jika sudah ada, sistem akan melompati (*skip*) job tersebut dan mengubah statusnya menjadi **`SKIPPED`** dengan detail label warna jingga agar terhindar dari *duplicate content*.
+
 ### v4.3.5
 - **Optimasi Performa & Keamanan Antrean**: Ditambahkan batas waktu eksekusi dinamis (`set_time_limit`) dan sistem penguncian baris DB atomik untuk menghindari *race conditions* dan duplikasi pembuatan artikel.
 

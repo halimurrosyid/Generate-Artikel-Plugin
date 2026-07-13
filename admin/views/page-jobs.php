@@ -51,6 +51,7 @@ $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 							$status_class = 'status-draft';
 							if ($job->status == 'completed') $status_class = 'status-active';
 							if ($job->status == 'failed') $status_class = 'status-error';
+							if ($job->status == 'skipped') $status_class = 'status-skipped';
 							if ($job->status == 'processing') $status_class = 'status-paused';
 							if ($job->status == 'pending') $status_class = 'status-draft';
 							?>
@@ -61,7 +62,7 @@ $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 						<td><?php echo esc_html( $job->error_message ? $job->error_message : '-' ); ?></td>
 						<td style="white-space: nowrap; width: 220px;">
 							<div style="display: flex; gap: 6px; align-items: center;">
-								<?php if ( in_array( $job->status, array('pending', 'failed') ) ) : ?>
+								<?php if ( in_array( $job->status, array('pending', 'failed', 'skipped') ) ) : ?>
 									<button class="button aaag-run-job-btn" data-id="<?php echo esc_attr( $job->id ); ?>" style="margin: 0;">Run Now</button>
 								<?php endif; ?>
 								<?php 

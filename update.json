@@ -1,5 +1,5 @@
 {
-  "version": "4.3.5",
+  "version": "4.3.6",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "Optimized queue execution: added dynamic timeout settings and atomic DB row locking to prevent race conditions and duplicate generations."
+  "changelog": "Added duplicate post title prevention: automatically skips generating article if a post with the same title and post type already exists in WordPress."
 }

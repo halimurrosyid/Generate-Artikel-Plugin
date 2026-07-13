@@ -75,7 +75,7 @@ class AAAG_Job {
 		if ( $status === 'processing' ) {
 			$data['locked_at'] = current_time( 'mysql' );
 			$format[] = '%s';
-		} elseif ( $status === 'completed' || $status === 'failed' ) {
+		} elseif ( $status === 'completed' || $status === 'failed' || $status === 'skipped' ) {
 			$data['locked_at'] = null;
 			$format[] = '%s';
 		}

@@ -191,6 +191,12 @@
 	color: #475569;
 }
 
+.aaag-badge.status-skipped {
+	background: #fff7ed;
+	color: #c2410c;
+	border: 1px solid #ffedd5;
+}
+
 /* Tables Styling */
 .aaag-wrap .wp-list-table {
 	background: var(--aaag-card-bg);
