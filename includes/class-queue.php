@@ -280,13 +280,29 @@ class AAAG_Queue {
 		}
 		
 		$seo_enabled = ( $campaign && isset( $campaign->generate_seo_meta ) && intval( $campaign->generate_seo_meta ) === 1 );
-		$seo_style   = ( $campaign && ! empty( $campaign->seo_title_style ) ) ? $campaign->seo_title_style : 'dynamic_ctr';
 		
-		$seo_title_rule = "Create a unique, compelling, click-worthy SEO Meta Title strictly between 50 and 60 characters (never exceed 60 chars). It must include the primary keyword and be optimized for maximum search CTR.";
-		if ( $seo_style === 'power_words' ) {
-			$seo_title_rule = "Create an engaging SEO Meta Title strictly between 50 and 60 characters that includes power words and current year (" . current_time('Y') . ").";
-		} elseif ( $seo_style === 'standard' ) {
-			$seo_title_rule = "Create a clean standard SEO Meta Title strictly between 50 and 60 characters following the pattern: [Title] | [Brand/Site Name].";
+		$seo_replacements = array(
+			'{{title}}'        => $job->title,
+			'{{site_name}}'    => get_bloginfo( 'name' ),
+			'{{current_year}}' => current_time( 'Y' ),
+		);
+
+		if ( ! empty( $campaign->seo_title_prompt ) ) {
+			$seo_title_rule = strtr( $campaign->seo_title_prompt, $seo_replacements ) . " (STRICT RULE: Length must be strictly 50-60 characters, never exceed 60 chars).";
+		} else {
+			$seo_style   = ( $campaign && ! empty( $campaign->seo_title_style ) ) ? $campaign->seo_title_style : 'dynamic_ctr';
+			$seo_title_rule = "Create a unique, compelling, click-worthy SEO Meta Title strictly between 50 and 60 characters (never exceed 60 chars). It must include the primary keyword and be optimized for maximum search CTR.";
+			if ( $seo_style === 'power_words' ) {
+				$seo_title_rule = "Create an engaging SEO Meta Title strictly between 50 and 60 characters that includes power words and current year (" . current_time('Y') . ").";
+			} elseif ( $seo_style === 'standard' ) {
+				$seo_title_rule = "Create a clean standard SEO Meta Title strictly between 50 and 60 characters following the pattern: [Title] | [Brand/Site Name].";
+			}
+		}
+
+		if ( ! empty( $campaign->seo_desc_prompt ) ) {
+			$seo_desc_rule = strtr( $campaign->seo_desc_prompt, $seo_replacements ) . " (STRICT RULE: Length must be strictly 120-155 characters, must not exceed 160 chars).";
+		} else {
+			$seo_desc_rule = "A compelling SEO meta description strictly between 120 and 155 characters (MUST NOT exceed 160 chars) summarizing the article with a natural call to action";
 		}
 
 		$advanced_instruction = "\n\n--- ADVANCED INSTRUCTIONS ---\n";
@@ -295,7 +311,7 @@ class AAAG_Queue {
 		$advanced_instruction .= '  "content": "Your full article HTML content here. If relevant, naturally insert hyperlinks (<a> tags) to these recent articles where contextually appropriate:\n' . $links_text . '", ' . "\n";
 		if ( $seo_enabled ) {
 			$advanced_instruction .= '  "meta_title": "' . $seo_title_rule . '", ' . "\n";
-			$advanced_instruction .= '  "meta_description": "A compelling SEO meta description strictly between 120 and 155 characters (MUST NOT exceed 160 chars) summarizing the article with a natural call to action", ' . "\n";
+			$advanced_instruction .= '  "meta_description": "' . $seo_desc_rule . '", ' . "\n";
 			$advanced_instruction .= '  "focus_keyword": "The primary SEO focus keyword of this article (2-4 words)", ' . "\n";
 		}
 		$advanced_instruction .= '  "tags": ["tag1", "tag2", "tag3"], ' . "\n";

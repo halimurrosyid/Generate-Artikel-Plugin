@@ -14,6 +14,8 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 	$author_id         = isset( $_POST['author_id'] ) ? absint( $_POST['author_id'] ) : ( get_current_user_id() ?: 1 );
 	$generate_seo_meta = isset( $_POST['generate_seo_meta'] ) ? 1 : 0;
 	$seo_title_style   = isset( $_POST['seo_title_style'] ) ? sanitize_text_field( $_POST['seo_title_style'] ) : 'dynamic_ctr';
+	$seo_title_prompt  = isset( $_POST['seo_title_prompt'] ) ? wp_unslash( $_POST['seo_title_prompt'] ) : '';
+	$seo_desc_prompt   = isset( $_POST['seo_desc_prompt'] ) ? wp_unslash( $_POST['seo_desc_prompt'] ) : '';
 	$prompt            = isset( $_POST['prompt'] ) ? wp_unslash( $_POST['prompt'] ) : '';
 	$knowledge_base    = isset( $_POST['knowledge_base'] ) ? wp_unslash( $_POST['knowledge_base'] ) : '';
 	
@@ -34,7 +36,7 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 	if ( $min_words > $max_words ) {
 		echo '<div class="notice notice-error"><p>Minimal kata tidak boleh lebih besar dari maksimal kata.</p></div>';
 	} elseif ( empty( $prompt ) ) {
-		echo '<div class="notice notice-error"><p>Silakan isi AI Prompt (Instruksi).</p></div>';
+		echo '<div class="notice notice-error"><p>Silakan isi AI Prompt Konten Artikel.</p></div>';
 	} else {
 		// Insert Campaign
 		$campaign_id = AAAG_Campaign::insert( array(
@@ -48,6 +50,8 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 			'author_id'         => $author_id,
 			'generate_seo_meta' => $generate_seo_meta,
 			'seo_title_style'   => $seo_title_style,
+			'seo_title_prompt'  => $seo_title_prompt,
+			'seo_desc_prompt'   => $seo_desc_prompt,
 			'status'            => 'active'
 		) );
 		
@@ -269,24 +273,29 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						</div>
 					</div>
 
-					<div class="aaag-form-group">
-						<label for="prompt" class="aaag-label">AI Prompt (Instruksi Tambahan)</label>
-						<textarea name="prompt" id="prompt" rows="7" class="large-text aaag-textarea-full" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
+					<div class="aaag-form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--aaag-radius-md); padding: 18px; margin-bottom: 20px;">
+						<label for="prompt" class="aaag-label" style="color: #166534; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px;">
+							<span>📝 1. AI Prompt Konten Artikel (Instruksi Isi Postingan)</span>
+						</label>
+						<p class="aaag-help-text" style="color: #15803d; margin-top: 2px; margin-bottom: 10px;">
+							Prompt ini digunakan AI untuk menulis <strong>keseluruhan isi artikel (body text)</strong>, struktur sub-heading (H2, H3), format list, dan pembahasan lengkap.
+						</p>
+						<textarea name="prompt" id="prompt" rows="7" class="large-text aaag-textarea-full" style="background: #ffffff;" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
 						<p class="aaag-help-text">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>. Opsional: <code>{{site_name}}</code>, <code>{{current_date}}</code>.</p>
 					</div>
 
 					<div class="aaag-form-group">
-						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi (Opsional)</label>
+						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi Tambahan (Opsional)</label>
 						<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text aaag-textarea-full" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
 						<p class="aaag-help-text">AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.</p>
 					</div>
 
 					<!-- SEO Metadata Integration Box -->
-					<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">
-						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+					<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
 							<label style="font-weight: 700; color: #0f172a; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
 								<input type="checkbox" name="generate_seo_meta" id="generate_seo_meta" value="1" checked style="margin: 0; width: 18px; height: 18px;">
-								<span>🚀 Generate Otomatis Meta Title & Meta Deskripsi (SEO Plugin Compatible)</span>
+								<span>🚀 2. AI Prompt & Optimasi SEO (Meta Title & Meta Deskripsi)</span>
 							</label>
 						</div>
 						<p class="aaag-help-text" style="margin-top: 0; margin-bottom: 15px; color: #475569;">
@@ -294,9 +303,25 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						</p>
 
 						<div id="seo_settings_fields" style="display: block; border-top: 1px dashed #cbd5e1; padding-top: 15px;">
+							<div class="aaag-form-group" style="margin-bottom: 16px;">
+								<label for="seo_title_prompt" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b;">
+									🎯 AI Prompt Khusus Meta Title (Judul SEO di Google)
+								</label>
+								<textarea name="seo_title_prompt" id="seo_title_prompt" rows="2" class="aaag-textarea-full" placeholder="Contoh: Buat Meta Title SEO yang memikat klik (CTR tinggi), mengandung keyword utama {{title}}, dan dibatasi 50-60 karakter."></textarea>
+								<p class="aaag-help-text">Instruksi AI untuk membuat judul snippet SERP. Jika dikosongkan, AI menggunakan pola otomatis di bawah. Variabel: <code>{{title}}</code>, <code>{{site_name}}</code>, <code>{{current_year}}</code>. Batas Google: <strong>50–60 karakter</strong>.</p>
+							</div>
+
+							<div class="aaag-form-group" style="margin-bottom: 16px;">
+								<label for="seo_desc_prompt" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b;">
+									📄 AI Prompt Khusus Meta Description (Deskripsi Cuplikan SEO)
+								</label>
+								<textarea name="seo_desc_prompt" id="seo_desc_prompt" rows="2" class="aaag-textarea-full" placeholder="Contoh: Buat Meta Deskripsi persuasif (120-155 karakter) yang merangkum solusi artikel {{title}} di {{site_name}} diakhiri Call to Action."></textarea>
+								<p class="aaag-help-text">Instruksi AI untuk membuat deskripsi cuplikan di bawah judul Google. Variabel: <code>{{title}}</code>, <code>{{site_name}}</code>, <code>{{current_year}}</code>. Batas Google: <strong>120–155 karakter</strong>.</p>
+							</div>
+
 							<div class="aaag-form-row">
 								<div class="aaag-form-col">
-									<label for="seo_title_style" class="aaag-label" style="font-size: 12px;">Struktur / Pola Meta Title</label>
+									<label for="seo_title_style" class="aaag-label" style="font-size: 12px;">Preset Pola Meta Title (Sebagai Fallback)</label>
 									<select name="seo_title_style" id="seo_title_style" class="aaag-select-full">
 										<option value="dynamic_ctr" selected>⚡ AI Dynamic CTR Booster (Beda tiap artikel, memikat klik & ranking)</option>
 										<option value="power_words">📈 Power Words + Tahun Aktif (Contoh: Panduan Lengkap [Judul] 2026)</option>
