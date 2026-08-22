@@ -151,6 +151,8 @@ class AAAG_Queue {
 			'{{max_words}}'      => $job->max_words,
 			'{{site_name}}'      => get_bloginfo( 'name' ),
 			'{{current_date}}'   => current_time( 'Y-m-d' ),
+			'{{current_year}}'   => current_time( 'Y' ),
+			'{{year}}'           => current_time( 'Y' ),
 		);
 		$compiled = strtr( $prompt, $replacements );
 

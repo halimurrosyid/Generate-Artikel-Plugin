@@ -171,10 +171,12 @@ jQuery(document).ready(function($) {
 		});
 	});
 
-	// Token Estimation (Fixed for v2.1/v3.0 UI)
+	// Token Estimation (Fixed for v4.4 UI)
 	function estimateTokens() {
 		var prompt = $('#prompt').val() || '';
 		var kb = $('#knowledge_base').val() || '';
+		var seoTitlePrompt = $('#seo_title_prompt').val() || '';
+		var seoDescPrompt = $('#seo_desc_prompt').val() || '';
 		var titleLines = ($('#titles').val() || '').split('\n');
 		var maxTitleLength = 0;
 		var titleCount = 0;
@@ -189,7 +191,7 @@ jQuery(document).ready(function($) {
 			}
 		}
 
-		var totalChars = prompt.length + kb.length + maxTitleLength;
+		var totalChars = prompt.length + kb.length + seoTitlePrompt.length + seoDescPrompt.length + maxTitleLength + 500;
 		// Rough estimate: 4 chars per token
 		var estimatedTokens = Math.ceil(totalChars / 4);
 
@@ -200,7 +202,7 @@ jQuery(document).ready(function($) {
 		}
 	}
 
-	$('#prompt, #knowledge_base, #titles').on('change keyup', estimateTokens);
+	$('#prompt, #knowledge_base, #seo_title_prompt, #seo_desc_prompt, #titles').on('change keyup', estimateTokens);
 	// Trigger on load if elements exist
 	if ($('#titles').length) {
 		estimateTokens();
