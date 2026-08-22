@@ -319,8 +319,9 @@ class AAAG_AI_Client {
 			}
 			
 			$all_supported = array(
-				'gpt-4o-mini'        => 'GPT-4o Mini',
+				'gpt-4.5-preview'    => 'GPT-4.5 Preview (Model Terbesar OpenAI)',
 				'gpt-4o'             => 'GPT-4o',
+				'gpt-4o-mini'        => 'GPT-4o Mini',
 				'chatgpt-4o-latest'  => 'ChatGPT-4o Latest',
 				'o3-mini'            => 'o3-mini',
 				'o1-mini'            => 'o1-mini',

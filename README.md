@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.0
+- **Dukungan OpenAI GPT-4.5 Preview & Generasi Model 2026**:
+  - Menambahkan dukungan model raksasa terbaru OpenAI `gpt-4.5-preview` berdampingan dengan `claude-3-7-sonnet-20250219` dan `gemini-2.5-pro/flash`.
+
 ### v4.4.9
 - **Perbaikan Tata Letak Input Jadwal di Sidebar**:
   - Mengubah susunan input *Metode Penjadwalan* dan *Mulai Tanggal / Posting Pertama* menjadi vertikal (*full-width*) sehingga tidak lagi terpotong/sempit.

@@ -168,8 +168,9 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								);
 
 								$openai_names = array(
-									'gpt-4o-mini'        => 'GPT-4o Mini (Sangat Cepat & Murah)',
+									'gpt-4.5-preview'    => 'GPT-4.5 Preview (Model Terbesar OpenAI)',
 									'gpt-4o'             => 'GPT-4o (Sangat Pintar & Komprehensif)',
+									'gpt-4o-mini'        => 'GPT-4o Mini (Sangat Cepat & Murah)',
 									'chatgpt-4o-latest'  => 'ChatGPT-4o Latest (Versi Terbaru ChatGPT)',
 									'o3-mini'            => 'o3-mini (Model Penalaran / Reasoning Cepat)',
 									'o1-mini'            => 'o1-mini (Penalaran Logis)',

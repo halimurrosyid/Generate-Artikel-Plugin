@@ -1,5 +1,5 @@
 {
-  "version": "4.4.9",
+  "version": "4.5.0",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.4.9: Fixed squashed and cut-off schedule inputs in sidebar by converting them to clean full-width vertical rows and widened sidebar width to 380px."
+  "changelog": "v4.5.0: Added support for GPT-4.5 Preview alongside Claude 3.7 Sonnet, Gemini 2.5 Pro/Flash, and polished connection test suite."
 }
