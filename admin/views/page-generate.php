@@ -444,18 +444,17 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 					</div>
 
 					<div id="schedule_options" class="aaag-schedule-box" style="display:none; margin-bottom: 20px;">
-						<div class="aaag-form-row" style="margin-bottom: 15px;">
-							<div class="aaag-form-col">
-								<label for="schedule_mode" class="aaag-label">Metode Penjadwalan</label>
-								<select name="schedule_mode" id="schedule_mode" class="aaag-select-full">
-									<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
-									<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
-								</select>
-							</div>
-							<div class="aaag-form-col">
-								<label for="schedule_date" class="aaag-label">Mulai Tanggal / Posting Pertama</label>
-								<input type="datetime-local" name="schedule_date" id="schedule_date" class="aaag-input-full">
-							</div>
+						<div class="aaag-form-group" style="margin-bottom: 16px;">
+							<label for="schedule_mode" class="aaag-label">Metode Penjadwalan</label>
+							<select name="schedule_mode" id="schedule_mode" class="aaag-select-full">
+								<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
+								<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
+							</select>
+						</div>
+
+						<div class="aaag-form-group" style="margin-bottom: 16px;">
+							<label for="schedule_date" class="aaag-label">Mulai Tanggal / Posting Pertama</label>
+							<input type="datetime-local" name="schedule_date" id="schedule_date" class="aaag-input-full" style="width: 100%; box-sizing: border-box;">
 						</div>
 						
 						<div id="wrap_schedule_daily">
@@ -473,7 +472,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						</div>
 
 						<div id="wrap_schedule_interval" style="display:none;">
-							<div class="aaag-form-row">
+							<div class="aaag-form-row" style="margin-bottom: 12px;">
 								<div class="aaag-form-col">
 									<label class="aaag-label">Min Jarak</label>
 									<input type="number" name="min_gap" value="2" min="1" class="aaag-input-full">
@@ -482,13 +481,13 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 									<label class="aaag-label">Max Jarak</label>
 									<input type="number" name="max_gap" value="6" min="1" class="aaag-input-full">
 								</div>
-								<div class="aaag-form-col">
-									<label class="aaag-label">Satuan</label>
-									<select name="gap_unit" class="aaag-select-full">
-										<option value="hours">Jam</option>
-										<option value="minutes">Menit</option>
-									</select>
-								</div>
+							</div>
+							<div class="aaag-form-group">
+								<label class="aaag-label">Satuan Jarak</label>
+								<select name="gap_unit" class="aaag-select-full">
+									<option value="hours">Jam</option>
+									<option value="minutes">Menit</option>
+								</select>
 							</div>
 							<p class="aaag-help-text">Jarak antar posting akan diacak dalam rentang ini.</p>
 						</div>

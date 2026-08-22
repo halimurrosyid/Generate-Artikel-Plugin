@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.9
+- **Perbaikan Tata Letak Input Jadwal di Sidebar**:
+  - Mengubah susunan input *Metode Penjadwalan* dan *Mulai Tanggal / Posting Pertama* menjadi vertikal (*full-width*) sehingga tidak lagi terpotong/sempit.
+  - Memperluas lebar sidebar menjadi `380px` untuk kenyamanan visual maksimal.
+
 ### v4.4.8
 - **Verifikasi Koneksi Standar Industri via Endpoint `/v1/models`**:
   - Mengubah metode uji koneksi Anthropic, OpenAI, dan Google Gemini dengan menembak langsung endpoint resmi daftar model (`/v1/models`).

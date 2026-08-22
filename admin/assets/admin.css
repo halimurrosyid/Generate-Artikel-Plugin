@@ -605,7 +605,7 @@
 /* Modern Dashboard Grid & Card Layouts */
 .aaag-dashboard-grid {
 	display: grid;
-	grid-template-columns: 1fr 340px;
+	grid-template-columns: 1fr 380px;
 	gap: 24px;
 	margin-top: 25px;
 	align-items: start;

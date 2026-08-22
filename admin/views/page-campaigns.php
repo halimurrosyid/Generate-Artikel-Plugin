@@ -527,21 +527,20 @@ $campaigns = AAAG_Campaign::get_all();
 						<p class="aaag-help-text" style="color: #991b1b; margin-top:10px;">Jadwal baru di bawah ini hanya akan aktif jika kotak di atas Anda centang.</p>
 					</div>
 					
-					<div id="wrap_reschedule_options" class="aaag-schedule-box" style="display:none; margin-top:20px;">
-						<h3 style="margin-top:0; font-size:14px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:var(--aaag-primary);">Pengaturan Jadwal Baru</h3>
+					<div id="wrap_reschedule_options" class="aaag-schedule-box" style="display:none; margin-top:18px;">
+						<h3 style="margin-top:0; font-size:14px; border-bottom:1px solid #e2e8f0; padding-bottom:8px; color:var(--aaag-primary); font-weight:700;">Pengaturan Jadwal Baru</h3>
 						
-						<div class="aaag-form-row" style="margin-bottom: 15px;">
-							<div class="aaag-form-col">
-								<label for="schedule_mode" class="aaag-label">Metode Penjadwalan</label>
-								<select name="schedule_mode" id="schedule_mode" class="aaag-select-full">
-									<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
-									<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
-								</select>
-							</div>
-							<div class="aaag-form-col">
-								<label for="schedule_date" class="aaag-label">Mulai Tanggal / Posting Pertama</label>
-								<input type="datetime-local" name="schedule_date" id="schedule_date" class="aaag-input-full" required disabled>
-							</div>
+						<div class="aaag-form-group" style="margin-bottom: 16px;">
+							<label for="schedule_mode" class="aaag-label">Metode Penjadwalan</label>
+							<select name="schedule_mode" id="schedule_mode" class="aaag-select-full">
+								<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
+								<option value="interval">Berdasarkan Jarak Waktu (Interval)</option>
+							</select>
+						</div>
+
+						<div class="aaag-form-group" style="margin-bottom: 16px;">
+							<label for="schedule_date" class="aaag-label">Mulai Tanggal / Posting Pertama</label>
+							<input type="datetime-local" name="schedule_date" id="schedule_date" class="aaag-input-full" style="width: 100%; box-sizing: border-box;" required disabled>
 						</div>
 
 						<div id="wrap_schedule_daily">
@@ -559,7 +558,7 @@ $campaigns = AAAG_Campaign::get_all();
 						</div>
 
 						<div id="wrap_schedule_interval" style="display:none;">
-							<div class="aaag-form-row">
+							<div class="aaag-form-row" style="margin-bottom: 12px;">
 								<div class="aaag-form-col">
 									<label class="aaag-label">Min Jarak</label>
 									<input type="number" name="min_gap" value="2" min="1" class="aaag-input-full">
@@ -568,13 +567,13 @@ $campaigns = AAAG_Campaign::get_all();
 									<label class="aaag-label">Max Jarak</label>
 									<input type="number" name="max_gap" value="6" min="1" class="aaag-input-full">
 								</div>
-								<div class="aaag-form-col">
-									<label class="aaag-label">Satuan</label>
-									<select name="gap_unit" class="aaag-select-full">
-										<option value="hours">Jam</option>
-										<option value="minutes">Menit</option>
-									</select>
-								</div>
+							</div>
+							<div class="aaag-form-group">
+								<label class="aaag-label">Satuan Jarak</label>
+								<select name="gap_unit" class="aaag-select-full">
+									<option value="hours">Jam</option>
+									<option value="minutes">Menit</option>
+								</select>
 							</div>
 							<p class="aaag-help-text">Jarak akan diacak dalam rentang di atas.</p>
 						</div>
