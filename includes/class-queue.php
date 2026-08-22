@@ -320,8 +320,9 @@ class AAAG_Queue {
 		$advanced_instruction .= '  "category": "Select ONE most relevant category from this list: \n' . $cats_text . '"' . "\n";
 		$advanced_instruction .= "}\n\n";
 		$advanced_instruction .= "CRITICAL SEO GUIDELINES:\n";
-		$advanced_instruction .= "- If meta_title is generated, ensure character length is 50-60 chars.\n";
-		$advanced_instruction .= "- If meta_description is generated, ensure character length is 120-155 chars.\n";
+		$advanced_instruction .= "- Synchronization: The generated meta_title and meta_description MUST directly reflect and be 100% synchronized with the generated article content.\n";
+		$advanced_instruction .= "- If meta_title is generated, ensure character length is strictly 50-60 chars (never exceed 60).\n";
+		$advanced_instruction .= "- If meta_description is generated, ensure character length is strictly 120-155 chars (never exceed 160).\n";
 		$advanced_instruction .= "- Complete the JSON object perfectly and close with } at the very end.\n";
 		
 		return $compiled . $advanced_instruction;
