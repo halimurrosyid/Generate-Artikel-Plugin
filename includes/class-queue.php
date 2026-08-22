@@ -279,16 +279,32 @@ class AAAG_Queue {
 			$cats_text .= "- " . $c->name . "\n";
 		}
 		
+		$seo_enabled = ( ! $campaign || ! isset( $campaign->generate_seo_meta ) || $campaign->generate_seo_meta == 1 );
+		$seo_style   = ( $campaign && ! empty( $campaign->seo_title_style ) ) ? $campaign->seo_title_style : 'dynamic_ctr';
+		
+		$seo_title_rule = "Create a unique, compelling, click-worthy SEO Meta Title strictly between 50 and 60 characters (never exceed 60 chars). It must include the primary keyword and be optimized for maximum search CTR.";
+		if ( $seo_style === 'power_words' ) {
+			$seo_title_rule = "Create an engaging SEO Meta Title strictly between 50 and 60 characters that includes power words and current year (" . current_time('Y') . ").";
+		} elseif ( $seo_style === 'standard' ) {
+			$seo_title_rule = "Create a clean standard SEO Meta Title strictly between 50 and 60 characters following the pattern: [Title] | [Brand/Site Name].";
+		}
+
 		$advanced_instruction = "\n\n--- ADVANCED INSTRUCTIONS ---\n";
 		$advanced_instruction .= "You must output your response ONLY as a raw valid JSON object without any markdown formatting, no code blocks, and no extra text. Do not wrap it in ```json. The JSON must have the following exact keys:\n";
 		$advanced_instruction .= "{\n";
 		$advanced_instruction .= '  "content": "Your full article HTML content here. If relevant, naturally insert hyperlinks (<a> tags) to these recent articles where contextually appropriate:\n' . $links_text . '", ' . "\n";
-		$advanced_instruction .= '  "meta_description": "A compelling SEO meta description under 160 characters", ' . "\n";
-		$advanced_instruction .= '  "focus_keyword": "The primary SEO focus keyword of this article", ' . "\n";
+		if ( $seo_enabled ) {
+			$advanced_instruction .= '  "meta_title": "' . $seo_title_rule . '", ' . "\n";
+			$advanced_instruction .= '  "meta_description": "A compelling SEO meta description strictly between 120 and 155 characters (MUST NOT exceed 160 chars) summarizing the article with a natural call to action", ' . "\n";
+			$advanced_instruction .= '  "focus_keyword": "The primary SEO focus keyword of this article (2-4 words)", ' . "\n";
+		}
 		$advanced_instruction .= '  "tags": ["tag1", "tag2", "tag3"], ' . "\n";
 		$advanced_instruction .= '  "category": "Select ONE most relevant category from this list: \n' . $cats_text . '"' . "\n";
 		$advanced_instruction .= "}\n\n";
-		$advanced_instruction .= "CRITICAL: You must write the entire article and complete the JSON object perfectly. Do not let your response get cut off. Make sure you close the JSON object with } at the very end.\n";
+		$advanced_instruction .= "CRITICAL SEO GUIDELINES:\n";
+		$advanced_instruction .= "- If meta_title is generated, ensure character length is 50-60 chars.\n";
+		$advanced_instruction .= "- If meta_description is generated, ensure character length is 120-155 chars.\n";
+		$advanced_instruction .= "- Complete the JSON object perfectly and close with } at the very end.\n";
 		
 		return $compiled . $advanced_instruction;
 	}

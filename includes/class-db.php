@@ -25,6 +25,8 @@ class AAAG_DB {
 			tone varchar(50) NOT NULL DEFAULT 'informative',
 			pov varchar(50) NOT NULL DEFAULT 'second_person',
 			author_id bigint(20) unsigned NOT NULL DEFAULT 1,
+			generate_seo_meta tinyint(1) NOT NULL DEFAULT 1,
+			seo_title_style varchar(50) NOT NULL DEFAULT 'dynamic_ctr',
 			status varchar(20) NOT NULL DEFAULT 'active',
 			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			PRIMARY KEY  (id)
@@ -92,6 +94,8 @@ class AAAG_DB {
 		$pov_exists         = $wpdb->query( "SELECT pov FROM $campaigns_table LIMIT 1" ) !== false;
 		$camp_author_exists = $wpdb->query( "SELECT author_id FROM $campaigns_table LIMIT 1" ) !== false;
 		$job_author_exists  = $wpdb->query( "SELECT author_id FROM $jobs_table LIMIT 1" ) !== false;
+		$seo_meta_exists    = $wpdb->query( "SELECT generate_seo_meta FROM $campaigns_table LIMIT 1" ) !== false;
+		$seo_style_exists   = $wpdb->query( "SELECT seo_title_style FROM $campaigns_table LIMIT 1" ) !== false;
 		$post_type_exists   = $wpdb->query( "SELECT post_type FROM $jobs_table LIMIT 1" ) !== false;
 		$post_status_exists = $wpdb->query( "SELECT post_status FROM $jobs_table LIMIT 1" ) !== false;
 		$min_words_exists   = $wpdb->query( "SELECT min_words FROM $jobs_table LIMIT 1" ) !== false;
@@ -109,6 +113,12 @@ class AAAG_DB {
 		}
 		if ( ! $camp_author_exists ) {
 			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN author_id bigint(20) unsigned NOT NULL DEFAULT 1" );
+		}
+		if ( ! $seo_meta_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN generate_seo_meta tinyint(1) NOT NULL DEFAULT 1" );
+		}
+		if ( ! $seo_style_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN seo_title_style varchar(50) NOT NULL DEFAULT 'dynamic_ctr'" );
 		}
 		if ( ! $job_author_exists ) {
 			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN author_id bigint(20) unsigned NOT NULL DEFAULT 1" );

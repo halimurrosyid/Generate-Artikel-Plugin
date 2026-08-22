@@ -1,5 +1,5 @@
 {
-  "version": "4.3.8",
+  "version": "4.3.9",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.3.8: Added Language selection, Tone of Voice (Informative, Casual, Professional, Journalistic, Storytelling, Persuasive), POV selection, WordPress Author assignment per campaign, Status Tabs filtering & Bulk Actions (Bulk Run, Bulk Reset, Bulk Delete) on Jobs list, Auto-create categories, and auto-publishing missed schedules."
+  "changelog": "v4.3.9: Added full integration with WordPress SEO plugins (Rank Math, Yoast SEO, All in One SEO, SEOPress, The SEO Framework), auto generation of custom Meta Title (50-60 chars) with dynamic CTR / power words / standard styles, Meta Description (120-155 chars) search engine character boundary compliance, and Focus Keyword injection."
 }

@@ -12,6 +12,8 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 	$tone              = isset( $_POST['tone'] ) ? sanitize_text_field( $_POST['tone'] ) : 'informative';
 	$pov               = isset( $_POST['pov'] ) ? sanitize_text_field( $_POST['pov'] ) : 'second_person';
 	$author_id         = isset( $_POST['author_id'] ) ? absint( $_POST['author_id'] ) : ( get_current_user_id() ?: 1 );
+	$generate_seo_meta = isset( $_POST['generate_seo_meta'] ) ? 1 : 0;
+	$seo_title_style   = isset( $_POST['seo_title_style'] ) ? sanitize_text_field( $_POST['seo_title_style'] ) : 'dynamic_ctr';
 	$prompt            = isset( $_POST['prompt'] ) ? wp_unslash( $_POST['prompt'] ) : '';
 	$knowledge_base    = isset( $_POST['knowledge_base'] ) ? wp_unslash( $_POST['knowledge_base'] ) : '';
 	
@@ -36,15 +38,17 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 	} else {
 		// Insert Campaign
 		$campaign_id = AAAG_Campaign::insert( array(
-			'name'           => $campaign_name,
-			'prompt'         => $prompt,
-			'knowledge_base' => $knowledge_base,
-			'ai_model'       => $ai_model,
-			'language'       => $language,
-			'tone'           => $tone,
-			'pov'            => $pov,
-			'author_id'      => $author_id,
-			'status'         => 'active'
+			'name'              => $campaign_name,
+			'prompt'            => $prompt,
+			'knowledge_base'    => $knowledge_base,
+			'ai_model'          => $ai_model,
+			'language'          => $language,
+			'tone'              => $tone,
+			'pov'               => $pov,
+			'author_id'         => $author_id,
+			'generate_seo_meta' => $generate_seo_meta,
+			'seo_title_style'   => $seo_title_style,
+			'status'            => 'active'
 		) );
 		
 		$current_schedule = null;
@@ -276,6 +280,36 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text aaag-textarea-full" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
 						<p class="aaag-help-text">AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.</p>
 					</div>
+
+					<!-- SEO Metadata Integration Box -->
+					<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+							<label style="font-weight: 700; color: #0f172a; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+								<input type="checkbox" name="generate_seo_meta" id="generate_seo_meta" value="1" checked style="margin: 0; width: 18px; height: 18px;">
+								<span>🚀 Generate Otomatis Meta Title & Meta Deskripsi (SEO Plugin Compatible)</span>
+							</label>
+						</div>
+						<p class="aaag-help-text" style="margin-top: 0; margin-bottom: 15px; color: #475569;">
+							Otomatis menyuntikkan Meta Title, Meta Description, dan Focus Keyword ke <strong>Rank Math, Yoast SEO, All in One SEO, SEOPress,</strong> & <strong>The SEO Framework</strong>.
+						</p>
+
+						<div id="seo_settings_fields" style="display: block; border-top: 1px dashed #cbd5e1; padding-top: 15px;">
+							<div class="aaag-form-row">
+								<div class="aaag-form-col">
+									<label for="seo_title_style" class="aaag-label" style="font-size: 12px;">Struktur / Pola Meta Title</label>
+									<select name="seo_title_style" id="seo_title_style" class="aaag-select-full">
+										<option value="dynamic_ctr" selected>⚡ AI Dynamic CTR Booster (Beda tiap artikel, memikat klik & ranking)</option>
+										<option value="power_words">📈 Power Words + Tahun Aktif (Contoh: Panduan Lengkap [Judul] 2026)</option>
+										<option value="standard">🏷️ Standar Bersih ([Judul] | Nama Web)</option>
+									</select>
+								</div>
+							</div>
+							<div style="margin-top: 12px; display: flex; gap: 15px; flex-wrap: wrap; font-size: 11px; color: #0284c7; background: #f0f9ff; padding: 8px 12px; border-radius: 6px; border: 1px solid #bae6fd;">
+								<span>📏 <strong>Meta Title:</strong> Dibatasi 50–60 karakter (Tidak terpotong di Google SERP)</span>
+								<span>📏 <strong>Meta Deskripsi:</strong> Dibatasi 120–155 karakter (Call-to-Action optimal)</span>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -397,6 +431,17 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 					</div>
 				</div>
 			</div>
-		</div>
 	</form>
+
+	<script>
+	jQuery(document).ready(function($) {
+		$('#generate_seo_meta').on('change', function() {
+			if ($(this).is(':checked')) {
+				$('#seo_settings_fields').slideDown(200);
+			} else {
+				$('#seo_settings_fields').slideUp(200);
+			}
+		});
+	});
+	</script>
 </div>

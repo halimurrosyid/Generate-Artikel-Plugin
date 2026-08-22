@@ -37,6 +37,12 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.3.9
+- **Integrasi Penuh Plugin SEO WordPress**: Kompatibel langsung dengan **Rank Math SEO, Yoast SEO, All in One SEO (AIOSEO), SEOPress,** dan **The SEO Framework**.
+- **Generator Meta Title Unik & Panjang Sesuai Rekomendasi Search Engine**: Menghasilkan Meta Title teroptimasi rasio klik (50–60 karakter) agar tidak terpotong di Google SERP dengan berbagai pilihan pola (*AI Dynamic CTR Booster*, *Power Words + Tahun*, *Standar Bersih*).
+- **Generator Meta Deskripsi & Focus Keyword**: Menghasilkan deskripsi memikat (120–155 karakter) dan fokus keyword untuk optimasi On-Page SEO otomatis.
+- **Kontrol Fleksibel per Campaign**: Fitur SEO dapat diaktifkan atau dinonaktifkan sesuai kebutuhan saat membuat atau mengedit Campaign.
+
 ### v4.3.8
 - **Pilihan Bahasa & Persona (Tone of Voice & POV)**: Dukungan pilihan bahasa (Indonesia, English, Melayu, dll.), gaya penulisan (Informatif, Kasual/Santai, Profesional, Jurnalistik, Storytelling, Persuasif), dan sudut pandang (POV) per Campaign.
 - **Pemilihan Author per Campaign**: Pilih akun penulis/redaktur WordPress yang diinginkan untuk disematkan pada setiap artikel.

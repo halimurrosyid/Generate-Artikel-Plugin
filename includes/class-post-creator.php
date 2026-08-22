@@ -10,6 +10,7 @@ class AAAG_Post_Creator {
 		$end_pos = strrpos($content, '}');
 		
 		$actual_content = $content;
+		$meta_title = '';
 		$meta_desc = '';
 		$focus_kw = '';
 		$tags = array();
@@ -24,6 +25,7 @@ class AAAG_Post_Creator {
 			$data = json_decode($json_string, true);
 			if (json_last_error() === JSON_ERROR_NONE) {
 				if (!empty($data['content'])) $actual_content = $data['content'];
+				if (!empty($data['meta_title'])) $meta_title = sanitize_text_field($data['meta_title']);
 				if (!empty($data['meta_description'])) $meta_desc = sanitize_text_field($data['meta_description']);
 				if (!empty($data['focus_keyword'])) $focus_kw = sanitize_text_field($data['focus_keyword']);
 				if (!empty($data['tags']) && is_array($data['tags'])) {
@@ -31,18 +33,33 @@ class AAAG_Post_Creator {
 				}
 				if (!empty($data['category'])) $category_name = sanitize_text_field($data['category']);
 			} else {
-				// Fallback jika JSON tidak valid (biasanya karena Claude lupa escape tanda kutip HTML)
-				// Kita ektrak paksa teks di antara "content": " dan ", "meta_description"
-				if ( preg_match('/"content"\s*:\s*"(.*?)"\s*,\s*"meta_description"/is', $json_string, $matches) ) {
+				// Fallback jika JSON tidak valid
+				if ( preg_match('/"content"\s*:\s*"(.*?)"\s*,\s*"(?:meta_title|meta_description)"/is', $json_string, $matches) ) {
 					$actual_content = $matches[1];
 					$actual_content = str_replace( '\\"', '"', $actual_content );
 				} else {
-					// Fallback terakhir: bersihkan markdown agar tidak terlalu jelek
 					$cleaned = preg_replace('/^```[a-z]*\s*/i', '', trim($content));
 					$cleaned = preg_replace('/```$/i', '', $cleaned);
 					$actual_content = trim($cleaned);
 				}
+				if ( preg_match('/"meta_title"\s*:\s*"(.*?)"/is', $json_string, $m) ) {
+					$meta_title = sanitize_text_field($m[1]);
+				}
+				if ( preg_match('/"meta_description"\s*:\s*"(.*?)"/is', $json_string, $m) ) {
+					$meta_desc = sanitize_text_field($m[1]);
+				}
+				if ( preg_match('/"focus_keyword"\s*:\s*"(.*?)"/is', $json_string, $m) ) {
+					$focus_kw = sanitize_text_field($m[1]);
+				}
 			}
+		}
+
+		// SEO Meta Character Safety Trimming (Failsafe to prevent search engine truncation)
+		if ( ! empty( $meta_title ) && mb_strlen( $meta_title ) > 60 ) {
+			$meta_title = mb_substr( $meta_title, 0, 58 ) . '..';
+		}
+		if ( ! empty( $meta_desc ) && mb_strlen( $meta_desc ) > 160 ) {
+			$meta_desc = mb_substr( $meta_desc, 0, 157 ) . '...';
 		}
 
 		// Clean up literal \n that might be left over if Claude double-escaped
@@ -101,14 +118,28 @@ class AAAG_Post_Creator {
 			}
 		}
 
-		// Inject SEO Data (Supports BOTH RankMath and Yoast)
+		// Inject Comprehensive SEO Metadata (Supports Rank Math, Yoast SEO, AIOSEO, SEOPress, The SEO Framework)
+		if (!empty($meta_title)) {
+			update_post_meta($post_id, 'rank_math_title', $meta_title);
+			update_post_meta($post_id, '_yoast_wpseo_title', $meta_title);
+			update_post_meta($post_id, '_aioseo_title', $meta_title);
+			update_post_meta($post_id, '_seopress_titles_title', $meta_title);
+			update_post_meta($post_id, '_genesis_title', $meta_title);
+		}
+
 		if (!empty($meta_desc)) {
 			update_post_meta($post_id, 'rank_math_description', $meta_desc);
 			update_post_meta($post_id, '_yoast_wpseo_metadesc', $meta_desc);
+			update_post_meta($post_id, '_aioseo_description', $meta_desc);
+			update_post_meta($post_id, '_seopress_titles_desc', $meta_desc);
+			update_post_meta($post_id, '_genesis_description', $meta_desc);
 		}
+
 		if (!empty($focus_kw)) {
 			update_post_meta($post_id, 'rank_math_focus_keyword', $focus_kw);
 			update_post_meta($post_id, '_yoast_wpseo_focuskw', $focus_kw);
+			update_post_meta($post_id, '_aioseo_keywords', $focus_kw);
+			update_post_meta($post_id, '_seopress_analysis_target_kw', $focus_kw);
 		}
 
 		return $post_id;
