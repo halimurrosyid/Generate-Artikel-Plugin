@@ -285,8 +285,10 @@ class AAAG_AI_Client {
 			$supported_models = array(
 				'gpt-4o-mini',
 				'gpt-4o',
+				'chatgpt-4o-latest',
 				'o3-mini',
-				'o1-mini'
+				'o1-mini',
+				'o1'
 			);
 
 			$url = 'https://api.openai.com/v1/chat/completions';
@@ -341,11 +343,12 @@ class AAAG_AI_Client {
 			}
 			
 			$supported_models = array(
-				'gemini-2.0-flash',
-				'gemini-1.5-flash',
-				'gemini-1.5-pro',
 				'gemini-2.5-flash',
-				'gemini-2.5-pro'
+				'gemini-2.5-pro',
+				'gemini-2.0-flash',
+				'gemini-2.0-flash-lite',
+				'gemini-1.5-flash',
+				'gemini-1.5-pro'
 			);
 
 			$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$api_key}";

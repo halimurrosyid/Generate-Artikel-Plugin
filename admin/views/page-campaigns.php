@@ -272,18 +272,21 @@ $campaigns = AAAG_Campaign::get_all();
 								);
 
 								$openai_names = array(
-									'gpt-4o-mini' => 'GPT-4o Mini (Sangat Cepat & Murah)',
-									'gpt-4o' => 'GPT-4o (Sangat Pintar)',
-									'o1-mini' => 'o1-mini (Super Logis)',
-									'o3-mini' => 'o3-mini (Terbaru & Pintar)'
+									'gpt-4o-mini'        => 'GPT-4o Mini (Sangat Cepat & Murah)',
+									'gpt-4o'             => 'GPT-4o (Sangat Pintar & Komprehensif)',
+									'chatgpt-4o-latest'  => 'ChatGPT-4o Latest (Versi Terbaru ChatGPT)',
+									'o3-mini'            => 'o3-mini (Model Penalaran / Reasoning Cepat)',
+									'o1-mini'            => 'o1-mini (Penalaran Logis)',
+									'o1'                 => 'o1 (Penalaran Mendalam / Deep Thinking)'
 								);
 
 								$gemini_names = array(
-									'gemini-2.5-flash' => 'Gemini 2.5 Flash (Terbaru & Sangat Cepat)',
-									'gemini-2.5-pro' => 'Gemini 2.5 Pro (Sangat Pintar)',
-									'gemini-2.0-flash' => 'Gemini 2.0 Flash',
-									'gemini-1.5-flash' => 'Gemini 1.5 Flash (Stabil & Hemat)',
-									'gemini-1.5-pro' => 'Gemini 1.5 Pro'
+									'gemini-2.5-flash'      => 'Gemini 2.5 Flash (Generasi Terbaru & Sangat Cepat)',
+									'gemini-2.5-pro'        => 'Gemini 2.5 Pro (Sangat Pintar & Analitis)',
+									'gemini-2.0-flash'      => 'Gemini 2.0 Flash (Cepat & Stabil)',
+									'gemini-2.0-flash-lite' => 'Gemini 2.0 Flash Lite (Super Hemat & Ringan)',
+									'gemini-1.5-flash'      => 'Gemini 1.5 Flash (Stabil & Teruji)',
+									'gemini-1.5-pro'        => 'Gemini 1.5 Pro (Konteks Panjang)'
 								);
 
 								$has_any = false;
