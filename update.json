@@ -1,5 +1,5 @@
 {
-  "version": "4.5.0",
+  "version": "4.5.1",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.0: Added support for GPT-4.5 Preview alongside Claude 3.7 Sonnet, Gemini 2.5 Pro/Flash, and polished connection test suite."
+  "changelog": "v4.5.1: Clarified model dropdown labels with exact Anthropic Dashboard matching names (Claude 3.5 Haiku / Haiku 4.5, Claude 3.7 Sonnet, Claude 3.5 Sonnet / Sonnet 5)."
 }

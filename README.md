@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.1
+- **Penyelarasan Nama Model dengan Dashboard Anthropic**:
+  - Menyelaraskan label dropdown model Anthropic agar sama persis dengan yang tertera di Console dashboard (`Claude 3.5 Haiku / Haiku 4.5`, `Claude 3.7 Sonnet`, `Claude 3.5 Sonnet / Sonnet 5`).
+
 ### v4.5.0
 - **Dukungan OpenAI GPT-4.5 Preview & Generasi Model 2026**:
   - Menambahkan dukungan model raksasa terbaru OpenAI `gpt-4.5-preview` berdampingan dengan `claude-3-7-sonnet-20250219` dan `gemini-2.5-pro/flash`.

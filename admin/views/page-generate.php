@@ -160,11 +160,11 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								$current_model      = 'anthropic:claude-3-5-haiku-20241022';
 								
 								$anthropic_names = array(
-									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (Terbaru & Sangat Pintar)',
-									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (Pintar & Cepat)',
-									'claude-3-5-haiku-20241022'  => 'Claude 3.5 Haiku (Sangat Cepat & Hemat)',
-									'claude-3-haiku-20240307'    => 'Claude 3 Haiku (Hemat)',
-									'claude-3-opus-20240229'     => 'Claude 3 Opus (Mendalam)',
+									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (Model Flagship Terbaru Anthropic)',
+									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet / Sonnet 5 (Paling Populer & Cerdas)',
+									'claude-3-5-haiku-20241022'  => 'Claude 3.5 Haiku / Haiku 4.5 (Tercepat, Biaya Terendah, Volume Tinggi)',
+									'claude-3-haiku-20240307'    => 'Claude 3 Haiku (Ekonomis & Ringan)',
+									'claude-3-opus-20240229'     => 'Claude 3 Opus (Riset Mendalam)',
 								);
 
 								$openai_names = array(
