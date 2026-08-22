@@ -37,6 +37,12 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.2
+- **Penyempurnaan UX SEO Meta (One-Click Presets & Interactive Chips)**:
+  - Tombol **Template Cepat (Quick Presets)** sekali klik untuk Meta Title (*CTR Booster*, *Power Words + Tahun*, *Standar*) dan Meta Description (*Hook + Solusi + CTA*, *Problem + Benefit*).
+  - Tag variabel interaktif `{{title}}`, `{{site_name}}`, `{{current_year}}` yang otomatis menyisipkan variabel ke posisi kursor saat diklik (*Click-to-Insert*).
+  - Menghilangkan dropdown fallback yang redundan agar antarmuka lebih bersih, fokus, dan tidak membingungkan.
+
 ### v4.4.1
 - **Pemisahan Jelas & Kustom AI Prompt Khusus SEO**: Pemisahan visual yang jelas antara:
   - **1. AI Prompt Konten Artikel**: Instruksi pembuatan isi artikel, sub-heading, dan pembahasan.

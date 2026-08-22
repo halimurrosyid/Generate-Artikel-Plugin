@@ -608,4 +608,38 @@
 	padding-right: 36px !important;
 }
 
+/* Quick Preset Buttons & Variable Chip Badges */
+.aaag-preset-btn {
+	background: #f1f5f9 !important;
+	border-color: #cbd5e1 !important;
+	color: #334155 !important;
+	font-size: 11px !important;
+	border-radius: 4px !important;
+	padding: 2px 8px !important;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
 
+.aaag-preset-btn:hover {
+	background: #e2e8f0 !important;
+	color: #0f172a !important;
+	border-color: #94a3b8 !important;
+}
+
+.aaag-chip-var {
+	background: #e2e8f0 !important;
+	border-color: #cbd5e1 !important;
+	color: #1e293b !important;
+	font-size: 11px !important;
+	font-family: monospace !important;
+	border-radius: 4px !important;
+	padding: 1px 6px !important;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.aaag-chip-var:hover {
+	background: #3b82f6 !important;
+	border-color: #2563eb !important;
+	color: #ffffff !important;
+}

@@ -291,6 +291,10 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 					</div>
 
 					<!-- SEO Metadata Integration Box -->
+					<?php
+					$default_seo_title_prompt = "Buat Meta Title SEO yang memikat klik (CTR tinggi), mengandung keyword utama {{title}}, dan dibatasi 50-60 karakter.";
+					$default_seo_desc_prompt  = "Buat Meta Deskripsi persuasif (120-155 karakter) yang merangkum solusi artikel {{title}} di {{site_name}} diakhiri Call to Action.";
+					?>
 					<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">
 						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
 							<label style="font-weight: 700; color: #0f172a; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
@@ -303,36 +307,60 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						</p>
 
 						<div id="seo_settings_fields" style="display: block; border-top: 1px dashed #cbd5e1; padding-top: 15px;">
-							<div class="aaag-form-group" style="margin-bottom: 16px;">
-								<label for="seo_title_prompt" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b;">
-									🎯 AI Prompt Khusus Meta Title (Judul SEO di Google)
-								</label>
-								<textarea name="seo_title_prompt" id="seo_title_prompt" rows="2" class="aaag-textarea-full" placeholder="Contoh: Buat Meta Title SEO yang memikat klik (CTR tinggi), mengandung keyword utama {{title}}, dan dibatasi 50-60 karakter."></textarea>
-								<p class="aaag-help-text">Instruksi AI untuk membuat judul snippet SERP. Jika dikosongkan, AI menggunakan pola otomatis di bawah. Variabel: <code>{{title}}</code>, <code>{{site_name}}</code>, <code>{{current_year}}</code>. Batas Google: <strong>50–60 karakter</strong>.</p>
-							</div>
+							
+							<!-- Meta Title Section -->
+							<div class="aaag-form-group" style="margin-bottom: 20px;">
+								<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+									<label for="seo_title_prompt" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin: 0;">
+										🎯 AI Prompt Khusus Meta Title (Judul Google)
+									</label>
+									<!-- Quick Presets for Title -->
+									<div style="display: flex; gap: 4px; align-items: center;">
+										<span style="font-size: 11px; color: #64748b; margin-right: 4px;">Pilih Template:</span>
+										<button type="button" class="button button-small aaag-preset-btn" data-target="seo_title_prompt" data-text="Buat Meta Title SEO yang memikat klik (CTR tinggi), mengandung keyword utama {{title}}, dan dibatasi 50-60 karakter.">⚡ CTR Booster</button>
+										<button type="button" class="button button-small aaag-preset-btn" data-target="seo_title_prompt" data-text="Buat Meta Title bentuk pertanyaan/trik menarik tentang {{title}} disertai tahun {{current_year}} (Maksimal 58 karakter).">📈 Power Words + <?php echo current_time('Y'); ?></button>
+										<button type="button" class="button button-small aaag-preset-btn" data-target="seo_title_prompt" data-text="Format judul standar bersih: {{title}} | {{site_name}} (Panjang 50-60 karakter).">🏷️ Standar</button>
+									</div>
+								</div>
 
-							<div class="aaag-form-group" style="margin-bottom: 16px;">
-								<label for="seo_desc_prompt" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b;">
-									📄 AI Prompt Khusus Meta Description (Deskripsi Cuplikan SEO)
-								</label>
-								<textarea name="seo_desc_prompt" id="seo_desc_prompt" rows="2" class="aaag-textarea-full" placeholder="Contoh: Buat Meta Deskripsi persuasif (120-155 karakter) yang merangkum solusi artikel {{title}} di {{site_name}} diakhiri Call to Action."></textarea>
-								<p class="aaag-help-text">Instruksi AI untuk membuat deskripsi cuplikan di bawah judul Google. Variabel: <code>{{title}}</code>, <code>{{site_name}}</code>, <code>{{current_year}}</code>. Batas Google: <strong>120–155 karakter</strong>.</p>
-							</div>
-
-							<div class="aaag-form-row">
-								<div class="aaag-form-col">
-									<label for="seo_title_style" class="aaag-label" style="font-size: 12px;">Preset Pola Meta Title (Sebagai Fallback)</label>
-									<select name="seo_title_style" id="seo_title_style" class="aaag-select-full">
-										<option value="dynamic_ctr" selected>⚡ AI Dynamic CTR Booster (Beda tiap artikel, memikat klik & ranking)</option>
-										<option value="power_words">📈 Power Words + Tahun Aktif (Contoh: Panduan Lengkap [Judul] 2026)</option>
-										<option value="standard">🏷️ Standar Bersih ([Judul] | Nama Web)</option>
-									</select>
+								<textarea name="seo_title_prompt" id="seo_title_prompt" rows="2" class="aaag-textarea-full" style="background: #ffffff;"><?php echo esc_textarea( $default_seo_title_prompt ); ?></textarea>
+								
+								<div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+									<p class="aaag-help-text" style="margin: 0;">Klik variabel untuk menyisipkan: 
+										<button type="button" class="button button-small aaag-chip-var" data-target="seo_title_prompt" data-var="{{title}}">{{title}}</button>
+										<button type="button" class="button button-small aaag-chip-var" data-target="seo_title_prompt" data-var="{{site_name}}">{{site_name}}</button>
+										<button type="button" class="button button-small aaag-chip-var" data-target="seo_title_prompt" data-var="{{current_year}}">{{current_year}}</button>
+									</p>
+									<span style="font-size: 11px; color: #0284c7; font-weight: 600;">📏 Batas Google: 50–60 Karakter</span>
 								</div>
 							</div>
-							<div style="margin-top: 12px; display: flex; gap: 15px; flex-wrap: wrap; font-size: 11px; color: #0284c7; background: #f0f9ff; padding: 8px 12px; border-radius: 6px; border: 1px solid #bae6fd;">
-								<span>📏 <strong>Meta Title:</strong> Dibatasi 50–60 karakter (Tidak terpotong di Google SERP)</span>
-								<span>📏 <strong>Meta Deskripsi:</strong> Dibatasi 120–155 karakter (Call-to-Action optimal)</span>
+
+							<!-- Meta Description Section -->
+							<div class="aaag-form-group" style="margin-bottom: 12px;">
+								<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px;">
+									<label for="seo_desc_prompt" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin: 0;">
+										📄 AI Prompt Khusus Meta Description (Deskripsi Cuplikan Google)
+									</label>
+									<!-- Quick Presets for Description -->
+									<div style="display: flex; gap: 4px; align-items: center;">
+										<span style="font-size: 11px; color: #64748b; margin-right: 4px;">Pilih Template:</span>
+										<button type="button" class="button button-small aaag-preset-btn" data-target="seo_desc_prompt" data-text="Buat Meta Deskripsi persuasif (120-155 karakter) yang merangkum solusi artikel {{title}} di {{site_name}} diakhiri Call to Action.">🎯 Hook + Solusi + CTA</button>
+										<button type="button" class="button button-small aaag-preset-btn" data-target="seo_desc_prompt" data-text="Sebutkan masalah utama pembaca tentang {{title}}, tawarkan manfaat terbaik dari artikel ini, dan ajak untuk membaca sekarang (120-155 karakter).">💡 Problem + Benefit</button>
+									</div>
+								</div>
+
+								<textarea name="seo_desc_prompt" id="seo_desc_prompt" rows="2" class="aaag-textarea-full" style="background: #ffffff;"><?php echo esc_textarea( $default_seo_desc_prompt ); ?></textarea>
+								
+								<div style="margin-top: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+									<p class="aaag-help-text" style="margin: 0;">Klik variabel untuk menyisipkan: 
+										<button type="button" class="button button-small aaag-chip-var" data-target="seo_desc_prompt" data-var="{{title}}">{{title}}</button>
+										<button type="button" class="button button-small aaag-chip-var" data-target="seo_desc_prompt" data-var="{{site_name}}">{{site_name}}</button>
+										<button type="button" class="button button-small aaag-chip-var" data-target="seo_desc_prompt" data-var="{{current_year}}">{{current_year}}</button>
+									</p>
+									<span style="font-size: 11px; color: #0284c7; font-weight: 600;">📏 Batas Google: 120–155 Karakter</span>
+								</div>
 							</div>
+
 						</div>
 					</div>
 				</div>

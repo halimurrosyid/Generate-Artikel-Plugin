@@ -207,4 +207,39 @@ jQuery(document).ready(function($) {
 	if ($('#titles').length) {
 		estimateTokens();
 	}
+
+	// Quick Preset Buttons
+	$(document).on('click', '.aaag-preset-btn', function(e) {
+		e.preventDefault();
+		var targetId = $(this).data('target');
+		var text = $(this).data('text');
+		if (targetId && text) {
+			$('#' + targetId).val(text).trigger('change').focus();
+		}
+	});
+
+	// Interactive Clickable Variable Chips
+	$(document).on('click', '.aaag-chip-var', function(e) {
+		e.preventDefault();
+		var targetId = $(this).data('target');
+		var variable = $(this).data('var');
+		if (!targetId || !variable) return;
+
+		var $target = $('#' + targetId);
+		if ($target.length) {
+			var domElem = $target[0];
+			var startPos = domElem.selectionStart;
+			var endPos = domElem.selectionEnd;
+			var currentVal = $target.val();
+
+			if (startPos !== undefined && startPos >= 0) {
+				$target.val(currentVal.substring(0, startPos) + variable + currentVal.substring(endPos, currentVal.length));
+				domElem.selectionStart = startPos + variable.length;
+				domElem.selectionEnd = startPos + variable.length;
+			} else {
+				$target.val(currentVal + ' ' + variable);
+			}
+			$target.trigger('change').focus();
+		}
+	});
 });

@@ -1,5 +1,5 @@
 {
-  "version": "4.4.1",
+  "version": "4.4.2",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.4.1: Added dedicated Custom AI Prompt fields for SEO Meta Title and Meta Description (with {{title}}, {{site_name}}, and {{current_year}} variable support) alongside distinct Article Body Content prompt sections, character limit boundaries, and multi-SEO plugin integration."
+  "changelog": "v4.4.2: Streamlined SEO Prompt UX with One-Click Quick Presets (CTR Booster, Power Words, Standard, Hook + CTA, Problem + Benefit), interactive Click-to-Insert Variable Chips ({{title}}, {{site_name}}, {{current_year}}), and removed redundant fallback dropdown for an effortless and intuitive workflow."
 }
