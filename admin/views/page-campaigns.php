@@ -217,9 +217,22 @@ $campaigns = AAAG_Campaign::get_all();
 </div>
 <?php else : ?>
 <div class="wrap aaag-wrap">
-	<h1>Edit Campaign</h1>
-	<p class="description">Mengubah instruksi atau referensi akan mempengaruhi semua antrean yang belum dijalankan (Pending) di dalam Campaign ini.</p>
-	<a href="<?php echo admin_url('admin.php?page=aaag-campaigns'); ?>" class="button" style="margin-bottom: 20px;">&laquo; Kembali ke Daftar</a>
+	<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; background: #ffffff; padding: 20px 24px; border-radius: var(--aaag-radius-lg); border: 1px solid var(--aaag-border); box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+		<div>
+			<h1 style="display: flex; align-items: center; gap: 10px; margin: 0; font-size: 24px;">
+				<span>Edit Campaign: <?php echo esc_html( $edit_camp->name ); ?></span>
+				<span class="aaag-badge status-<?php echo ( $edit_camp->status == 'active' ) ? 'active' : 'paused'; ?>" style="font-size: 11px;">
+					<?php echo ( $edit_camp->status == 'active' ) ? '🟢 Aktif' : '⏸️ Dijeda'; ?>
+				</span>
+			</h1>
+			<p class="description" style="margin-top: 4px; margin-bottom: 0;">Mengubah instruksi atau referensi akan mempengaruhi semua antrean yang belum dijalankan (Pending) di Campaign ini.</p>
+		</div>
+		<div>
+			<a href="<?php echo admin_url('admin.php?page=aaag-campaigns'); ?>" class="button" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px !important; font-weight: 600;">
+				<span class="dashicons dashicons-arrow-left-alt" style="font-size: 16px; margin: 0;"></span> Kembali ke Daftar
+			</a>
+		</div>
+	</div>
 	
 	<form method="post" action="<?php echo admin_url('admin.php?page=aaag-campaigns'); ?>">
 		<?php wp_nonce_field( 'campaign_edit_action', 'campaign_edit_nonce' ); ?>
@@ -229,10 +242,12 @@ $campaigns = AAAG_Campaign::get_all();
 			<!-- Left Column: Main Settings (Card) -->
 			<div class="aaag-main-card">
 				<div class="aaag-card-header">
-					<h2><span class="dashicons dashicons-admin-generic"></span> Edit Detail Campaign & AI</h2>
+					<h2><span class="dashicons dashicons-admin-generic"></span> Konfigurasi Campaign & Otak AI</h2>
 				</div>
 				<div class="aaag-card-body">
-					<div class="aaag-form-row" style="margin-bottom: 24px;">
+					
+					<!-- 1. Identitas & Model AI -->
+					<div class="aaag-form-row" style="margin-bottom: 20px;">
 						<div class="aaag-form-col">
 							<label for="campaign_name" class="aaag-label">Nama Campaign</label>
 							<input type="text" name="campaign_name" id="campaign_name" class="aaag-input-full" required value="<?php echo esc_attr( $edit_camp->name ); ?>">
@@ -324,6 +339,7 @@ $campaigns = AAAG_Campaign::get_all();
 						</div>
 					</div>
 
+					<!-- 2. Persona & Bahasa -->
 					<div class="aaag-form-row" style="margin-bottom: 24px;">
 						<div class="aaag-form-col">
 							<label for="language" class="aaag-label">Bahasa Artikel</label>
@@ -365,24 +381,40 @@ $campaigns = AAAG_Campaign::get_all();
 						</div>
 					</div>
 
-					<div class="aaag-form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--aaag-radius-md); padding: 18px; margin-bottom: 20px;">
+					<!-- 3. AI Prompt Konten Artikel (Emerald Card) -->
+					<div class="aaag-form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--aaag-radius-md); padding: 20px; margin-bottom: 24px;">
 						<label for="prompt" class="aaag-label" style="color: #166534; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px;">
 							<span>📝 1. AI Prompt Konten Artikel (Instruksi Isi Postingan)</span>
 						</label>
-						<p class="aaag-help-text" style="color: #15803d; margin-top: 2px; margin-bottom: 10px;">
+						<p class="aaag-help-text" style="color: #15803d; margin-top: 2px; margin-bottom: 12px;">
 							Prompt ini digunakan AI untuk menulis <strong>keseluruhan isi artikel (body text)</strong>, struktur sub-heading (H2, H3), format list, dan pembahasan lengkap.
 						</p>
-						<textarea name="prompt" id="prompt" rows="8" class="aaag-textarea-full" style="background: #ffffff;" required><?php echo esc_textarea( $edit_camp->prompt ); ?></textarea>
-						<p class="aaag-help-text">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>.</p>
+						<textarea name="prompt" id="prompt" rows="8" class="aaag-textarea-full" style="background: #ffffff; font-size: 13px;" required><?php echo esc_textarea( $edit_camp->prompt ); ?></textarea>
+						
+						<div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+							<p class="aaag-help-text" style="margin: 0; color: #166534;">Klik variabel untuk menyisipkan: 
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{title}}">{{title}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{min_words}}">{{min_words}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{max_words}}">{{max_words}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{site_name}}">{{site_name}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{current_year}}">{{current_year}}</button>
+							</p>
+							<span style="font-size: 11px; color: #15803d; font-weight: 600;">Wajib: {{title}}, {{min_words}}, {{max_words}}</span>
+						</div>
 					</div>
 
-					<div class="aaag-form-group">
-						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi Tambahan (Opsional)</label>
-						<textarea name="knowledge_base" id="knowledge_base" rows="5" class="aaag-textarea-full"><?php echo esc_textarea( $edit_camp->knowledge_base ); ?></textarea>
-						<p class="aaag-help-text">Teks yang diketik di sini akan dipaksa masuk ke otak AI setiap kali judul dalam Campaign ini diproses.</p>
+					<!-- 4. Knowledge Base (Slate Card) -->
+					<div class="aaag-form-group" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--aaag-radius-md); padding: 20px; margin-bottom: 24px;">
+						<label for="knowledge_base" class="aaag-label" style="font-size: 14px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+							<span>📚 Knowledge Base / Referensi Tambahan (Opsional)</span>
+						</label>
+						<p class="aaag-help-text" style="margin-top: 2px; margin-bottom: 12px; color: #64748b;">
+							Teks yang diketik di sini akan dipaksa masuk ke otak AI setiap kali judul dalam Campaign ini diproses.
+						</p>
+						<textarea name="knowledge_base" id="knowledge_base" rows="5" class="aaag-textarea-full" style="background: #ffffff; font-size: 13px;" placeholder="Masukkan referensi data, spesifikasi harga, aturan khusus, atau fakta yang wajib dimuat AI..."><?php echo esc_textarea( $edit_camp->knowledge_base ); ?></textarea>
 					</div>
 
-					<!-- SEO Metadata Integration Box -->
+					<!-- 5. SEO Metadata Integration Box (Sky Card) -->
 					<?php 
 					$camp_seo_enabled = ( isset($edit_camp->generate_seo_meta) && intval($edit_camp->generate_seo_meta) === 1 ); 
 					$default_title_p  = "Buat Meta Title SEO yang memikat klik (CTR tinggi), mengandung keyword utama {{title}}, dan dibatasi 50-60 karakter.";
@@ -390,7 +422,7 @@ $campaigns = AAAG_Campaign::get_all();
 					$camp_title_prompt = ( ! empty($edit_camp->seo_title_prompt) ) ? $edit_camp->seo_title_prompt : $default_title_p;
 					$camp_desc_prompt  = ( ! empty($edit_camp->seo_desc_prompt) ) ? $edit_camp->seo_desc_prompt : $default_desc_p;
 					?>
-					<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">
+					<div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: var(--aaag-radius-md); padding: 20px;">
 						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
 							<label style="font-weight: 700; color: #0f172a; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
 								<input type="checkbox" name="generate_seo_meta" id="generate_seo_meta_edit" value="1" <?php checked($camp_seo_enabled, true); ?> style="margin: 0; width: 18px; height: 18px;">
@@ -577,8 +609,8 @@ $campaigns = AAAG_Campaign::get_all();
 					});
 					</script>
 					
-					<div class="aaag-submit-box" style="margin-top: 30px;">
-						<input type="submit" name="aaag_campaign_edit_submit" class="button button-primary aaag-btn-submit-full" value="Simpan Perubahan Campaign">
+					<div class="aaag-submit-box" style="margin-top: 24px;">
+						<input type="submit" name="aaag_campaign_edit_submit" class="button button-primary aaag-btn-submit-full" value="💾 Simpan Perubahan Campaign">
 					</div>
 				</div>
 			</div>

@@ -37,6 +37,13 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.4
+- **Desain Ulang Visual & Tata Letak Modern (Edit & Buat Campaign)**:
+  - **Sticky Action Sidebar**: Panel kanan (*Penulis, Jadwal, Tombol Simpan*) kini melayang rapi (*sticky*) mengikuti scroll layar sehingga tidak ada ruang kosong dan tombol simpan selalu mudah dijangkau.
+  - **Tombol Variabel Interaktif pada Prompt Utama**: Tag `{{title}}`, `{{min_words}}`, `{{max_words}}`, `{{site_name}}`, `{{current_year}}` pada Prompt Konten Artikel kini bisa diklik langsung (*Click-to-Insert*).
+  - **Visual Card Berwarna & Terstruktur**: Pembagian visual yang rapi dengan aksen lembut (Emerald untuk Konten Artikel, Slate untuk Knowledge Base, dan Sky Blue untuk Optimasi SEO).
+  - **Header Navigasi Elegan**: Menampilkan nama campaign dengan status badge aktif/jeda serta tombol kembali berikon.
+
 ### v4.4.3
 - **Penyederhanaan Label Persona & Gaya Sapaan Pembaca**:
   - Mengubah istilah linguistik *"Sudut Pandang (POV)"* menjadi **"Gaya Sapaan Pembaca"** dengan opsi yang jelas: *Menyapa Pembaca ("Anda"/"Kamu")*, *Sudut Pandang Penulis ("Saya"/"Kami")*, dan *Netral & Objektif (Formal/Berita)*.

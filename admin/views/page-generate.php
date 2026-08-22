@@ -276,29 +276,45 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						</div>
 					</div>
 
-					<div class="aaag-form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--aaag-radius-md); padding: 18px; margin-bottom: 20px;">
+					<!-- 3. AI Prompt Konten Artikel (Emerald Card) -->
+					<div class="aaag-form-group" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--aaag-radius-md); padding: 20px; margin-bottom: 24px;">
 						<label for="prompt" class="aaag-label" style="color: #166534; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 6px;">
 							<span>📝 1. AI Prompt Konten Artikel (Instruksi Isi Postingan)</span>
 						</label>
-						<p class="aaag-help-text" style="color: #15803d; margin-top: 2px; margin-bottom: 10px;">
+						<p class="aaag-help-text" style="color: #15803d; margin-top: 2px; margin-bottom: 12px;">
 							Prompt ini digunakan AI untuk menulis <strong>keseluruhan isi artikel (body text)</strong>, struktur sub-heading (H2, H3), format list, dan pembahasan lengkap.
 						</p>
-						<textarea name="prompt" id="prompt" rows="7" class="large-text aaag-textarea-full" style="background: #ffffff;" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
-						<p class="aaag-help-text">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>. Opsional: <code>{{site_name}}</code>, <code>{{current_date}}</code>.</p>
+						<textarea name="prompt" id="prompt" rows="7" class="large-text aaag-textarea-full" style="background: #ffffff; font-size: 13px;" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
+						
+						<div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+							<p class="aaag-help-text" style="margin: 0; color: #166534;">Klik variabel untuk menyisipkan: 
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{title}}">{{title}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{min_words}}">{{min_words}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{max_words}}">{{max_words}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{site_name}}">{{site_name}}</button>
+								<button type="button" class="button button-small aaag-chip-var" data-target="prompt" data-var="{{current_year}}">{{current_year}}</button>
+							</p>
+							<span style="font-size: 11px; color: #15803d; font-weight: 600;">Wajib: {{title}}, {{min_words}}, {{max_words}}</span>
+						</div>
 					</div>
 
-					<div class="aaag-form-group">
-						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi Tambahan (Opsional)</label>
-						<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text aaag-textarea-full" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
-						<p class="aaag-help-text">AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.</p>
+					<!-- 4. Knowledge Base (Slate Card) -->
+					<div class="aaag-form-group" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--aaag-radius-md); padding: 20px; margin-bottom: 24px;">
+						<label for="knowledge_base" class="aaag-label" style="font-size: 14px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+							<span>📚 Knowledge Base / Referensi Tambahan (Opsional)</span>
+						</label>
+						<p class="aaag-help-text" style="margin-top: 2px; margin-bottom: 12px; color: #64748b;">
+							AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.
+						</p>
+						<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text aaag-textarea-full" style="background: #ffffff; font-size: 13px;" placeholder="Masukkan referensi data, spesifikasi harga, aturan khusus, atau fakta yang wajib dimuat AI..."></textarea>
 					</div>
 
-					<!-- SEO Metadata Integration Box -->
+					<!-- SEO Metadata Integration Box (Sky Card) -->
 					<?php
 					$default_seo_title_prompt = "Buat Meta Title SEO yang memikat klik (CTR tinggi), mengandung keyword utama {{title}}, dan dibatasi 50-60 karakter.";
 					$default_seo_desc_prompt  = "Buat Meta Deskripsi persuasif (120-155 karakter) yang merangkum solusi artikel {{title}} di {{site_name}} diakhiri Call to Action.";
 					?>
-					<div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">
+					<div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: var(--aaag-radius-md); padding: 20px;">
 						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
 							<label style="font-weight: 700; color: #0f172a; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
 								<input type="checkbox" name="generate_seo_meta" id="generate_seo_meta" value="1" checked style="margin: 0; width: 18px; height: 18px;">
