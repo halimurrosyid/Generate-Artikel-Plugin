@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.5
+- **Perbaikan Test Connection Anthropic (Error 404 Model)**:
+  - Tombol "Test Anthropic Connection" kini menggunakan verifikasi model adaptif multi-tier (`claude-3-haiku-20240307` / `claude-3-5-sonnet-20241022`) sehingga tidak akan lagi gagal 404 pada akun Anthropic standar yang belum mengaktifkan endpoint haiku 3.5.
+
 ### v4.4.4
 - **Desain Ulang Visual & Tata Letak Modern (Edit & Buat Campaign)**:
   - **Sticky Action Sidebar**: Panel kanan (*Penulis, Jadwal, Tombol Simpan*) kini melayang rapi (*sticky*) mengikuti scroll layar sehingga tidak ada ruang kosong dan tombol simpan selalu mudah dijangkau.

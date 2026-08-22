@@ -1,5 +1,5 @@
 {
-  "version": "4.4.4",
+  "version": "4.4.5",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.4.4: Complete UI/UX Redesign for Edit & Create Campaign pages. Features a balanced 2-column layout with a Sticky Sidebar Action Bar, clickable interactive variable chips for the main article prompt, dedicated modern section cards (Emerald for Article Prompt, Slate for Knowledge Base, Sky for SEO Metadata), and polished breadcrumb headers."
+  "changelog": "v4.4.5: Fixed Anthropic Connection Test 404 error by implementing adaptive fallback model verification across all Anthropic account tiers (Claude 3 Haiku / Claude 3.5 Sonnet)."
 }

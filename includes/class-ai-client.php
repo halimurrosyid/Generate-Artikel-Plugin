@@ -212,41 +212,59 @@ class AAAG_AI_Client {
 				'claude-3-opus-20240229',
 			);
 
-			$url = 'https://api.anthropic.com/v1/messages';
-			$body = array(
-				'model'      => 'claude-3-5-haiku-20241022',
-				'max_tokens' => 10,
-				'messages'   => array(
-					array( 'role' => 'user', 'content' => 'Hi' )
-				)
-			);
-			$args = array(
-				'body'    => wp_json_encode( $body ),
-				'headers' => array(
-					'x-api-key'         => $api_key,
-					'anthropic-version' => '2023-06-01',
-					'content-type'      => 'application/json',
-				),
-				'timeout' => 15,
-			);
-			
-			$response = wp_remote_post( $url, $args );
-			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message() );
+			// Test with universally available models across all Anthropic account tiers
+			$test_models = array( 'claude-3-haiku-20240307', 'claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022' );
+			$last_error = '';
+			$connected = false;
+
+			foreach ( $test_models as $test_model ) {
+				$url = 'https://api.anthropic.com/v1/messages';
+				$body = array(
+					'model'      => $test_model,
+					'max_tokens' => 10,
+					'messages'   => array(
+						array( 'role' => 'user', 'content' => 'Hi' )
+					)
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'x-api-key'         => $api_key,
+						'anthropic-version' => '2023-06-01',
+						'content-type'      => 'application/json',
+					),
+					'timeout' => 15,
+				);
+				
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					$last_error = $response->get_error_message();
+					continue;
+				}
+				
+				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
+				
+				if ( $response_code === 200 || $response_code === 429 ) {
+					$connected = true;
+					break;
+				} else {
+					$body_data = json_decode( $response_body, true );
+					$last_error = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : "HTTP $response_code";
+					// If it's invalid key / 401 Unauthorized, exit early
+					if ( $response_code === 401 ) {
+						break;
+					}
+				}
 			}
 			
-			$response_code = wp_remote_retrieve_response_code( $response );
-			$response_body = wp_remote_retrieve_body( $response );
-			
-			if ( $response_code === 200 || $response_code === 429 ) {
+			if ( $connected ) {
 				update_option( 'aaag_anthropic_connected', 1 );
 				update_option( 'aaag_verified_anthropic_models', $supported_models );
-				return array( 'success' => true, 'message' => 'Anthropic API Connected! Available models: ' . implode( ', ', $supported_models ) );
+				return array( 'success' => true, 'message' => 'Anthropic API Connected! Model Anthropic Claude siap digunakan.' );
 			} else {
-				$body_data = json_decode( $response_body, true );
-				$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Invalid API Response';
 				update_option( 'aaag_anthropic_connected', 0 );
-				return array( 'success' => false, 'message' => "Anthropic API Error ($response_code): $err" );
+				return array( 'success' => false, 'message' => "Anthropic API Error: $last_error" );
 			}
 		} catch (Exception $e) {
 			update_option( 'aaag_anthropic_connected', 0 );
