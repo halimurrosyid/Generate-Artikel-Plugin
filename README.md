@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.0
+- **Default Non-Aktif pada Campaign yang Sudah Ada**: Fitur generator SEO Meta Title & Meta Deskripsi diset otomatis ke status **Non-Aktif (OFF)** untuk semua campaign lama yang sedang berjalan agar tidak mengubah konfigurasi yang sudah ada. Pengguna dapat mengaktifkannya kapan saja melalui menu Edit Campaign.
+- **Integrasi Multi-Plugin SEO Lengkap**: Kompatibel dengan Rank Math SEO, Yoast SEO, AIOSEO, SEOPress, dan The SEO Framework dengan batas karakter standar mesin pencari (50–60 karakter untuk Meta Title dan 120–155 karakter untuk Meta Description).
+
 ### v4.3.9
 - **Integrasi Penuh Plugin SEO WordPress**: Kompatibel langsung dengan **Rank Math SEO, Yoast SEO, All in One SEO (AIOSEO), SEOPress,** dan **The SEO Framework**.
 - **Generator Meta Title Unik & Panjang Sesuai Rekomendasi Search Engine**: Menghasilkan Meta Title teroptimasi rasio klik (50–60 karakter) agar tidak terpotong di Google SERP dengan berbagai pilihan pola (*AI Dynamic CTR Booster*, *Power Words + Tahun*, *Standar Bersih*).

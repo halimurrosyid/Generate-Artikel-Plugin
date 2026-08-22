@@ -372,7 +372,7 @@ $campaigns = AAAG_Campaign::get_all();
 
 					<!-- SEO Metadata Integration Box -->
 					<?php 
-					$camp_seo_enabled = ( ! isset($edit_camp->generate_seo_meta) || $edit_camp->generate_seo_meta == 1 ); 
+					$camp_seo_enabled = ( isset($edit_camp->generate_seo_meta) && intval($edit_camp->generate_seo_meta) === 1 ); 
 					$camp_seo_style   = isset($edit_camp->seo_title_style) ? $edit_camp->seo_title_style : 'dynamic_ctr';
 					?>
 					<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--aaag-radius-md); padding: 20px; margin-top: 24px;">

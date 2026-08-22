@@ -25,7 +25,7 @@ class AAAG_DB {
 			tone varchar(50) NOT NULL DEFAULT 'informative',
 			pov varchar(50) NOT NULL DEFAULT 'second_person',
 			author_id bigint(20) unsigned NOT NULL DEFAULT 1,
-			generate_seo_meta tinyint(1) NOT NULL DEFAULT 1,
+			generate_seo_meta tinyint(1) NOT NULL DEFAULT 0,
 			seo_title_style varchar(50) NOT NULL DEFAULT 'dynamic_ctr',
 			status varchar(20) NOT NULL DEFAULT 'active',
 			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -115,7 +115,7 @@ class AAAG_DB {
 			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN author_id bigint(20) unsigned NOT NULL DEFAULT 1" );
 		}
 		if ( ! $seo_meta_exists ) {
-			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN generate_seo_meta tinyint(1) NOT NULL DEFAULT 1" );
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN generate_seo_meta tinyint(1) NOT NULL DEFAULT 0" );
 		}
 		if ( ! $seo_style_exists ) {
 			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN seo_title_style varchar(50) NOT NULL DEFAULT 'dynamic_ctr'" );

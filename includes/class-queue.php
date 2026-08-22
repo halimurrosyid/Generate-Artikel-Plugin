@@ -279,7 +279,7 @@ class AAAG_Queue {
 			$cats_text .= "- " . $c->name . "\n";
 		}
 		
-		$seo_enabled = ( ! $campaign || ! isset( $campaign->generate_seo_meta ) || $campaign->generate_seo_meta == 1 );
+		$seo_enabled = ( $campaign && isset( $campaign->generate_seo_meta ) && intval( $campaign->generate_seo_meta ) === 1 );
 		$seo_style   = ( $campaign && ! empty( $campaign->seo_title_style ) ) ? $campaign->seo_title_style : 'dynamic_ctr';
 		
 		$seo_title_rule = "Create a unique, compelling, click-worthy SEO Meta Title strictly between 50 and 60 characters (never exceed 60 chars). It must include the primary keyword and be optimized for maximum search CTR.";

@@ -1,5 +1,5 @@
 {
-  "version": "4.3.9",
+  "version": "4.4.0",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.3.9: Added full integration with WordPress SEO plugins (Rank Math, Yoast SEO, All in One SEO, SEOPress, The SEO Framework), auto generation of custom Meta Title (50-60 chars) with dynamic CTR / power words / standard styles, Meta Description (120-155 chars) search engine character boundary compliance, and Focus Keyword injection."
+  "changelog": "v4.4.0: Set SEO metadata generator to default OFF (inactive) for all existing campaigns, preventing unintended changes while allowing on-demand activation per campaign. Full multi-SEO plugin integration (Rank Math, Yoast, AIOSEO, SEOPress, The SEO Framework) with strict Google SERP character boundary compliance (Meta Title 50-60 chars, Meta Description 120-155 chars)."
 }
