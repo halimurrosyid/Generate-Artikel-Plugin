@@ -1,5 +1,5 @@
 {
-  "version": "4.3.7",
+  "version": "4.3.8",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.3.7: Fixed stuck job recovery timezone inconsistency bug, accurate AI model post meta tracking, optimized AI test connection checks, added pagination for jobs list, capability check security hardening, and complete database uninstall cleanup."
+  "changelog": "v4.3.8: Added Language selection, Tone of Voice (Informative, Casual, Professional, Journalistic, Storytelling, Persuasive), POV selection, WordPress Author assignment per campaign, Status Tabs filtering & Bulk Actions (Bulk Run, Bulk Reset, Bulk Delete) on Jobs list, Auto-create categories, and auto-publishing missed schedules."
 }

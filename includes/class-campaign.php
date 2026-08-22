@@ -50,11 +50,17 @@ class AAAG_Campaign {
 	public static function get_stats( $id ) {
 		global $wpdb;
 		$jobs_table = AAAG_DB::get_table_name( 'jobs' );
-		$total = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d", $id ) );
-		$completed = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d AND status = 'completed'", $id ) );
+		$total      = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d", $id ) );
+		$completed  = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d AND status = 'completed'", $id ) );
+		$pending    = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d AND status = 'pending'", $id ) );
+		$failed     = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d AND status = 'failed'", $id ) );
+		$skipped    = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM $jobs_table WHERE campaign_id = %d AND status = 'skipped'", $id ) );
 		return array(
-			'total' => (int) $total,
-			'completed' => (int) $completed
+			'total'     => (int) $total,
+			'completed' => (int) $completed,
+			'pending'   => (int) $pending,
+			'failed'    => (int) $failed,
+			'skipped'   => (int) $skipped
 		);
 	}
 }

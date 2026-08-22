@@ -31,15 +31,25 @@ if ( isset( $_GET['action'] ) && isset( $_GET['id'] ) && $_GET['action'] !== 'ed
 // Handle Update Form Submission
 if ( isset( $_POST['aaag_campaign_edit_submit'] ) && check_admin_referer( 'campaign_edit_action', 'campaign_edit_nonce' ) ) {
 	$id = absint( $_POST['campaign_id'] );
+	$author_id = isset( $_POST['author_id'] ) ? absint( $_POST['author_id'] ) : 1;
 	$update_data = array(
 		'name'           => sanitize_text_field( $_POST['campaign_name'] ),
 		'prompt'         => wp_unslash( $_POST['prompt'] ),
 		'knowledge_base' => wp_unslash( $_POST['knowledge_base'] ),
-		'ai_model'       => sanitize_text_field( $_POST['ai_model'] )
+		'ai_model'       => sanitize_text_field( $_POST['ai_model'] ),
+		'language'       => isset( $_POST['language'] ) ? sanitize_text_field( $_POST['language'] ) : 'id',
+		'tone'           => isset( $_POST['tone'] ) ? sanitize_text_field( $_POST['tone'] ) : 'informative',
+		'pov'            => isset( $_POST['pov'] ) ? sanitize_text_field( $_POST['pov'] ) : 'second_person',
+		'author_id'      => $author_id
 	);
 	AAAG_Campaign::update( $id, $update_data );
 	
-	$msg = '<p>Campaign berhasil diperbarui. Job selanjutnya akan menggunakan prompt & referensi yang baru.</p>';
+	// Update author on pending/failed jobs
+	global $wpdb;
+	$jobs_table = AAAG_DB::get_table_name('jobs');
+	$wpdb->update( $jobs_table, array( 'author_id' => $author_id ), array( 'campaign_id' => $id, 'status' => 'pending' ) );
+	
+	$msg = '<p>Campaign berhasil diperbarui. Job selanjutnya akan menggunakan prompt, persona, author, & referensi yang baru.</p>';
 	
 	// Handle Reschedule
 	if ( isset($_POST['reschedule_jobs']) && $_POST['reschedule_jobs'] == '1' ) {
@@ -306,6 +316,44 @@ $campaigns = AAAG_Campaign::get_all();
 						</div>
 					</div>
 
+					<div class="aaag-form-row" style="margin-bottom: 24px;">
+						<div class="aaag-form-col">
+							<label for="language" class="aaag-label">Bahasa Artikel</label>
+							<?php $curr_lang = isset($edit_camp->language) ? $edit_camp->language : 'id'; ?>
+							<select name="language" id="language" class="aaag-select-full">
+								<option value="id" <?php selected($curr_lang, 'id'); ?>>🇮🇩 Bahasa Indonesia</option>
+								<option value="en" <?php selected($curr_lang, 'en'); ?>>🇬🇧 English</option>
+								<option value="ms" <?php selected($curr_lang, 'ms'); ?>>🇲🇾 Bahasa Melayu</option>
+								<option value="es" <?php selected($curr_lang, 'es'); ?>>🇪🇸 Spanish (Español)</option>
+								<option value="de" <?php selected($curr_lang, 'de'); ?>>🇩🇪 German (Deutsch)</option>
+								<option value="fr" <?php selected($curr_lang, 'fr'); ?>>🇫🇷 French (Français)</option>
+								<option value="ar" <?php selected($curr_lang, 'ar'); ?>>🇸🇦 Arabic (العربية)</option>
+								<option value="ja" <?php selected($curr_lang, 'ja'); ?>>🇯🇵 Japanese (日本語)</option>
+							</select>
+						</div>
+						<div class="aaag-form-col">
+							<label for="tone" class="aaag-label">Gaya Penulisan (Tone)</label>
+							<?php $curr_tone = isset($edit_camp->tone) ? $edit_camp->tone : 'informative'; ?>
+							<select name="tone" id="tone" class="aaag-select-full">
+								<option value="informative" <?php selected($curr_tone, 'informative'); ?>>Informatif & Edukatif</option>
+								<option value="casual" <?php selected($curr_tone, 'casual'); ?>>Kasual & Ramah (Mengobrol)</option>
+								<option value="professional" <?php selected($curr_tone, 'professional'); ?>>Profesional & Berwibawa</option>
+								<option value="journalistic" <?php selected($curr_tone, 'journalistic'); ?>>Jurnalistik & Berita</option>
+								<option value="storytelling" <?php selected($curr_tone, 'storytelling'); ?>>Storytelling & Naratif</option>
+								<option value="persuasive" <?php selected($curr_tone, 'persuasive'); ?>>Persuasif & Copywriting Promosi</option>
+							</select>
+						</div>
+						<div class="aaag-form-col">
+							<label for="pov" class="aaag-label">Sudut Pandang (POV)</label>
+							<?php $curr_pov = isset($edit_camp->pov) ? $edit_camp->pov : 'second_person'; ?>
+							<select name="pov" id="pov" class="aaag-select-full">
+								<option value="second_person" <?php selected($curr_pov, 'second_person'); ?>>Orang Ke-2 (Anda / Kamu)</option>
+								<option value="first_person" <?php selected($curr_pov, 'first_person'); ?>>Orang Ke-1 (Saya / Kami)</option>
+								<option value="third_person" <?php selected($curr_pov, 'third_person'); ?>>Orang Ke-3 (Netral / Objektif)</option>
+							</select>
+						</div>
+					</div>
+
 					<div class="aaag-form-group">
 						<label for="prompt" class="aaag-label">AI Prompt (Instruksi)</label>
 						<textarea name="prompt" id="prompt" rows="8" class="aaag-textarea-full" required><?php echo esc_textarea( $edit_camp->prompt ); ?></textarea>
@@ -323,9 +371,26 @@ $campaigns = AAAG_Campaign::get_all();
 			<!-- Right Column: Reschedule & Actions (Card) -->
 			<div class="aaag-sidebar-card">
 				<div class="aaag-card-header">
-					<h2><span class="dashicons dashicons-calendar-alt"></span> Reschedule & Simpan</h2>
+					<h2><span class="dashicons dashicons-admin-post"></span> Penulis & Jadwal</h2>
 				</div>
 				<div class="aaag-card-body">
+					<div class="aaag-form-group" style="margin-bottom: 20px;">
+						<label for="author_id" class="aaag-label">Penulis Artikel (Author)</label>
+						<select name="author_id" id="author_id" class="aaag-select-full">
+							<?php
+							$wp_authors = get_users( array( 'who' => 'authors', 'fields' => array( 'ID', 'display_name' ) ) );
+							if ( empty( $wp_authors ) ) {
+								$wp_authors = get_users( array( 'fields' => array( 'ID', 'display_name' ) ) );
+							}
+							$curr_author = isset($edit_camp->author_id) ? absint($edit_camp->author_id) : get_current_user_id();
+							foreach ( $wp_authors as $u ) :
+							?>
+								<option value="<?php echo esc_attr( $u->ID ); ?>" <?php selected( $curr_author, $u->ID ); ?>><?php echo esc_html( $u->display_name ); ?></option>
+							<?php endforeach; ?>
+						</select>
+						<p class="aaag-help-text">Penulis yang akan disematkan pada artikel yang belum di-generate di Campaign ini.</p>
+					</div>
+
 					<div class="aaag-form-group" style="background:#fff3f2; border: 1px solid #fee2e2; padding: 20px; border-radius: var(--aaag-radius-md);">
 						<label style="font-weight:bold; color:#d63638; display:flex; align-items:start; gap: 8px;">
 							<input type="checkbox" name="reschedule_jobs" id="reschedule_jobs" value="1" style="margin-top: 3px;"> 

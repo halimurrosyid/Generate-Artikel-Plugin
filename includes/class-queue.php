@@ -15,6 +15,12 @@ class AAAG_Queue {
 		// Auto-clean logs older than 7 days to keep database lightweight
 		AAAG_Logger::clear_old_logs( 7 );
 
+		// Self-healing: Auto-publish any missed schedule future posts
+		$wpdb->query( $wpdb->prepare(
+			"UPDATE $wpdb->posts SET post_status = 'publish' WHERE post_status = 'future' AND post_date <= %s",
+			current_time( 'mysql' )
+		) );
+
 		$table_name = AAAG_DB::get_table_name('jobs');
 		
 		$fifteen_mins_ago = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - ( 15 * 60 ) );
@@ -122,7 +128,7 @@ class AAAG_Queue {
 			$prompt_text = $campaign->prompt;
 			$knowledge_base_content = $campaign->knowledge_base;
 
-			$prompt = self::compile_prompt( $prompt_text, $job, $knowledge_base_content );
+			$prompt = self::compile_prompt( $prompt_text, $job, $knowledge_base_content, $campaign );
 			
 			$ai_model_str = isset($campaign->ai_model) && !empty($campaign->ai_model) ? $campaign->ai_model : 'anthropic:claude-3-5-haiku-20241022';
 			$content = AAAG_AI_Client::generate_content( $prompt, $ai_model_str );
@@ -138,7 +144,7 @@ class AAAG_Queue {
 		}
 	}
 	
-	private static function compile_prompt( $prompt, $job, $kb_content ) {
+	private static function compile_prompt( $prompt, $job, $kb_content, $campaign = null ) {
 		$replacements = array(
 			'{{title}}'          => $job->title,
 			'{{min_words}}'      => $job->min_words,
@@ -147,6 +153,49 @@ class AAAG_Queue {
 			'{{current_date}}'   => current_time( 'Y-m-d' ),
 		);
 		$compiled = strtr( $prompt, $replacements );
+
+		// Inject Persona: Language, Tone of Voice, and POV Guidelines
+		$lang_map = array(
+			'id' => 'Bahasa Indonesia (Natural, EYD sesuai standar penulisan artikel web modern)',
+			'en' => 'English (Fluent, natural, and modern standard English)',
+			'ms' => 'Bahasa Melayu (Baku dan mesra pembaca)',
+			'es' => 'Spanish (Español fluido y natural)',
+			'de' => 'German (Deutsch)',
+			'fr' => 'French (Français)',
+			'ar' => 'Arabic (العربية)',
+			'ja' => 'Japanese (日本語)'
+		);
+
+		$tone_map = array(
+			'informative'  => 'Informatif, mendalam, kaya data, terstruktur dan mudah dipahami',
+			'professional' => 'Profesional, berwibawa, formal, dan kredibel',
+			'casual'       => 'Kasual, ramah, santai, komunikatif, dan mengalir seperti mengobrol dengan kawan',
+			'journalistic' => 'Jurnalistik, berbasis fakta, objektif, padat, dan investigatif',
+			'storytelling' => 'Storytelling naratif, memikat emosi pembaca dengan alur cerita yang hidup',
+			'persuasive'   => 'Persuasif, copywriting menjual, memikat rasa penasaran, dan mendorong tindakan (Call to Action)'
+		);
+
+		$pov_map = array(
+			'second_person' => 'Orang Kedua (Sapa pembaca dengan sapaan "Anda" atau "Kamu" secara akrab dan konsisten)',
+			'first_person'  => 'Orang Pertama (Gunakan sudut pandang "Saya" atau "Kami" sebagai pakar/praktisi berpengalaman)',
+			'third_person'  => 'Orang Ketiga (Sudut pandang netral / objektif tanpa sapaan personal)'
+		);
+
+		$lang_code = ( $campaign && ! empty( $campaign->language ) ) ? $campaign->language : 'id';
+		$tone_code = ( $campaign && ! empty( $campaign->tone ) ) ? $campaign->tone : 'informative';
+		$pov_code  = ( $campaign && ! empty( $campaign->pov ) ) ? $campaign->pov : 'second_person';
+
+		$lang_desc = isset( $lang_map[$lang_code] ) ? $lang_map[$lang_code] : 'Bahasa Indonesia';
+		$tone_desc = isset( $tone_map[$tone_code] ) ? $tone_map[$tone_code] : 'Informatif dan edukatif';
+		$pov_desc  = isset( $pov_map[$pov_code] ) ? $pov_map[$pov_code] : 'Orang Kedua';
+
+		$persona_instruction = "\n\n--- PEDOMAN PENULISAN & PERSONA ---\n";
+		$persona_instruction .= "- Bahasa Wajib: " . $lang_desc . "\n";
+		$persona_instruction .= "- Gaya Bahasa / Tone: " . $tone_desc . "\n";
+		$persona_instruction .= "- Sudut Pandang (POV): " . $pov_desc . "\n";
+		$persona_instruction .= "-----------------------------------\n";
+
+		$compiled .= $persona_instruction;
 		
 		if (!empty($kb_content) && strpos($compiled, '{{knowledge_base}}') === false) {
 			$compiled .= "\n\n--- REFERENSI / KNOWLEDGE BASE ---\nHarap baca dan gunakan informasi berikut ini secara ekstensif dalam artikel Anda:\n" . $kb_content . "\n----------------------------------\n";

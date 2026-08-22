@@ -7,7 +7,11 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_generate_action', 'aaag_generate_nonce' ) ) {
 	$campaign_name     = isset( $_POST['campaign_name'] ) ? sanitize_text_field( $_POST['campaign_name'] ) : 'Untitled Campaign';
-	$ai_model          = isset( $_POST['ai_model'] ) ? sanitize_text_field( $_POST['ai_model'] ) : 'anthropic:claude-sonnet-4-6';
+	$ai_model          = isset( $_POST['ai_model'] ) ? sanitize_text_field( $_POST['ai_model'] ) : 'anthropic:claude-3-5-haiku-20241022';
+	$language          = isset( $_POST['language'] ) ? sanitize_text_field( $_POST['language'] ) : 'id';
+	$tone              = isset( $_POST['tone'] ) ? sanitize_text_field( $_POST['tone'] ) : 'informative';
+	$pov               = isset( $_POST['pov'] ) ? sanitize_text_field( $_POST['pov'] ) : 'second_person';
+	$author_id         = isset( $_POST['author_id'] ) ? absint( $_POST['author_id'] ) : ( get_current_user_id() ?: 1 );
 	$prompt            = isset( $_POST['prompt'] ) ? wp_unslash( $_POST['prompt'] ) : '';
 	$knowledge_base    = isset( $_POST['knowledge_base'] ) ? wp_unslash( $_POST['knowledge_base'] ) : '';
 	
@@ -36,6 +40,10 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 			'prompt'         => $prompt,
 			'knowledge_base' => $knowledge_base,
 			'ai_model'       => $ai_model,
+			'language'       => $language,
+			'tone'           => $tone,
+			'pov'            => $pov,
+			'author_id'      => $author_id,
 			'status'         => 'active'
 		) );
 		
@@ -77,10 +85,11 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 			AAAG_Job::insert( array(
 				'campaign_id'       => $campaign_id,
 				'title'             => $title,
-				'template_id'       => 0, // Legacy
-				'knowledge_base_id' => 0, // Legacy
+				'template_id'       => 0,
+				'knowledge_base_id' => 0,
 				'post_type'         => $post_type,
 				'post_status'       => $post_status,
+				'author_id'         => $author_id,
 				'min_words'         => $min_words,
 				'max_words'         => $max_words,
 				'schedule_time'     => $job_schedule_time,
@@ -221,15 +230,50 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 						</div>
 					</div>
 
+					<div class="aaag-form-row" style="margin-bottom: 24px;">
+						<div class="aaag-form-col">
+							<label for="language" class="aaag-label">Bahasa Artikel</label>
+							<select name="language" id="language" class="aaag-select-full">
+								<option value="id" selected>🇮🇩 Bahasa Indonesia</option>
+								<option value="en">🇬🇧 English</option>
+								<option value="ms">🇲🇾 Bahasa Melayu</option>
+								<option value="es">🇪🇸 Spanish (Español)</option>
+								<option value="de">🇩🇪 German (Deutsch)</option>
+								<option value="fr">🇫🇷 French (Français)</option>
+								<option value="ar">🇸🇦 Arabic (العربية)</option>
+								<option value="ja">🇯🇵 Japanese (日本語)</option>
+							</select>
+						</div>
+						<div class="aaag-form-col">
+							<label for="tone" class="aaag-label">Gaya Penulisan (Tone)</label>
+							<select name="tone" id="tone" class="aaag-select-full">
+								<option value="informative" selected>Informatif & Edukatif</option>
+								<option value="casual">Kasual & Ramah (Mengobrol)</option>
+								<option value="professional">Profesional & Berwibawa</option>
+								<option value="journalistic">Jurnalistik & Berita</option>
+								<option value="storytelling">Storytelling & Naratif</option>
+								<option value="persuasive">Persuasif & Copywriting Promosi</option>
+							</select>
+						</div>
+						<div class="aaag-form-col">
+							<label for="pov" class="aaag-label">Sudut Pandang (POV)</label>
+							<select name="pov" id="pov" class="aaag-select-full">
+								<option value="second_person" selected>Orang Ke-2 (Anda / Kamu)</option>
+								<option value="first_person">Orang Ke-1 (Saya / Kami)</option>
+								<option value="third_person">Orang Ke-3 (Netral / Objektif)</option>
+							</select>
+						</div>
+					</div>
+
 					<div class="aaag-form-group">
-						<label for="prompt" class="aaag-label">AI Prompt (Instruksi)</label>
-						<textarea name="prompt" id="prompt" rows="8" class="large-text aaag-textarea-full" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
+						<label for="prompt" class="aaag-label">AI Prompt (Instruksi Tambahan)</label>
+						<textarea name="prompt" id="prompt" rows="7" class="large-text aaag-textarea-full" required><?php echo esc_textarea( $default_prompt ); ?></textarea>
 						<p class="aaag-help-text">Variabel wajib: <code>{{title}}</code>, <code>{{min_words}}</code>, <code>{{max_words}}</code>. Opsional: <code>{{site_name}}</code>, <code>{{current_date}}</code>.</p>
 					</div>
 
 					<div class="aaag-form-group">
 						<label for="knowledge_base" class="aaag-label">Knowledge Base / Referensi (Opsional)</label>
-						<textarea name="knowledge_base" id="knowledge_base" rows="5" class="large-text aaag-textarea-full" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
+						<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text aaag-textarea-full" placeholder="Masukkan referensi tambahan, data spesifik, atau aturan khusus di sini..."></textarea>
 						<p class="aaag-help-text">AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.</p>
 					</div>
 				</div>
@@ -250,6 +294,24 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								<?php endforeach; ?>
 							</select>
 						</div>
+						<div class="aaag-form-col">
+							<label for="author_id" class="aaag-label">Penulis (Author)</label>
+							<select name="author_id" id="author_id" class="aaag-select-full">
+								<?php
+								$wp_authors = get_users( array( 'who' => 'authors', 'fields' => array( 'ID', 'display_name' ) ) );
+								if ( empty( $wp_authors ) ) {
+									$wp_authors = get_users( array( 'fields' => array( 'ID', 'display_name' ) ) );
+								}
+								$current_uid = get_current_user_id();
+								foreach ( $wp_authors as $u ) :
+								?>
+									<option value="<?php echo esc_attr( $u->ID ); ?>" <?php selected( $current_uid, $u->ID ); ?>><?php echo esc_html( $u->display_name ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
+					</div>
+
+					<div class="aaag-form-row" style="margin-bottom: 20px;">
 						<div class="aaag-form-col">
 							<label for="post_status" class="aaag-label">Status Artikel</label>
 							<select name="post_status" id="post_status" class="aaag-select-full">

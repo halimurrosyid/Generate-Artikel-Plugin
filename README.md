@@ -37,6 +37,12 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.3.8
+- **Pilihan Bahasa & Persona (Tone of Voice & POV)**: Dukungan pilihan bahasa (Indonesia, English, Melayu, dll.), gaya penulisan (Informatif, Kasual/Santai, Profesional, Jurnalistik, Storytelling, Persuasif), dan sudut pandang (POV) per Campaign.
+- **Pemilihan Author per Campaign**: Pilih akun penulis/redaktur WordPress yang diinginkan untuk disematkan pada setiap artikel.
+- **Filter Status & Tindakan Massal (Bulk Actions)**: Tab filter status (All, Pending, Processing, Completed, Failed, Skipped) serta aksi massal: *Jalankan Terpilih (Bulk Run)*, *Reset Terpilih*, dan *Hapus Terpilih*.
+- **Auto-Create Category & Missed Schedule Healing**: Otomatis membuat kategori baru jika belum ada di WordPress dan auto-publish artikel terjadwal yang terlewat.
+
 ### v4.3.7
 - **Perbaikan Sinkronisasi Waktu (Timezone Fix)**: Memperbaiki inkonsistensi perbandingan waktu lokal vs UTC pada auto-recovery job macet di background cron.
 - **Pencatatan Model AI Akurat**: Menyimpan model AI yang sebenarnya digunakan ke dalam meta post (`_ai_article_model`).

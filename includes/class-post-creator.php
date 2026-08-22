@@ -49,8 +49,12 @@ class AAAG_Post_Creator {
 		$actual_content = str_replace(array('\n', '\r', '\\n', '\\r'), "\n", $actual_content);
 
 		// Determine author ID safely
-		$author_id = get_current_user_id();
-		if ( ! $author_id ) {
+		$author_id = 0;
+		if ( isset( $job->author_id ) && absint( $job->author_id ) > 0 ) {
+			$author_id = absint( $job->author_id );
+		} elseif ( get_current_user_id() ) {
+			$author_id = get_current_user_id();
+		} else {
 			$admin_users = get_users( array( 'role' => 'administrator', 'number' => 1, 'fields' => 'ID' ) );
 			$author_id   = ! empty( $admin_users ) ? $admin_users[0] : 1;
 		}
@@ -89,6 +93,9 @@ class AAAG_Post_Creator {
 		}
 		if (!empty($category_name)) {
 			$cat_id = get_cat_ID($category_name);
+			if ($cat_id <= 0) {
+				$cat_id = wp_create_category($category_name);
+			}
 			if ($cat_id > 0) {
 				wp_set_post_categories($post_id, array($cat_id), false);
 			}

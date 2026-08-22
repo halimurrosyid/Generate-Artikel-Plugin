@@ -21,6 +21,10 @@ class AAAG_DB {
 			prompt text NOT NULL,
 			knowledge_base longtext NOT NULL,
 			ai_model varchar(100) NOT NULL DEFAULT 'anthropic:claude-3-5-haiku-20241022',
+			language varchar(50) NOT NULL DEFAULT 'id',
+			tone varchar(50) NOT NULL DEFAULT 'informative',
+			pov varchar(50) NOT NULL DEFAULT 'second_person',
+			author_id bigint(20) unsigned NOT NULL DEFAULT 1,
 			status varchar(20) NOT NULL DEFAULT 'active',
 			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			PRIMARY KEY  (id)
@@ -30,10 +34,11 @@ class AAAG_DB {
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			campaign_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			title text NOT NULL,
-			template_id bigint(20) unsigned NOT NULL,
+			template_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			knowledge_base_id bigint(20) unsigned DEFAULT 0,
 			post_type varchar(50) NOT NULL DEFAULT 'post',
 			post_status varchar(20) NOT NULL DEFAULT 'draft',
+			author_id bigint(20) unsigned NOT NULL DEFAULT 1,
 			min_words int(11) NOT NULL DEFAULT 500,
 			max_words int(11) NOT NULL DEFAULT 1000,
 			schedule_time datetime DEFAULT NULL,
@@ -78,15 +83,36 @@ class AAAG_DB {
 
 		// Robust verification: Ensure columns exist in case dbDelta failed
 		global $wpdb;
-		$jobs_table = self::get_table_name('jobs');
+		$campaigns_table = self::get_table_name('campaigns');
+		$jobs_table      = self::get_table_name('jobs');
 		
 		$wpdb->suppress_errors();
+		$lang_exists        = $wpdb->query( "SELECT language FROM $campaigns_table LIMIT 1" ) !== false;
+		$tone_exists        = $wpdb->query( "SELECT tone FROM $campaigns_table LIMIT 1" ) !== false;
+		$pov_exists         = $wpdb->query( "SELECT pov FROM $campaigns_table LIMIT 1" ) !== false;
+		$camp_author_exists = $wpdb->query( "SELECT author_id FROM $campaigns_table LIMIT 1" ) !== false;
+		$job_author_exists  = $wpdb->query( "SELECT author_id FROM $jobs_table LIMIT 1" ) !== false;
 		$post_type_exists   = $wpdb->query( "SELECT post_type FROM $jobs_table LIMIT 1" ) !== false;
 		$post_status_exists = $wpdb->query( "SELECT post_status FROM $jobs_table LIMIT 1" ) !== false;
 		$min_words_exists   = $wpdb->query( "SELECT min_words FROM $jobs_table LIMIT 1" ) !== false;
 		$max_words_exists   = $wpdb->query( "SELECT max_words FROM $jobs_table LIMIT 1" ) !== false;
 		$wpdb->suppress_errors( false );
 
+		if ( ! $lang_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN language varchar(50) NOT NULL DEFAULT 'id'" );
+		}
+		if ( ! $tone_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN tone varchar(50) NOT NULL DEFAULT 'informative'" );
+		}
+		if ( ! $pov_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN pov varchar(50) NOT NULL DEFAULT 'second_person'" );
+		}
+		if ( ! $camp_author_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN author_id bigint(20) unsigned NOT NULL DEFAULT 1" );
+		}
+		if ( ! $job_author_exists ) {
+			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN author_id bigint(20) unsigned NOT NULL DEFAULT 1" );
+		}
 		if ( ! $post_type_exists ) {
 			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN post_type varchar(50) NOT NULL DEFAULT 'post'" );
 		}
