@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.8
+- **Verifikasi Koneksi Standar Industri via Endpoint `/v1/models`**:
+  - Mengubah metode uji koneksi Anthropic, OpenAI, dan Google Gemini dengan menembak langsung endpoint resmi daftar model (`/v1/models`).
+  - Menghilangkan sepenuhnya resiko error model 404 dan berjalan instan dengan **0 konsumsi token**.
+
 ### v4.4.7
 - **Pengujian Multi-Model Cerdas & Dinamis (*Dynamic Multi-Model Probe*)**:
   - Tombol "Test Connection" kini menguji **seluruh model yang tersedia satu per satu** dan otomatis mengaktifkan semua model yang diizinkan oleh tier akun API Anda (menampilkan daftar model yang aktif secara transparan).

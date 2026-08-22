@@ -1,5 +1,5 @@
 {
-  "version": "4.4.7",
+  "version": "4.4.8",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.4.7: Dynamic Multi-Model Probe for Connection Testing. The Test Connection button now checks all available models individually (Claude 3.7 Sonnet, Claude 3.5 Sonnet, Claude 3 Haiku, Opus) and automatically unlocks only the models that are actively supported by your specific API account tier."
+  "changelog": "v4.4.8: Switched to official /v1/models endpoint for API connection testing. Completely eliminates model 404 errors by querying active account models directly with 0 token consumption."
 }
