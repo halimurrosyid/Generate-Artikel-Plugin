@@ -37,6 +37,13 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.3.7
+- **Perbaikan Sinkronisasi Waktu (Timezone Fix)**: Memperbaiki inkonsistensi perbandingan waktu lokal vs UTC pada auto-recovery job macet di background cron.
+- **Pencatatan Model AI Akurat**: Menyimpan model AI yang sebenarnya digunakan ke dalam meta post (`_ai_article_model`).
+- **Optimasi Test Connection AI**: Uji koneksi API Anthropic, OpenAI, dan Google Gemini berlangsung instan (< 1 detik) tanpa timeout berlebih.
+- **Paginasi Antrean Job**: Navigasi halaman (pagination 50 per halaman) pada Daftar Job untuk mempermudah pemantauan ratusan/ribuan antrean artikel.
+- **Hardening Keamanan & Cleanup**: Penambahan verifikasi hak akses `manage_options` di setiap aksi admin dan penyempurnaan pembersihan seluruh tabel/opsi saat uninstall.
+
 ### v4.3.6
 - **Pencegahan Judul Duplikat**: Otomatis mengecek apakah judul artikel sudah terdaftar di WordPress (pada *post type* target). Jika sudah ada, sistem akan melompati (*skip*) job tersebut dan mengubah statusnya menjadi **`SKIPPED`** dengan detail label warna jingga agar terhindar dari *duplicate content*.
 

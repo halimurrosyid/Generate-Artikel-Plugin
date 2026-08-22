@@ -10,6 +10,7 @@ if ( $delete_data ) {
 	global $wpdb;
 
 	$tables = array(
+		$wpdb->prefix . 'ai_article_campaigns',
 		$wpdb->prefix . 'ai_article_jobs',
 		$wpdb->prefix . 'ai_article_templates',
 		$wpdb->prefix . 'ai_article_knowledge_base',
@@ -20,11 +21,30 @@ if ( $delete_data ) {
 		$wpdb->query( "DROP TABLE IF EXISTS $table" );
 	}
 
-	delete_option( 'aaag_api_key' );
-	delete_option( 'aaag_model' );
-	delete_option( 'aaag_max_tokens' );
-	delete_option( 'aaag_temperature' );
-	delete_option( 'aaag_delete_data_uninstall' );
+	$options = array(
+		'aaag_api_key',
+		'aaag_openai_api_key',
+		'aaag_gemini_api_key',
+		'aaag_model',
+		'aaag_max_tokens',
+		'aaag_temperature',
+		'aaag_queue_buffer',
+		'aaag_internal_link_post_types',
+		'aaag_max_internal_links',
+		'aaag_delete_data_uninstall',
+		'aaag_anthropic_connected',
+		'aaag_openai_connected',
+		'aaag_gemini_connected',
+		'aaag_verified_anthropic_models',
+		'aaag_verified_openai_models',
+		'aaag_verified_gemini_models',
+		'aaag_db_version',
+	);
+
+	foreach ( $options as $option ) {
+		delete_option( $option );
+	}
 }
 
 wp_clear_scheduled_hook( 'aaag_process_queue_hook' );
+

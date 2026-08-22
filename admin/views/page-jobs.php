@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+if ( ! current_user_can( 'manage_options' ) ) {
+	wp_die( esc_html__( 'Anda tidak memiliki izin untuk mengakses halaman ini.', 'ai-auto-article-generator' ) );
+}
+
 if ( isset( $_GET['action'] ) && $_GET['action'] == 'delete' && isset( $_GET['job_id'] ) && check_admin_referer( 'delete_job_' . $_GET['job_id'] ) ) {
 	AAAG_Job::delete( absint( $_GET['job_id'] ) );
 	echo '<div class="notice notice-success"><p>Job berhasil dihapus.</p></div>';
@@ -15,15 +19,42 @@ if ( isset( $_GET['action'] ) && $_GET['action'] == 'reset_all_failed' ) {
 }
 
 $campaign_id = isset( $_GET['campaign_id'] ) ? absint( $_GET['campaign_id'] ) : 0;
-$jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
+$per_page    = 50;
+$current_page = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;
+$offset      = ( $current_page - 1 ) * $per_page;
+
+$total_jobs  = AAAG_Job::count_all( $campaign_id );
+$total_pages = ceil( $total_jobs / $per_page );
+$jobs        = AAAG_Job::get_all( $per_page, $offset, $campaign_id );
 ?>
 <div class="wrap aaag-wrap">
-	<h1>Daftar Job Antrean</h1>
+	<h1>Daftar Job Antrean <?php echo $campaign_id > 0 ? '(Campaign #' . $campaign_id . ')' : ''; ?></h1>
 	<p>Proses WP-Cron berjalan setiap 5 menit dan memproses 1 job berstatus "pending". Anda juga bisa menjalankan secara manual.</p>
 	
-	<div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
-		<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=aaag-jobs&action=reset_all_failed&campaign_id=' . $campaign_id), 'reset_all_failed_action' ); ?>" class="button button-secondary" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1;" onclick="return confirm('Apakah Anda yakin ingin mereset semua job yang gagal?');">Reset Semua Job Gagal</a>
-		<span style="font-size: 12px; color: #64748b; font-style: italic;">*Gunakan ini setelah mengisi token/API key agar antrean yang gagal otomatis berjalan kembali.</span>
+	<div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+		<div style="display: flex; gap: 10px; align-items: center;">
+			<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=aaag-jobs&action=reset_all_failed&campaign_id=' . $campaign_id), 'reset_all_failed_action' ); ?>" class="button button-secondary" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1;" onclick="return confirm('Apakah Anda yakin ingin mereset semua job yang gagal?');">Reset Semua Job Gagal</a>
+			<?php if ( $campaign_id > 0 ) : ?>
+				<a href="<?php echo admin_url('admin.php?page=aaag-jobs'); ?>" class="button">&laquo; Tampilkan Semua Job</a>
+			<?php endif; ?>
+			<span style="font-size: 12px; color: #64748b; font-style: italic;">*Gunakan ini setelah mengisi token/API key agar antrean yang gagal otomatis berjalan kembali.</span>
+		</div>
+		
+		<?php if ( $total_pages > 1 ) : ?>
+			<div class="aaag-pagination">
+				<span class="displaying-num" style="margin-right: 10px; color: #666; font-size: 13px;"><?php printf( '%d items', $total_jobs ); ?></span>
+				<?php
+				echo paginate_links( array(
+					'base'      => add_query_arg( 'paged', '%#%' ),
+					'format'    => '',
+					'prev_text' => '&laquo; Prev',
+					'next_text' => 'Next &raquo;',
+					'total'     => $total_pages,
+					'current'   => $current_page,
+				) );
+				?>
+			</div>
+		<?php endif; ?>
 	</div>
 	
 	<table class="wp-list-table widefat fixed striped">
@@ -74,7 +105,6 @@ $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 										$preview_url = get_permalink( $post_id );
 										$post_status = get_post_status( $post_id );
 										if ( in_array( $post_status, array( 'draft', 'pending', 'future' ) ) ) {
-											// Generate a preview link that works even if not published
 											$preview_url = set_url_scheme( get_permalink( $post_id ) );
 											$preview_url = add_query_arg( 'preview', 'true', $preview_url );
 										}
@@ -90,4 +120,21 @@ $jobs = AAAG_Job::get_all( 100, 0, $campaign_id );
 			<?php endif; ?>
 		</tbody>
 	</table>
+
+	<?php if ( $total_pages > 1 ) : ?>
+		<div class="aaag-tablenav" style="display: flex; justify-content: flex-end; margin-top: 15px;">
+			<div class="aaag-pagination">
+				<?php
+				echo paginate_links( array(
+					'base'      => add_query_arg( 'paged', '%#%' ),
+					'format'    => '',
+					'prev_text' => '&laquo; Prev',
+					'next_text' => 'Next &raquo;',
+					'total'     => $total_pages,
+					'current'   => $current_page,
+				) );
+				?>
+			</div>
+		</div>
+	<?php endif; ?>
 </div>

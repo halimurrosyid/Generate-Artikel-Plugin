@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+if ( ! current_user_can( 'manage_options' ) ) {
+	wp_die( esc_html__( 'Anda tidak memiliki izin untuk mengakses halaman ini.', 'ai-auto-article-generator' ) );
+}
+
 // Display success message if redirected from campaign creation
 if ( isset( $_GET['msg'] ) && $_GET['msg'] === 'created' ) {
 	$count = isset($_GET['count']) ? intval($_GET['count']) : 0;
@@ -227,17 +231,11 @@ $campaigns = AAAG_Campaign::get_all();
 								$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
 								
 								$anthropic_names = array(
-									'claude-sonnet-4-6' => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
-									'claude-haiku-4-5' => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
-									'claude-3-5-sonnet-latest' => 'Claude 3.5 Sonnet (Latest Alias)',
-									'claude-3-5-haiku-latest' => 'Claude 3.5 Haiku (Latest Alias)',
-									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (20241022)',
-									'claude-3-5-haiku-20241022' => 'Claude 3.5 Haiku (20241022)',
-									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (20250219)',
-									'claude-3-opus-latest' => 'Claude 3 Opus (Latest Alias)',
-									'claude-3-opus-20240229' => 'Claude 3 Opus (20240229)',
-									'claude-3-haiku-20240307' => 'Claude 3 Haiku (20240307)',
-									'claude-fable-5' => 'Claude 5 Fable (Premium)'
+									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (Terbaru & Sangat Pintar)',
+									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet (Pintar & Cepat)',
+									'claude-3-5-haiku-20241022'  => 'Claude 3.5 Haiku (Sangat Cepat & Hemat)',
+									'claude-3-haiku-20240307'    => 'Claude 3 Haiku (Hemat)',
+									'claude-3-opus-20240229'     => 'Claude 3 Opus (Mendalam)',
 								);
 
 								$openai_names = array(

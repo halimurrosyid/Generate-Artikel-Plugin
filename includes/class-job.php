@@ -59,10 +59,13 @@ class AAAG_Job {
 		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table $where $order_by LIMIT %d OFFSET %d", $limit, $offset ) );
 	}
 	
-	public static function count_all() {
+	public static function count_all( $campaign_id = 0 ) {
 		global $wpdb;
 		$table_name = AAAG_DB::get_table_name('jobs');
-		return $wpdb->get_var( "SELECT COUNT(*) FROM $table_name" );
+		if ( $campaign_id > 0 ) {
+			return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $table_name WHERE campaign_id = %d", $campaign_id ) );
+		}
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM $table_name" );
 	}
 
 	public static function update_status( $id, $status, $error_message = null ) {

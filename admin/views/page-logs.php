@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+if ( ! current_user_can( 'manage_options' ) ) {
+	wp_die( esc_html__( 'Anda tidak memiliki izin untuk mengakses halaman ini.', 'ai-auto-article-generator' ) );
+}
+
 if ( isset( $_POST['clear_logs'] ) && check_admin_referer( 'clear_logs_action' ) ) {
 	AAAG_Logger::clear_logs();
 	echo '<div class="notice notice-success"><p>Semua logs berhasil dibersihkan.</p></div>';

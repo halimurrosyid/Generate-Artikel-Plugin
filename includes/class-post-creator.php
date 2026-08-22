@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class AAAG_Post_Creator {
-	public static function create_post( $job, $content ) {
+	public static function create_post( $job, $content, $ai_model = '' ) {
 		// Attempt to parse JSON response
 		$start_pos = strpos($content, '{');
 		$end_pos = strrpos($content, '}');
@@ -48,13 +48,20 @@ class AAAG_Post_Creator {
 		// Clean up literal \n that might be left over if Claude double-escaped
 		$actual_content = str_replace(array('\n', '\r', '\\n', '\\r'), "\n", $actual_content);
 
+		// Determine author ID safely
+		$author_id = get_current_user_id();
+		if ( ! $author_id ) {
+			$admin_users = get_users( array( 'role' => 'administrator', 'number' => 1, 'fields' => 'ID' ) );
+			$author_id   = ! empty( $admin_users ) ? $admin_users[0] : 1;
+		}
+
 		// wp_insert_post requires data to be slashed because it calls wp_unslash internally.
 		$post_data = wp_slash( array(
 			'post_title'   => sanitize_text_field( $job->title ),
 			'post_content' => wp_kses_post( $actual_content ), // Secure content
 			'post_status'  => sanitize_text_field( $job->post_status ),
 			'post_type'    => sanitize_text_field( $job->post_type ),
-			'post_author'  => get_current_user_id() ?: 1,
+			'post_author'  => $author_id,
 		) );
 
 		if ( $job->post_status === 'future' && ! empty( $job->schedule_time ) ) {
@@ -70,7 +77,9 @@ class AAAG_Post_Creator {
 		}
 
 		update_post_meta( $post_id, '_ai_article_generated', 1 );
-		update_post_meta( $post_id, '_ai_article_model', get_option( 'aaag_model', 'claude-haiku-4-5-20251001' ) );
+		if ( ! empty( $ai_model ) ) {
+			update_post_meta( $post_id, '_ai_article_model', sanitize_text_field( $ai_model ) );
+		}
 		update_post_meta( $post_id, '_ai_article_job_id', $job->id );
 		update_post_meta( $post_id, '_ai_article_generated_at', current_time( 'mysql' ) );
 

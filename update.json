@@ -1,5 +1,5 @@
 {
-  "version": "4.3.6",
+  "version": "4.3.7",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "Added duplicate post title prevention: automatically skips generating article if a post with the same title and post type already exists in WordPress."
+  "changelog": "v4.3.7: Fixed stuck job recovery timezone inconsistency bug, accurate AI model post meta tracking, optimized AI test connection checks, added pagination for jobs list, capability check security hardening, and complete database uninstall cleanup."
 }

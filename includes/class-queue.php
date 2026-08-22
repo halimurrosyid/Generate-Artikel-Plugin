@@ -17,7 +17,7 @@ class AAAG_Queue {
 
 		$table_name = AAAG_DB::get_table_name('jobs');
 		
-		$fifteen_mins_ago = gmdate( 'Y-m-d H:i:s', time() - ( 15 * 60 ) );
+		$fifteen_mins_ago = date( 'Y-m-d H:i:s', current_time( 'timestamp' ) - ( 15 * 60 ) );
 		$wpdb->query( $wpdb->prepare(
 			"UPDATE $table_name SET status = 'failed', error_message = 'Job stuck processing for over 15 minutes', locked_at = NULL WHERE status = 'processing' AND locked_at < %s",
 			$fifteen_mins_ago
@@ -124,10 +124,10 @@ class AAAG_Queue {
 
 			$prompt = self::compile_prompt( $prompt_text, $job, $knowledge_base_content );
 			
-			$ai_model_str = isset($campaign->ai_model) && !empty($campaign->ai_model) ? $campaign->ai_model : 'anthropic:claude-sonnet-4-6';
+			$ai_model_str = isset($campaign->ai_model) && !empty($campaign->ai_model) ? $campaign->ai_model : 'anthropic:claude-3-5-haiku-20241022';
 			$content = AAAG_AI_Client::generate_content( $prompt, $ai_model_str );
 			
-			$post_id = AAAG_Post_Creator::create_post( $job, $content );
+			$post_id = AAAG_Post_Creator::create_post( $job, $content, $ai_model_str );
 			
 			AAAG_Job::update_status( $job->id, 'completed', '' );
 			AAAG_Logger::log( "Job completed. Created post ID: $post_id", $job->id );
