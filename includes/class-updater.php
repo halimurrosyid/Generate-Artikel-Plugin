@@ -25,9 +25,10 @@ class AAAG_Updater {
 		}
 
 		try {
-			// Fetch update information from GitHub raw json (timeout is low and fails silently to prevent critical errors)
-			$response = wp_remote_get( $this->update_url, array( 
-				'timeout'    => 5,
+			// Fetch update information from GitHub raw json (with cache busting)
+			$check_url = add_query_arg( 't', time(), $this->update_url );
+			$response  = wp_remote_get( $check_url, array( 
+				'timeout'    => 10,
 				'sslverify'  => false // Allow checking even if server has SSL resolution issues
 			) );
 
