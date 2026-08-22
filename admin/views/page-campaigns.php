@@ -338,6 +338,7 @@ $campaigns = AAAG_Campaign::get_all();
 								<option value="ar" <?php selected($curr_lang, 'ar'); ?>>🇸🇦 Arabic (العربية)</option>
 								<option value="ja" <?php selected($curr_lang, 'ja'); ?>>🇯🇵 Japanese (日本語)</option>
 							</select>
+							<p class="aaag-help-text">Bahasa utama yang digunakan artikel.</p>
 						</div>
 						<div class="aaag-form-col">
 							<label for="tone" class="aaag-label">Gaya Penulisan (Tone)</label>
@@ -350,15 +351,17 @@ $campaigns = AAAG_Campaign::get_all();
 								<option value="storytelling" <?php selected($curr_tone, 'storytelling'); ?>>Storytelling & Naratif</option>
 								<option value="persuasive" <?php selected($curr_tone, 'persuasive'); ?>>Persuasif & Copywriting Promosi</option>
 							</select>
+							<p class="aaag-help-text">Nada dan karakter penyampaian tulisan.</p>
 						</div>
 						<div class="aaag-form-col">
-							<label for="pov" class="aaag-label">Sudut Pandang (POV)</label>
+							<label for="pov" class="aaag-label">Gaya Sapaan Pembaca</label>
 							<?php $curr_pov = isset($edit_camp->pov) ? $edit_camp->pov : 'second_person'; ?>
 							<select name="pov" id="pov" class="aaag-select-full">
-								<option value="second_person" <?php selected($curr_pov, 'second_person'); ?>>Orang Ke-2 (Anda / Kamu)</option>
-								<option value="first_person" <?php selected($curr_pov, 'first_person'); ?>>Orang Ke-1 (Saya / Kami)</option>
-								<option value="third_person" <?php selected($curr_pov, 'third_person'); ?>>Orang Ke-3 (Netral / Objektif)</option>
+								<option value="second_person" <?php selected($curr_pov, 'second_person'); ?>>Menyapa Pembaca ("Anda" / "Kamu")</option>
+								<option value="first_person" <?php selected($curr_pov, 'first_person'); ?>>Sudut Pandang Penulis ("Saya" / "Kami")</option>
+								<option value="third_person" <?php selected($curr_pov, 'third_person'); ?>>Netral & Objektif (Formal / Berita)</option>
 							</select>
+							<p class="aaag-help-text">Cara penulis menyapa audiens di artikel.</p>
 						</div>
 					</div>
 

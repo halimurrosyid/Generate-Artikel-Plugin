@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.3
+- **Penyederhanaan Label Persona & Gaya Sapaan Pembaca**:
+  - Mengubah istilah linguistik *"Sudut Pandang (POV)"* menjadi **"Gaya Sapaan Pembaca"** dengan opsi yang jelas: *Menyapa Pembaca ("Anda"/"Kamu")*, *Sudut Pandang Penulis ("Saya"/"Kami")*, dan *Netral & Objektif (Formal/Berita)*.
+  - Menambahkan teks petunjuk ringkas di bawah kolom Bahasa, Gaya Penulisan, dan Gaya Sapaan agar lebih ramah bagi pengguna awam.
+
 ### v4.4.2
 - **Penyempurnaan UX SEO Meta (One-Click Presets & Interactive Chips)**:
   - Tombol **Template Cepat (Quick Presets)** sekali klik untuk Meta Title (*CTR Booster*, *Power Words + Tahun*, *Standar*) dan Meta Description (*Hook + Solusi + CTA*, *Problem + Benefit*).

@@ -1,5 +1,5 @@
 {
-  "version": "4.4.2",
+  "version": "4.4.3",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.4.2: Streamlined SEO Prompt UX with One-Click Quick Presets (CTR Booster, Power Words, Standard, Hook + CTA, Problem + Benefit), interactive Click-to-Insert Variable Chips ({{title}}, {{site_name}}, {{current_year}}), and removed redundant fallback dropdown for an effortless and intuitive workflow."
+  "changelog": "v4.4.3: Refined Persona options and terminology. Replaced confusing 'Sudut Pandang (POV)' label with clear 'Gaya Sapaan Pembaca' (Menyapa Pembaca, Sudut Pandang Penulis, Netral & Objektif) and added contextual helper descriptions for Language, Tone, and Reader Greeting."
 }
