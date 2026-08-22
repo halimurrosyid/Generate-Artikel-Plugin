@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.4.7
+- **Pengujian Multi-Model Cerdas & Dinamis (*Dynamic Multi-Model Probe*)**:
+  - Tombol "Test Connection" kini menguji **seluruh model yang tersedia satu per satu** dan otomatis mengaktifkan semua model yang diizinkan oleh tier akun API Anda (menampilkan daftar model yang aktif secara transparan).
+
 ### v4.4.6
 - **Dukungan Model AI Generasi Terbaru (Anthropic, OpenAI, Gemini)**:
   - **OpenAI**: Menambahkan model penalaran mendalam `o1`, `chatgpt-4o-latest`, dan `o3-mini`.

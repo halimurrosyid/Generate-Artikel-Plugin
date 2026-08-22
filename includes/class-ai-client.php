@@ -201,27 +201,26 @@ class AAAG_AI_Client {
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_anthropic_connected', 0 );
 				update_option( 'aaag_verified_anthropic_models', array() );
-				return array( 'success' => false, 'message' => 'API Key is missing.' );
+				return array( 'success' => false, 'message' => 'API Key Anthropic belum diisi.' );
 			}
 			
-			$supported_models = array(
-				'claude-3-7-sonnet-20250219',
-				'claude-3-5-sonnet-20241022',
-				'claude-3-5-haiku-20241022',
-				'claude-3-haiku-20240307',
-				'claude-3-opus-20240229',
+			$all_models = array(
+				'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet',
+				'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet',
+				'claude-3-5-haiku-20241022'  => 'Claude 3.5 Haiku',
+				'claude-3-haiku-20240307'    => 'Claude 3 Haiku',
+				'claude-3-opus-20240229'     => 'Claude 3 Opus',
 			);
 
-			// Test with universally available models across all Anthropic account tiers
-			$test_models = array( 'claude-3-haiku-20240307', 'claude-3-5-sonnet-20241022', 'claude-3-5-haiku-20241022' );
+			$verified_models = array();
+			$verified_labels = array();
 			$last_error = '';
-			$connected = false;
 
-			foreach ( $test_models as $test_model ) {
+			foreach ( $all_models as $model_id => $label ) {
 				$url = 'https://api.anthropic.com/v1/messages';
 				$body = array(
-					'model'      => $test_model,
-					'max_tokens' => 10,
+					'model'      => $model_id,
+					'max_tokens' => 5,
 					'messages'   => array(
 						array( 'role' => 'user', 'content' => 'Hi' )
 					)
@@ -233,7 +232,7 @@ class AAAG_AI_Client {
 						'anthropic-version' => '2023-06-01',
 						'content-type'      => 'application/json',
 					),
-					'timeout' => 15,
+					'timeout' => 8,
 				);
 				
 				$response = wp_remote_post( $url, $args );
@@ -244,27 +243,32 @@ class AAAG_AI_Client {
 				
 				$response_code = wp_remote_retrieve_response_code( $response );
 				$response_body = wp_remote_retrieve_body( $response );
+				$body_data     = json_decode( $response_body, true );
 				
 				if ( $response_code === 200 || $response_code === 429 ) {
-					$connected = true;
-					break;
+					$verified_models[] = $model_id;
+					$verified_labels[] = $label;
+				} elseif ( $response_code === 401 ) {
+					// Invalid API key for all models
+					update_option( 'aaag_anthropic_connected', 0 );
+					update_option( 'aaag_verified_anthropic_models', array() );
+					return array( 'success' => false, 'message' => 'Anthropic API Key tidak valid (401 Unauthorized).' );
 				} else {
-					$body_data = json_decode( $response_body, true );
 					$last_error = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : "HTTP $response_code";
-					// If it's invalid key / 401 Unauthorized, exit early
-					if ( $response_code === 401 ) {
-						break;
-					}
 				}
 			}
 			
-			if ( $connected ) {
+			if ( ! empty( $verified_models ) ) {
 				update_option( 'aaag_anthropic_connected', 1 );
-				update_option( 'aaag_verified_anthropic_models', $supported_models );
-				return array( 'success' => true, 'message' => 'Anthropic API Connected! Model Anthropic Claude siap digunakan.' );
+				update_option( 'aaag_verified_anthropic_models', $verified_models );
+				return array( 
+					'success' => true, 
+					'message' => 'Anthropic API Terhubung! Model yang aktif di akun Anda: ' . implode( ', ', $verified_labels ) 
+				);
 			} else {
 				update_option( 'aaag_anthropic_connected', 0 );
-				return array( 'success' => false, 'message' => "Anthropic API Error: $last_error" );
+				update_option( 'aaag_verified_anthropic_models', array() );
+				return array( 'success' => false, 'message' => "Gagal terhubung ke Anthropic: $last_error" );
 			}
 		} catch (Exception $e) {
 			update_option( 'aaag_anthropic_connected', 0 );
@@ -279,52 +283,73 @@ class AAAG_AI_Client {
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_openai_connected', 0 );
 				update_option( 'aaag_verified_openai_models', array() );
-				return array( 'success' => false, 'message' => 'OpenAI API Key is missing.' );
+				return array( 'success' => false, 'message' => 'API Key OpenAI belum diisi.' );
 			}
 			
-			$supported_models = array(
-				'gpt-4o-mini',
-				'gpt-4o',
-				'chatgpt-4o-latest',
-				'o3-mini',
-				'o1-mini',
-				'o1'
+			$all_models = array(
+				'gpt-4o-mini'        => 'GPT-4o Mini',
+				'gpt-4o'             => 'GPT-4o',
+				'chatgpt-4o-latest'  => 'ChatGPT-4o Latest',
+				'o3-mini'            => 'o3-mini',
+				'o1-mini'            => 'o1-mini',
+				'o1'                 => 'o1'
 			);
 
-			$url = 'https://api.openai.com/v1/chat/completions';
-			$body = array(
-				'model'      => 'gpt-4o-mini',
-				'max_tokens' => 10,
-				'messages'   => array(
-					array( 'role' => 'user', 'content' => 'Hi' )
-				)
-			);
-			$args = array(
-				'body'    => wp_json_encode( $body ),
-				'headers' => array(
-					'Authorization' => 'Bearer ' . $api_key,
-					'Content-Type'  => 'application/json',
-				),
-				'timeout' => 15,
-			);
-			
-			$response = wp_remote_post( $url, $args );
-			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message() );
+			$verified_models = array();
+			$verified_labels = array();
+			$last_error = '';
+
+			foreach ( $all_models as $model_id => $label ) {
+				$url = 'https://api.openai.com/v1/chat/completions';
+				$body = array(
+					'model'      => $model_id,
+					'max_tokens' => 5,
+					'messages'   => array(
+						array( 'role' => 'user', 'content' => 'Hi' )
+					)
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'Authorization' => 'Bearer ' . $api_key,
+						'Content-Type'  => 'application/json',
+					),
+					'timeout' => 8,
+				);
+				
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					$last_error = $response->get_error_message();
+					continue;
+				}
+				
+				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
+				$body_data     = json_decode( $response_body, true );
+				
+				if ( $response_code === 200 || $response_code === 429 ) {
+					$verified_models[] = $model_id;
+					$verified_labels[] = $label;
+				} elseif ( $response_code === 401 ) {
+					update_option( 'aaag_openai_connected', 0 );
+					update_option( 'aaag_verified_openai_models', array() );
+					return array( 'success' => false, 'message' => 'OpenAI API Key tidak valid (401 Unauthorized).' );
+				} else {
+					$last_error = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : "HTTP $response_code";
+				}
 			}
-			
-			$response_code = wp_remote_retrieve_response_code( $response );
-			$response_body = wp_remote_retrieve_body( $response );
-			
-			if ( $response_code === 200 || $response_code === 429 ) {
+
+			if ( ! empty( $verified_models ) ) {
 				update_option( 'aaag_openai_connected', 1 );
-				update_option( 'aaag_verified_openai_models', $supported_models );
-				return array( 'success' => true, 'message' => 'OpenAI API Connected! Available models: ' . implode( ', ', $supported_models ) );
+				update_option( 'aaag_verified_openai_models', $verified_models );
+				return array( 
+					'success' => true, 
+					'message' => 'OpenAI API Terhubung! Model yang aktif di akun Anda: ' . implode( ', ', $verified_labels ) 
+				);
 			} else {
-				$body_data = json_decode( $response_body, true );
-				$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Invalid API Response';
 				update_option( 'aaag_openai_connected', 0 );
-				return array( 'success' => false, 'message' => "OpenAI API Error ($response_code): $err" );
+				update_option( 'aaag_verified_openai_models', array() );
+				return array( 'success' => false, 'message' => "Gagal terhubung ke OpenAI: $last_error" );
 			}
 		} catch (Exception $e) {
 			update_option( 'aaag_openai_connected', 0 );
@@ -339,56 +364,80 @@ class AAAG_AI_Client {
 			if ( empty( $api_key ) ) {
 				update_option( 'aaag_gemini_connected', 0 );
 				update_option( 'aaag_verified_gemini_models', array() );
-				return array( 'success' => false, 'message' => 'Gemini API Key is missing.' );
+				return array( 'success' => false, 'message' => 'API Key Gemini belum diisi.' );
 			}
 			
-			$supported_models = array(
-				'gemini-2.5-flash',
-				'gemini-2.5-pro',
-				'gemini-2.0-flash',
-				'gemini-2.0-flash-lite',
-				'gemini-1.5-flash',
-				'gemini-1.5-pro'
+			$all_models = array(
+				'gemini-2.5-flash'      => 'Gemini 2.5 Flash',
+				'gemini-2.5-pro'        => 'Gemini 2.5 Pro',
+				'gemini-2.0-flash'      => 'Gemini 2.0 Flash',
+				'gemini-2.0-flash-lite' => 'Gemini 2.0 Flash Lite',
+				'gemini-1.5-flash'      => 'Gemini 1.5 Flash',
+				'gemini-1.5-pro'        => 'Gemini 1.5 Pro'
 			);
 
-			$url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$api_key}";
-			$body = array(
-				'contents' => array(
-					array(
-						'parts' => array(
-							array( 'text' => 'Hi' )
+			$verified_models = array();
+			$verified_labels = array();
+			$last_error = '';
+
+			foreach ( $all_models as $model_id => $label ) {
+				$url = "https://generativelanguage.googleapis.com/v1beta/models/{$model_id}:generateContent?key={$api_key}";
+				$body = array(
+					'contents' => array(
+						array(
+							'parts' => array(
+								array( 'text' => 'Hi' )
+							)
 						)
+					),
+					'generationConfig' => array(
+						'maxOutputTokens' => 5
 					)
-				),
-				'generationConfig' => array(
-					'maxOutputTokens' => 10
-				)
-			);
-			$args = array(
-				'body'    => wp_json_encode( $body ),
-				'headers' => array(
-					'Content-Type' => 'application/json',
-				),
-				'timeout' => 15,
-			);
-			
-			$response = wp_remote_post( $url, $args );
-			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_message() );
+				);
+				$args = array(
+					'body'    => wp_json_encode( $body ),
+					'headers' => array(
+						'Content-Type' => 'application/json',
+					),
+					'timeout' => 8,
+				);
+				
+				$response = wp_remote_post( $url, $args );
+				if ( is_wp_error( $response ) ) {
+					$last_error = $response->get_error_message();
+					continue;
+				}
+				
+				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
+				$body_data     = json_decode( $response_body, true );
+				
+				if ( $response_code === 200 || $response_code === 429 ) {
+					$verified_models[] = $model_id;
+					$verified_labels[] = $label;
+				} elseif ( $response_code === 400 || $response_code === 403 ) {
+					if ( isset( $body_data['error']['status'] ) && $body_data['error']['status'] === 'PERMISSION_DENIED' ) {
+						update_option( 'aaag_gemini_connected', 0 );
+						update_option( 'aaag_verified_gemini_models', array() );
+						return array( 'success' => false, 'message' => 'Gemini API Key tidak valid atau tidak memiliki izin akses.' );
+					}
+					$last_error = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : "HTTP $response_code";
+				} else {
+					$last_error = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : "HTTP $response_code";
+				}
 			}
-			
-			$response_code = wp_remote_retrieve_response_code( $response );
-			$response_body = wp_remote_retrieve_body( $response );
-			
-			if ( $response_code === 200 || $response_code === 429 ) {
+
+			if ( ! empty( $verified_models ) ) {
 				update_option( 'aaag_gemini_connected', 1 );
-				update_option( 'aaag_verified_gemini_models', $supported_models );
-				return array( 'success' => true, 'message' => 'Gemini API Connected! Available models: ' . implode( ', ', $supported_models ) );
+				update_option( 'aaag_verified_gemini_models', $verified_models );
+				return array( 
+					'success' => true, 
+					'message' => 'Gemini API Terhubung! Model yang aktif di akun Anda: ' . implode( ', ', $verified_labels ) 
+				);
 			} else {
-				$body_data = json_decode( $response_body, true );
-				$err = isset( $body_data['error']['message'] ) ? $body_data['error']['message'] : 'Invalid API Response';
 				update_option( 'aaag_gemini_connected', 0 );
-				return array( 'success' => false, 'message' => "Gemini API Error ($response_code): $err" );
+				update_option( 'aaag_verified_gemini_models', array() );
+				return array( 'success' => false, 'message' => "Gagal terhubung ke Gemini: $last_error" );
 			}
 		} catch (Exception $e) {
 			update_option( 'aaag_gemini_connected', 0 );

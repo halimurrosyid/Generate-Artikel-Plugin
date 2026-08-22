@@ -1,5 +1,5 @@
 {
-  "version": "4.4.6",
+  "version": "4.4.7",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.4.6: Added the latest AI models across all providers including Claude 3.7 Sonnet, OpenAI o1, ChatGPT-4o Latest, and Google Gemini 2.5 Flash / 2.5 Pro / 2.0 Flash Lite."
+  "changelog": "v4.4.7: Dynamic Multi-Model Probe for Connection Testing. The Test Connection button now checks all available models individually (Claude 3.7 Sonnet, Claude 3.5 Sonnet, Claude 3 Haiku, Opus) and automatically unlocks only the models that are actively supported by your specific API account tier."
 }
