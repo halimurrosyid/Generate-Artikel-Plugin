@@ -32,64 +32,84 @@ class AAAG_AI_Client {
 		}
 
 		$url = 'https://api.anthropic.com/v1/messages';
-		$body = array(
-			'model'      => $model,
-			'max_tokens' => $max_tokens,
-			'temperature'=> $temperature,
-			'messages'   => array(
-				array( 'role' => 'user', 'content' => $prompt )
-			)
-		);
+		
+		// Candidate model fallback chain in priority order
+		$models_to_try = array_values( array_unique( array(
+			$model,
+			'claude-3-5-sonnet-20241022',
+			'claude-3-5-sonnet-latest',
+			'claude-3-7-sonnet-20250219',
+			'claude-3-haiku-20240307',
+			'claude-3-5-haiku-20241022',
+			'claude-3-5-haiku-latest',
+			'claude-3-sonnet-20240229',
+			'claude-3-opus-20240229'
+		) ) );
 
-		$args = array(
-			'body'        => wp_json_encode( $body ),
-			'headers'     => array(
-				'x-api-key'         => $api_key,
-				'anthropic-version' => '2023-06-01',
-				'content-type'      => 'application/json',
-			),
-			'timeout'     => 120,
-			'data_format' => 'body',
-		);
+		$last_error_code = 0;
+		$last_error_msg  = '';
 
-		$response = wp_remote_post( $url, $args );
+		foreach ( $models_to_try as $try_model ) {
+			$body = array(
+				'model'       => $try_model,
+				'max_tokens'  => $max_tokens,
+				'temperature' => $temperature,
+				'messages'    => array(
+					array( 'role' => 'user', 'content' => $prompt )
+				)
+			);
 
-		if ( is_wp_error( $response ) ) {
-			throw new Exception( 'WP HTTP Error: ' . $response->get_error_message() );
-		}
+			$args = array(
+				'body'        => wp_json_encode( $body ),
+				'headers'     => array(
+					'x-api-key'         => $api_key,
+					'anthropic-version' => '2023-06-01',
+					'content-type'      => 'application/json',
+				),
+				'timeout'     => 120,
+				'data_format' => 'body',
+			);
 
-		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
-		$data          = json_decode( $response_body, true );
-
-		// Intelligent Fallback: If specific 3.5 Haiku is not enabled on account tier (404), fallback to universal Claude 3 Haiku
-		if ( $response_code === 404 && $model === 'claude-3-5-haiku-20241022' ) {
-			AAAG_Logger::log( "Model claude-3-5-haiku-20241022 (404) belum aktif di tier akun Anthropic. Mengalihkan otomatis ke claude-3-haiku-20240307..." );
-			$body['model'] = 'claude-3-haiku-20240307';
-			$args['body']  = wp_json_encode( $body );
 			$response = wp_remote_post( $url, $args );
 
-			if ( ! is_wp_error( $response ) ) {
-				$response_code = wp_remote_retrieve_response_code( $response );
-				$response_body = wp_remote_retrieve_body( $response );
-				$data          = json_decode( $response_body, true );
+			if ( is_wp_error( $response ) ) {
+				$last_error_msg = 'WP HTTP Error: ' . $response->get_error_message();
+				continue;
 			}
-		}
 
-		if ( $response_code !== 200 ) {
+			$response_code = wp_remote_retrieve_response_code( $response );
+			$response_body = wp_remote_retrieve_body( $response );
+			$data          = json_decode( $response_body, true );
+
+			if ( $response_code === 200 ) {
+				if ( ! isset( $data['content'][0]['text'] ) ) {
+					throw new Exception( 'Invalid API response format from Anthropic.' );
+				}
+				
+				if ( isset( $data['stop_reason'] ) && $data['stop_reason'] === 'max_tokens' ) {
+					throw new Exception( 'Generation terpotong karena mencapai batas Max Tokens.' );
+				}
+
+				if ( $try_model !== $model ) {
+					AAAG_Logger::log( "Model '$model' (404) otomatis dialihkan & sukses diproses menggunakan model aktif: '$try_model'" );
+				}
+
+				return $data['content'][0]['text'];
+			}
+
+			// If model is not enabled for this API account (404), try next model in fallback chain
+			if ( $response_code === 404 ) {
+				$last_error_code = 404;
+				$last_error_msg  = isset( $data['error']['message'] ) ? $data['error']['message'] : "model: $try_model";
+				continue;
+			}
+
+			// For fatal auth or billing errors (401, 402, 400), throw immediately
 			$error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : 'Unknown API Error';
 			throw new Exception( "Anthropic API Error ($response_code): $error_msg" );
 		}
 
-		if ( ! isset( $data['content'][0]['text'] ) ) {
-			throw new Exception( 'Invalid API response format from Anthropic.' );
-		}
-		
-		if ( isset( $data['stop_reason'] ) && $data['stop_reason'] === 'max_tokens' ) {
-			throw new Exception( 'Generation terpotong karena mencapai batas Max Tokens.' );
-		}
-
-		return $data['content'][0]['text'];
+		throw new Exception( "Anthropic API Error ($last_error_code): $last_error_msg" );
 	}
 
 	private static function generate_openai( $model, $prompt, $max_tokens, $temperature ) {

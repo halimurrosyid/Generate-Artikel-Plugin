@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.4
+- **Rantai Pengalihan Multi-Model Cerdas (*Comprehensive Multi-Model Fallback Chain*)**:
+  - Jika suatu model mengembalikan 404 dari server Anthropic, sistem otomatis mencoba urutan kandidat (`Claude 3.5 Sonnet`, `Claude 3.7 Sonnet`, `Claude 3 Haiku`, `Sonnet-Latest`) hingga artikel 100% sukses terbit.
+  - Menghilangkan sepenuhnya kegagalan artikel pada semua level tier API.
+
 ### v4.5.3
 - **Deteksi Pembaruan Instan (*Instant Update Detection*)**:
   - Mengintegrasikan hook `pre_set_site_transient_update_plugins` sehingga WordPress langsung mendeteksi rilis versi baru tanpa menunggu jeda cache 12 jam.

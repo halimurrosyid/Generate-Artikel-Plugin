@@ -1,5 +1,5 @@
 {
-  "version": "4.5.3",
+  "version": "4.5.4",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.3: Instant update detection engine hooking pre_set_site_transient_update_plugins with direct 1-click update check button."
+  "changelog": "v4.5.4: Comprehensive auto-fallback candidate chain (Claude 3.5 Sonnet, Claude 3.7 Sonnet, Claude 3 Haiku, Sonnet-latest) to completely prevent 404 job failures across all API account tiers."
 }
