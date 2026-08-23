@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.6.0
+- **Perbaikan Dropdown Model Tidak Lengkap**:
+  - Semua model (Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable, dll.) sekarang **selalu tampil di dropdown** tanpa perlu menjalankan ulang Test Connection.
+  - Sebelumnya dropdown hanya menampilkan model yang tersimpan di daftar verifikasi lama, menyebabkan model baru seperti Claude 4.5 Haiku tidak muncul.
+
 ### v4.5.9
 - **Audit Menyeluruh & Pembersihan Total**:
   - Diperbaiki 4 bug tersembunyi: default model lama yang masih tersisa di form processor (`page-generate.php`), dispatcher (`class-ai-client.php`), edit campaign (`page-campaigns.php`), dan skema database (`class-db.php`).

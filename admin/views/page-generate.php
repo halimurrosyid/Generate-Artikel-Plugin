@@ -154,9 +154,9 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 							<label for="ai_model" class="aaag-label">Model AI Utama</label>
 							<select name="ai_model" id="ai_model" class="aaag-select-full">
 								<?php
-								$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
-								$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
-								$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
+								$anthropic_connected = get_option( 'aaag_anthropic_connected', 0 );
+								$openai_connected    = get_option( 'aaag_openai_connected', 0 );
+								$gemini_connected    = get_option( 'aaag_gemini_connected', 0 );
 								$current_model      = 'anthropic:claude-haiku-4-5';
 								
 								$anthropic_names = array(
@@ -192,12 +192,11 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								$openai_key    = get_option( 'aaag_openai_api_key' );
 								$gemini_key    = get_option( 'aaag_gemini_api_key' );
 								
-								if ( ! empty( $anthropic_verified ) && ! empty( $anthropic_key ) ) :
+								if ( $anthropic_connected && ! empty( $anthropic_key ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="Anthropic (Claude)">
-									<?php foreach ( $anthropic_verified as $model ) : 
-										$label = isset($anthropic_names[$model]) ? $anthropic_names[$model] : $model;
+									<?php foreach ( $anthropic_names as $model => $label ) :
 										$val = "anthropic:" . $model;
 									?>
 										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
@@ -206,12 +205,11 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								<?php 
 								endif;
 								
-								if ( ! empty( $openai_verified ) && ! empty( $openai_key ) ) :
+								if ( $openai_connected && ! empty( $openai_key ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="OpenAI (ChatGPT)">
-									<?php foreach ( $openai_verified as $model ) : 
-										$label = isset($openai_names[$model]) ? $openai_names[$model] : $model;
+									<?php foreach ( $openai_names as $model => $label ) :
 										$val = "openai:" . $model;
 									?>
 										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>
@@ -220,12 +218,11 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								<?php 
 								endif;
 								
-								if ( ! empty( $gemini_verified ) && ! empty( $gemini_key ) ) :
+								if ( $gemini_connected && ! empty( $gemini_key ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="Google Gemini">
-									<?php foreach ( $gemini_verified as $model ) : 
-										$label = isset($gemini_names[$model]) ? $gemini_names[$model] : $model;
+									<?php foreach ( $gemini_names as $model => $label ) :
 										$val = "gemini:" . $model;
 									?>
 										<option value="<?php echo esc_attr( $val ); ?>" <?php selected($current_model, $val); ?>><?php echo esc_html( $label ); ?></option>

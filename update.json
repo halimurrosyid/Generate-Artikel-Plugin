@@ -1,5 +1,5 @@
 {
-  "version": "4.5.9",
+  "version": "4.6.0",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.9: Comprehensive audit & cleanup. Fixed 4 hidden bugs: old model defaults in form processor, dispatcher, campaigns, and DB schema. Fixed missing div tag in layout. All model IDs now consistently use claude-haiku-4-5."
+  "changelog": "v4.6.0: Fixed dropdown showing incomplete model list. All models (Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable, etc.) now always visible without needing to re-run Test Connection."
 }
