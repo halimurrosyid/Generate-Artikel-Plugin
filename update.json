@@ -1,5 +1,5 @@
 {
-  "version": "4.5.1",
+  "version": "4.5.2",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.1: Clarified model dropdown labels with exact Anthropic Dashboard matching names (Claude 3.5 Haiku / Haiku 4.5, Claude 3.7 Sonnet, Claude 3.5 Sonnet / Sonnet 5)."
+  "changelog": "v4.5.2: Added intelligent auto-fallback to universal Claude 3 Haiku if 3.5 Haiku is not enabled on account tier (404), ensuring zero failed jobs."
 }

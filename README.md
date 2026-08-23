@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.2
+- **Sistem Pengalihan Otomatis Model Cerdas (*Auto-Fallback on 404*)**:
+  - Jika akun API Anthropic pengguna belum mengaktifkan `3.5-haiku` (404), sistem secara otomatis mengalihkan permintaan ke `Claude 3 Haiku` universal yang dijamin aktif di semua akun Anthropic.
+  - Menghilangkan kegagalan pembuatan artikel pada antrean latar belakang (*background cron queue*).
+
 ### v4.5.1
 - **Penyelarasan Nama Model dengan Dashboard Anthropic**:
   - Menyelaraskan label dropdown model Anthropic agar sama persis dengan yang tertera di Console dashboard (`Claude 3.5 Haiku / Haiku 4.5`, `Claude 3.7 Sonnet`, `Claude 3.5 Sonnet / Sonnet 5`).

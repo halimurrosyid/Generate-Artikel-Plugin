@@ -157,7 +157,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
 								$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
 								$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
-								$current_model      = 'anthropic:claude-3-5-haiku-20241022';
+								$current_model      = 'anthropic:claude-3-haiku-20240307';
 								
 								$anthropic_names = array(
 									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (Model Flagship Terbaru Anthropic)',

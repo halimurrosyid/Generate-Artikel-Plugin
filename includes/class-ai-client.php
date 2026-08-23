@@ -62,6 +62,20 @@ class AAAG_AI_Client {
 		$response_body = wp_remote_retrieve_body( $response );
 		$data          = json_decode( $response_body, true );
 
+		// Intelligent Fallback: If specific 3.5 Haiku is not enabled on account tier (404), fallback to universal Claude 3 Haiku
+		if ( $response_code === 404 && $model === 'claude-3-5-haiku-20241022' ) {
+			AAAG_Logger::log( "Model claude-3-5-haiku-20241022 (404) belum aktif di tier akun Anthropic. Mengalihkan otomatis ke claude-3-haiku-20240307..." );
+			$body['model'] = 'claude-3-haiku-20240307';
+			$args['body']  = wp_json_encode( $body );
+			$response = wp_remote_post( $url, $args );
+
+			if ( ! is_wp_error( $response ) ) {
+				$response_code = wp_remote_retrieve_response_code( $response );
+				$response_body = wp_remote_retrieve_body( $response );
+				$data          = json_decode( $response_body, true );
+			}
+		}
+
 		if ( $response_code !== 200 ) {
 			$error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : 'Unknown API Error';
 			throw new Exception( "Anthropic API Error ($response_code): $error_msg" );
