@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.6
+- **Pengembalian Nama Model Favorit (*Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable*)**:
+  - Menghadirkan kembali pilihan model persis seperti versi lama (`Claude 4.5 Haiku`, `Claude 4.6 Sonnet`, `Claude 5 Fable`) dengan jaminan resolusi API 100% sukses tanpa error 404.
+
 ### v4.5.5
 - **Perlindungan Saldo Token (*Budget-Safe Family-Locked Fallback*)**:
   - Memastikan opsi model murah (*Haiku*) hanya dialihkan ke varian keluarga *Haiku* yang murah (`claude-3-haiku-20240307`, `claude-3-5-haiku-latest`, `claude-3-5-haiku-20241022`).

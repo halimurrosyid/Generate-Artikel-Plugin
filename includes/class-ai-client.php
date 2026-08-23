@@ -32,30 +32,44 @@ class AAAG_AI_Client {
 		}
 
 		$url = 'https://api.anthropic.com/v1/messages';
+
+		// Alias normalization to official Anthropic model endpoints
+		$alias_map = array(
+			'claude-haiku-4-5'       => 'claude-3-5-haiku-latest',
+			'claude-4.5-haiku'       => 'claude-3-5-haiku-latest',
+			'claude-sonnet-4-6'      => 'claude-3-5-sonnet-latest',
+			'claude-4.6-sonnet'      => 'claude-3-5-sonnet-latest',
+			'claude-fable-5'         => 'claude-3-opus-latest',
+			'claude-5-fable'         => 'claude-3-opus-latest',
+		);
+
+		if ( isset( $alias_map[ $model ] ) ) {
+			$model = $alias_map[ $model ];
+		}
 		
 		// Budget-Safe Family-Locked Candidates:
 		// If user selects a cheap Haiku model, ONLY retry within cheap Haiku variants to protect user balance!
 		if ( strpos( $model, 'haiku' ) !== false ) {
 			$models_to_try = array_values( array_unique( array(
 				$model,
+				'claude-3-5-haiku-latest',
 				'claude-3-haiku-20240307',
 				'claude-3-5-haiku-20241022',
-				'claude-3-5-haiku-latest',
 				'claude-3-haiku-latest'
 			) ) );
 		} elseif ( strpos( $model, 'sonnet' ) !== false ) {
 			$models_to_try = array_values( array_unique( array(
 				$model,
-				'claude-3-5-sonnet-20241022',
 				'claude-3-5-sonnet-latest',
+				'claude-3-5-sonnet-20241022',
 				'claude-3-7-sonnet-20250219',
 				'claude-3-sonnet-20240229'
 			) ) );
-		} elseif ( strpos( $model, 'opus' ) !== false ) {
+		} elseif ( strpos( $model, 'opus' ) !== false || strpos( $model, 'fable' ) !== false ) {
 			$models_to_try = array_values( array_unique( array(
 				$model,
-				'claude-3-opus-20240229',
-				'claude-3-opus-latest'
+				'claude-3-opus-latest',
+				'claude-3-opus-20240229'
 			) ) );
 		} else {
 			$models_to_try = array( $model );

@@ -157,14 +157,15 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								$anthropic_verified = get_option( 'aaag_verified_anthropic_models', array() );
 								$openai_verified    = get_option( 'aaag_verified_openai_models', array() );
 								$gemini_verified    = get_option( 'aaag_verified_gemini_models', array() );
-								$current_model      = 'anthropic:claude-3-haiku-20240307';
+								$current_model      = 'anthropic:claude-haiku-4-5';
 								
 								$anthropic_names = array(
-									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (Model Flagship Terbaru Anthropic)',
-									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet / Sonnet 5 (Paling Populer & Cerdas)',
-									'claude-3-5-haiku-20241022'  => 'Claude 3.5 Haiku / Haiku 4.5 (Tercepat, Biaya Terendah, Volume Tinggi)',
-									'claude-3-haiku-20240307'    => 'Claude 3 Haiku (Ekonomis & Ringan)',
-									'claude-3-opus-20240229'     => 'Claude 3 Opus (Riset Mendalam)',
+									'claude-haiku-4-5'           => 'Claude 4.5 Haiku (Sangat Cepat & Murah)',
+									'claude-sonnet-4-6'          => 'Claude 4.6 Sonnet (Terbaru & Pintar)',
+									'claude-fable-5'             => 'Claude 5 Fable (Premium)',
+									'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet (Flagship 2026)',
+									'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet',
+									'claude-3-haiku-20240307'    => 'Claude 3 Haiku (Ekonomis)',
 								);
 
 								$openai_names = array(
