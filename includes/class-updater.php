@@ -14,14 +14,15 @@ class AAAG_Updater {
 		$this->plugin_slug = plugin_basename( $plugin_file );
 		$this->current_version = $current_version;
 
-		// Hook into update checks
+		// Hook into both transient set and get filters for instant detection
+		add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'check_update' ) );
 		add_filter( 'site_transient_update_plugins', array( $this, 'check_update' ) );
 		add_filter( 'plugins_api', array( $this, 'plugin_popup_info' ), 20, 3 );
 	}
 
 	public function check_update( $transient ) {
-		if ( empty( $transient->checked ) ) {
-			return $transient;
+		if ( ! is_object( $transient ) ) {
+			$transient = new stdClass();
 		}
 
 		try {
@@ -43,14 +44,22 @@ class AAAG_Updater {
 
 			// If new version is higher, inject update info
 			if ( version_compare( $this->current_version, $data['version'], '<' ) ) {
+				$slug_dir = dirname( $this->plugin_slug );
+				if ( '.' === $slug_dir || empty( $slug_dir ) ) {
+					$slug_dir = 'indahweb-ai-auto-article';
+				}
+
 				$obj = new stdClass();
-				$obj->slug        = 'indahweb-ai-auto-article';
+				$obj->slug        = $slug_dir;
 				$obj->plugin      = $this->plugin_slug;
 				$obj->new_version = $data['version'];
-				$obj->tested      = '6.6';
+				$obj->tested      = '6.7';
 				$obj->package     = $data['package'];
 				$obj->url         = 'https://github.com/halimurrosyid/Generate-Artikel-Plugin';
 
+				if ( ! isset( $transient->response ) || ! is_array( $transient->response ) ) {
+					$transient->response = array();
+				}
 				$transient->response[ $this->plugin_slug ] = $obj;
 			}
 		} catch ( Exception $e ) {

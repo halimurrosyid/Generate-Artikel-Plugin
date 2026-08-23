@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.3
+- **Deteksi Pembaruan Instan (*Instant Update Detection*)**:
+  - Mengintegrasikan hook `pre_set_site_transient_update_plugins` sehingga WordPress langsung mendeteksi rilis versi baru tanpa menunggu jeda cache 12 jam.
+  - Menambahkan tombol *"Periksa Update WordPress"* langsung di halaman Settings.
+
 ### v4.5.2
 - **Sistem Pengalihan Otomatis Model Cerdas (*Auto-Fallback on 404*)**:
   - Jika akun API Anthropic pengguna belum mengaktifkan `3.5-haiku` (404), sistem secara otomatis mengalihkan permintaan ke `Claude 3 Haiku` universal yang dijamin aktif di semua akun Anthropic.

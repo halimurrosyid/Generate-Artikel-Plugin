@@ -1,5 +1,5 @@
 {
-  "version": "4.5.2",
+  "version": "4.5.3",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.2: Added intelligent auto-fallback to universal Claude 3 Haiku if 3.5 Haiku is not enabled on account tier (404), ensuring zero failed jobs."
+  "changelog": "v4.5.3: Instant update detection engine hooking pre_set_site_transient_update_plugins with direct 1-click update check button."
 }

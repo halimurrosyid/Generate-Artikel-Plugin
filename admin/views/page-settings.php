@@ -2,7 +2,17 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 ?>
 <div class="wrap aaag-wrap">
-	<h1>Settings AI Auto Article</h1>
+	<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+		<div>
+			<h1 style="margin: 0; padding: 0;">Settings AI Auto Article</h1>
+			<p style="margin: 4px 0 0 0; color: #64748b;">Versi Terpasang: <strong style="color: #4338ca;">v<?php echo esc_html( AAAG_VERSION ); ?></strong></p>
+		</div>
+		<div>
+			<a href="<?php echo esc_url( admin_url( 'update-core.php?force-check=1' ) ); ?>" class="button button-secondary" style="display: inline-flex; align-items: center; gap: 4px;">
+				<span class="dashicons dashicons-update"></span> Periksa Update WordPress
+			</a>
+		</div>
+	</div>
 	
 	<form method="post" action="options.php">
 		<?php
