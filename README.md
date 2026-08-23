@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.8
+- **Perbaikan Akar Masalah 404 Haiku**:
+  - Menemukan dan memperbaiki bug: kode alias map SALAH mengubah model ID `claude-haiku-4-5` (yang valid & berhasil) menjadi `claude-3-5-haiku-latest` (yang gagal 404).
+  - Sekarang `claude-haiku-4-5` dikirim langsung ke API Anthropic tanpa diubah — persis seperti versi lama yang berhasil.
+
 ### v4.5.7
 - **Penyelesaian Tuntas 100% Error 404 Anthropic**:
   - Menyematkan jaring pengaman berjenjang otomatis (*fail-safe fallback*) ke varian `Claude Sonnet` yang terbukti 100% aktif dan berhasil men-generate puluhan artikel di semua web.

@@ -1,5 +1,5 @@
 {
-  "version": "4.5.7",
+  "version": "4.5.8",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.7: Deeply investigated and eliminated all 404 model errors with guaranteed auto-fallback to active Sonnet models matching tukangwifi.com execution."
+  "changelog": "v4.5.8: ROOT CAUSE FIX - Removed broken alias map that was converting working claude-haiku-4-5 to non-working old IDs. Haiku now sends correct official model ID directly."
 }

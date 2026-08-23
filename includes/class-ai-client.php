@@ -33,51 +33,25 @@ class AAAG_AI_Client {
 
 		$url = 'https://api.anthropic.com/v1/messages';
 
-		// Alias normalization to official Anthropic model endpoints
-		$alias_map = array(
-			'claude-haiku-4-5'       => 'claude-3-5-haiku-latest',
-			'claude-4.5-haiku'       => 'claude-3-5-haiku-latest',
-			'claude-sonnet-4-6'      => 'claude-3-5-sonnet-latest',
-			'claude-4.6-sonnet'      => 'claude-3-5-sonnet-latest',
-			'claude-fable-5'         => 'claude-3-opus-latest',
-			'claude-5-fable'         => 'claude-3-opus-latest',
-		);
+		// NO alias mapping! claude-haiku-4-5, claude-sonnet-4-6, claude-fable-5 are
+		// all REAL official Anthropic API model IDs (new dateless format since 4.x generation).
+		// Mapping them to old 3.x IDs was the ROOT CAUSE of 404 errors!
 
-		if ( isset( $alias_map[ $model ] ) ) {
-			$model = $alias_map[ $model ];
-		}
-		
-		// Build Intelligent Fallback Priority Chain:
-		// 1. Requested model first
-		// 2. Exact family models (e.g. Haiku variants if Haiku was requested)
-		// 3. Guaranteed active fallback models (Sonnet) so generation NEVER fails!
-		$models_to_try = array();
-		$models_to_try[] = $model;
+		// Fallback chain: requested model first, then same-family variants only
+		$models_to_try = array( $model );
 
 		if ( strpos( $model, 'haiku' ) !== false ) {
-			$models_to_try[] = 'claude-3-5-haiku-latest';
+			$models_to_try[] = 'claude-haiku-4-5';
 			$models_to_try[] = 'claude-3-5-haiku-20241022';
 			$models_to_try[] = 'claude-3-haiku-20240307';
-			$models_to_try[] = 'claude-3-5-sonnet-latest';
-			$models_to_try[] = 'claude-3-5-sonnet-20241022';
-			$models_to_try[] = 'claude-3-7-sonnet-20250219';
 		} elseif ( strpos( $model, 'sonnet' ) !== false ) {
-			$models_to_try[] = 'claude-3-5-sonnet-latest';
+			$models_to_try[] = 'claude-sonnet-4-6';
 			$models_to_try[] = 'claude-3-5-sonnet-20241022';
 			$models_to_try[] = 'claude-3-7-sonnet-20250219';
-			$models_to_try[] = 'claude-3-sonnet-20240229';
-			$models_to_try[] = 'claude-3-5-haiku-latest';
-			$models_to_try[] = 'claude-3-haiku-20240307';
 		} elseif ( strpos( $model, 'opus' ) !== false || strpos( $model, 'fable' ) !== false ) {
+			$models_to_try[] = 'claude-fable-5';
 			$models_to_try[] = 'claude-3-opus-latest';
 			$models_to_try[] = 'claude-3-opus-20240229';
-			$models_to_try[] = 'claude-3-5-sonnet-latest';
-			$models_to_try[] = 'claude-3-5-sonnet-20241022';
-		} else {
-			$models_to_try[] = 'claude-3-5-sonnet-latest';
-			$models_to_try[] = 'claude-3-5-sonnet-20241022';
-			$models_to_try[] = 'claude-3-5-haiku-latest';
-			$models_to_try[] = 'claude-3-haiku-20240307';
 		}
 
 		$models_to_try = array_values( array_unique( $models_to_try ) );
@@ -275,11 +249,12 @@ class AAAG_AI_Client {
 			}
 			
 			$all_supported = array(
+				'claude-haiku-4-5'           => 'Claude 4.5 Haiku',
+				'claude-sonnet-4-6'          => 'Claude 4.6 Sonnet',
+				'claude-fable-5'             => 'Claude 5 Fable',
 				'claude-3-7-sonnet-20250219' => 'Claude 3.7 Sonnet',
 				'claude-3-5-sonnet-20241022' => 'Claude 3.5 Sonnet',
-				'claude-3-5-haiku-20241022'  => 'Claude 3.5 Haiku',
 				'claude-3-haiku-20240307'    => 'Claude 3 Haiku',
-				'claude-3-opus-20240229'     => 'Claude 3 Opus',
 			);
 
 			// 1. Primary Check: Official Anthropic /v1/models API endpoint
@@ -324,8 +299,8 @@ class AAAG_AI_Client {
 				}
 			}
 
-			// 2. Fallback Check: Lightweight message test probe
-			$test_models = array( 'claude-3-haiku-20240307', 'claude-3-5-sonnet-20241022', 'claude-3-7-sonnet-20250219' );
+			// 2. Fallback Check: Lightweight message test probe (use new-gen IDs first!)
+			$test_models = array( 'claude-haiku-4-5', 'claude-sonnet-4-6', 'claude-3-5-sonnet-20241022' );
 			$connected = false;
 			$last_error = '';
 
