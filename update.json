@@ -1,5 +1,5 @@
 {
-  "version": "4.6.0",
+  "version": "4.6.1",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.6.0: Fixed dropdown showing incomplete model list. All models (Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable, etc.) now always visible without needing to re-run Test Connection."
+  "changelog": "v4.6.1: Hotfix. Models now appear immediately in the dropdown once you save the API Key, without needing to run Test Connection."
 }

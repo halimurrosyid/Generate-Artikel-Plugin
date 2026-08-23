@@ -293,7 +293,7 @@ $campaigns = AAAG_Campaign::get_all();
 
 								$has_any = false;
 								
-								if ( $anthropic_connected && ! empty( get_option( 'aaag_api_key' ) ) ) :
+								if ( ! empty( get_option( 'aaag_api_key' ) ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="Anthropic (Claude)">
@@ -306,7 +306,7 @@ $campaigns = AAAG_Campaign::get_all();
 								<?php 
 								endif;
 								
-								if ( $openai_connected && ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
+								if ( ! empty( get_option( 'aaag_openai_api_key' ) ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="OpenAI (ChatGPT)">
@@ -319,7 +319,7 @@ $campaigns = AAAG_Campaign::get_all();
 								<?php 
 								endif;
 								
-								if ( $gemini_connected && ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
+								if ( ! empty( get_option( 'aaag_gemini_api_key' ) ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="Google Gemini">

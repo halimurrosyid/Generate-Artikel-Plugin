@@ -192,7 +192,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								$openai_key    = get_option( 'aaag_openai_api_key' );
 								$gemini_key    = get_option( 'aaag_gemini_api_key' );
 								
-								if ( $anthropic_connected && ! empty( $anthropic_key ) ) :
+								if ( ! empty( $anthropic_key ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="Anthropic (Claude)">
@@ -205,7 +205,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								<?php 
 								endif;
 								
-								if ( $openai_connected && ! empty( $openai_key ) ) :
+								if ( ! empty( $openai_key ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="OpenAI (ChatGPT)">
@@ -218,7 +218,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								<?php 
 								endif;
 								
-								if ( $gemini_connected && ! empty( $gemini_key ) ) :
+								if ( ! empty( $gemini_key ) ) :
 									$has_any = true;
 								?>
 								<optgroup label="Google Gemini">
