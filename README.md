@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.5
+- **Perlindungan Saldo Token (*Budget-Safe Family-Locked Fallback*)**:
+  - Memastikan opsi model murah (*Haiku*) hanya dialihkan ke varian keluarga *Haiku* yang murah (`claude-3-haiku-20240307`, `claude-3-5-haiku-latest`, `claude-3-5-haiku-20241022`).
+  - Sistem dijamin **TIDAK AKAN PERNAH** melompat ke model yang lebih mahal (*Sonnet/Opus*) tanpa izin pengguna, menjaga pengeluaran token tetap super hemat.
+
 ### v4.5.4
 - **Rantai Pengalihan Multi-Model Cerdas (*Comprehensive Multi-Model Fallback Chain*)**:
   - Jika suatu model mengembalikan 404 dari server Anthropic, sistem otomatis mencoba urutan kandidat (`Claude 3.5 Sonnet`, `Claude 3.7 Sonnet`, `Claude 3 Haiku`, `Sonnet-Latest`) hingga artikel 100% sukses terbit.

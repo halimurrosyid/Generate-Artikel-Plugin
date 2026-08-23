@@ -1,5 +1,5 @@
 {
-  "version": "4.5.4",
+  "version": "4.5.5",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.4: Comprehensive auto-fallback candidate chain (Claude 3.5 Sonnet, Claude 3.7 Sonnet, Claude 3 Haiku, Sonnet-latest) to completely prevent 404 job failures across all API account tiers."
+  "changelog": "v4.5.5: Budget-Safe Family-Locked Fallback. Haiku models only fallback within cheap Haiku variants, ensuring token balance is 100% protected."
 }

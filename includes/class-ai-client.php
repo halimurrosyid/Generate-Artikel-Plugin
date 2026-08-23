@@ -33,18 +33,33 @@ class AAAG_AI_Client {
 
 		$url = 'https://api.anthropic.com/v1/messages';
 		
-		// Candidate model fallback chain in priority order
-		$models_to_try = array_values( array_unique( array(
-			$model,
-			'claude-3-5-sonnet-20241022',
-			'claude-3-5-sonnet-latest',
-			'claude-3-7-sonnet-20250219',
-			'claude-3-haiku-20240307',
-			'claude-3-5-haiku-20241022',
-			'claude-3-5-haiku-latest',
-			'claude-3-sonnet-20240229',
-			'claude-3-opus-20240229'
-		) ) );
+		// Budget-Safe Family-Locked Candidates:
+		// If user selects a cheap Haiku model, ONLY retry within cheap Haiku variants to protect user balance!
+		if ( strpos( $model, 'haiku' ) !== false ) {
+			$models_to_try = array_values( array_unique( array(
+				$model,
+				'claude-3-haiku-20240307',
+				'claude-3-5-haiku-20241022',
+				'claude-3-5-haiku-latest',
+				'claude-3-haiku-latest'
+			) ) );
+		} elseif ( strpos( $model, 'sonnet' ) !== false ) {
+			$models_to_try = array_values( array_unique( array(
+				$model,
+				'claude-3-5-sonnet-20241022',
+				'claude-3-5-sonnet-latest',
+				'claude-3-7-sonnet-20250219',
+				'claude-3-sonnet-20240229'
+			) ) );
+		} elseif ( strpos( $model, 'opus' ) !== false ) {
+			$models_to_try = array_values( array_unique( array(
+				$model,
+				'claude-3-opus-20240229',
+				'claude-3-opus-latest'
+			) ) );
+		} else {
+			$models_to_try = array( $model );
+		}
 
 		$last_error_code = 0;
 		$last_error_msg  = '';
