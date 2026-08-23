@@ -255,7 +255,7 @@ $campaigns = AAAG_Campaign::get_all();
 						<div class="aaag-form-col">
 							<label for="ai_model" class="aaag-label">Model AI</label>
 							<?php 
-							$current_model = isset($edit_camp->ai_model) && !empty($edit_camp->ai_model) ? $edit_camp->ai_model : 'anthropic:claude-3-5-haiku-20241022';
+							$current_model = isset($edit_camp->ai_model) && !empty($edit_camp->ai_model) ? $edit_camp->ai_model : 'anthropic:claude-haiku-4-5';
 							?>
 							<select name="ai_model" id="ai_model" class="aaag-select-full">
 								<?php

@@ -1,5 +1,5 @@
 {
-  "version": "4.5.8",
+  "version": "4.5.9",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.8: ROOT CAUSE FIX - Removed broken alias map that was converting working claude-haiku-4-5 to non-working old IDs. Haiku now sends correct official model ID directly."
+  "changelog": "v4.5.9: Comprehensive audit & cleanup. Fixed 4 hidden bugs: old model defaults in form processor, dispatcher, campaigns, and DB schema. Fixed missing div tag in layout. All model IDs now consistently use claude-haiku-4-5."
 }

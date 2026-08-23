@@ -20,7 +20,7 @@ class AAAG_DB {
 			name varchar(255) NOT NULL,
 			prompt text NOT NULL,
 			knowledge_base longtext NOT NULL,
-			ai_model varchar(100) NOT NULL DEFAULT 'anthropic:claude-3-5-haiku-20241022',
+			ai_model varchar(100) NOT NULL DEFAULT 'anthropic:claude-haiku-4-5',
 			language varchar(50) NOT NULL DEFAULT 'id',
 			tone varchar(50) NOT NULL DEFAULT 'informative',
 			pov varchar(50) NOT NULL DEFAULT 'second_person',

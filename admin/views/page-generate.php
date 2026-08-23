@@ -7,7 +7,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_generate_action', 'aaag_generate_nonce' ) ) {
 	$campaign_name     = isset( $_POST['campaign_name'] ) ? sanitize_text_field( $_POST['campaign_name'] ) : 'Untitled Campaign';
-	$ai_model          = isset( $_POST['ai_model'] ) ? sanitize_text_field( $_POST['ai_model'] ) : 'anthropic:claude-3-5-haiku-20241022';
+	$ai_model          = isset( $_POST['ai_model'] ) ? sanitize_text_field( $_POST['ai_model'] ) : 'anthropic:claude-haiku-4-5';
 	$language          = isset( $_POST['language'] ) ? sanitize_text_field( $_POST['language'] ) : 'id';
 	$tone              = isset( $_POST['tone'] ) ? sanitize_text_field( $_POST['tone'] ) : 'informative';
 	$pov               = isset( $_POST['pov'] ) ? sanitize_text_field( $_POST['pov'] ) : 'second_person';
@@ -507,6 +507,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 					</div>
 				</div>
 			</div>
+		</div> <!-- /.aaag-dashboard-grid -->
 	</form>
 
 	<script>

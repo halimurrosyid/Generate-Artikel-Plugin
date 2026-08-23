@@ -37,6 +37,12 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.9
+- **Audit Menyeluruh & Pembersihan Total**:
+  - Diperbaiki 4 bug tersembunyi: default model lama yang masih tersisa di form processor (`page-generate.php`), dispatcher (`class-ai-client.php`), edit campaign (`page-campaigns.php`), dan skema database (`class-db.php`).
+  - Diperbaiki tag `</div>` yang hilang di halaman Generate Artikel.
+  - Seluruh referensi model ID sekarang konsisten menggunakan `claude-haiku-4-5` (format resmi Anthropic generasi baru).
+
 ### v4.5.8
 - **Perbaikan Akar Masalah 404 Haiku**:
   - Menemukan dan memperbaiki bug: kode alias map SALAH mengubah model ID `claude-haiku-4-5` (yang valid & berhasil) menjadi `claude-3-5-haiku-latest` (yang gagal 404).
