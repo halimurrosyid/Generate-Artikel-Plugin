@@ -47,33 +47,40 @@ class AAAG_AI_Client {
 			$model = $alias_map[ $model ];
 		}
 		
-		// Budget-Safe Family-Locked Candidates:
-		// If user selects a cheap Haiku model, ONLY retry within cheap Haiku variants to protect user balance!
+		// Build Intelligent Fallback Priority Chain:
+		// 1. Requested model first
+		// 2. Exact family models (e.g. Haiku variants if Haiku was requested)
+		// 3. Guaranteed active fallback models (Sonnet) so generation NEVER fails!
+		$models_to_try = array();
+		$models_to_try[] = $model;
+
 		if ( strpos( $model, 'haiku' ) !== false ) {
-			$models_to_try = array_values( array_unique( array(
-				$model,
-				'claude-3-5-haiku-latest',
-				'claude-3-haiku-20240307',
-				'claude-3-5-haiku-20241022',
-				'claude-3-haiku-latest'
-			) ) );
+			$models_to_try[] = 'claude-3-5-haiku-latest';
+			$models_to_try[] = 'claude-3-5-haiku-20241022';
+			$models_to_try[] = 'claude-3-haiku-20240307';
+			$models_to_try[] = 'claude-3-5-sonnet-latest';
+			$models_to_try[] = 'claude-3-5-sonnet-20241022';
+			$models_to_try[] = 'claude-3-7-sonnet-20250219';
 		} elseif ( strpos( $model, 'sonnet' ) !== false ) {
-			$models_to_try = array_values( array_unique( array(
-				$model,
-				'claude-3-5-sonnet-latest',
-				'claude-3-5-sonnet-20241022',
-				'claude-3-7-sonnet-20250219',
-				'claude-3-sonnet-20240229'
-			) ) );
+			$models_to_try[] = 'claude-3-5-sonnet-latest';
+			$models_to_try[] = 'claude-3-5-sonnet-20241022';
+			$models_to_try[] = 'claude-3-7-sonnet-20250219';
+			$models_to_try[] = 'claude-3-sonnet-20240229';
+			$models_to_try[] = 'claude-3-5-haiku-latest';
+			$models_to_try[] = 'claude-3-haiku-20240307';
 		} elseif ( strpos( $model, 'opus' ) !== false || strpos( $model, 'fable' ) !== false ) {
-			$models_to_try = array_values( array_unique( array(
-				$model,
-				'claude-3-opus-latest',
-				'claude-3-opus-20240229'
-			) ) );
+			$models_to_try[] = 'claude-3-opus-latest';
+			$models_to_try[] = 'claude-3-opus-20240229';
+			$models_to_try[] = 'claude-3-5-sonnet-latest';
+			$models_to_try[] = 'claude-3-5-sonnet-20241022';
 		} else {
-			$models_to_try = array( $model );
+			$models_to_try[] = 'claude-3-5-sonnet-latest';
+			$models_to_try[] = 'claude-3-5-sonnet-20241022';
+			$models_to_try[] = 'claude-3-5-haiku-latest';
+			$models_to_try[] = 'claude-3-haiku-20240307';
 		}
+
+		$models_to_try = array_values( array_unique( $models_to_try ) );
 
 		$last_error_code = 0;
 		$last_error_msg  = '';

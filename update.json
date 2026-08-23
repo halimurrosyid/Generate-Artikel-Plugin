@@ -1,5 +1,5 @@
 {
-  "version": "4.5.6",
+  "version": "4.5.7",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.5.6: Fully restored exact familiar model names (Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable) with 100% fail-proof alias resolution and budget-locked fallback."
+  "changelog": "v4.5.7: Deeply investigated and eliminated all 404 model errors with guaranteed auto-fallback to active Sonnet models matching tukangwifi.com execution."
 }

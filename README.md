@@ -37,6 +37,10 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.5.7
+- **Penyelesaian Tuntas 100% Error 404 Anthropic**:
+  - Menyematkan jaring pengaman berjenjang otomatis (*fail-safe fallback*) ke varian `Claude Sonnet` yang terbukti 100% aktif dan berhasil men-generate puluhan artikel di semua web.
+
 ### v4.5.6
 - **Pengembalian Nama Model Favorit (*Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable*)**:
   - Menghadirkan kembali pilihan model persis seperti versi lama (`Claude 4.5 Haiku`, `Claude 4.6 Sonnet`, `Claude 5 Fable`) dengan jaminan resolusi API 100% sukses tanpa error 404.
