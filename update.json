@@ -1,5 +1,5 @@
 {
-  "version": "4.6.1",
+  "version": "4.7.0",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.6.1: Hotfix. Models now appear immediately in the dropdown once you save the API Key, without needing to run Test Connection."
+  "changelog": "v4.7.0: Fitur Baru! Anda sekarang bisa mengatur Format URL (Slug) artikel (Pilihan: Sesuai Judul, Sesuai Focus Keyword, Sesuai Meta Title, atau Random Alphanumeric)."
 }

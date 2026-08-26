@@ -35,6 +35,7 @@ if ( isset( $_POST['aaag_campaign_edit_submit'] ) && check_admin_referer( 'campa
 	$generate_seo_meta = isset( $_POST['generate_seo_meta'] ) ? 1 : 0;
 	$seo_title_style   = isset( $_POST['seo_title_style'] ) ? sanitize_text_field( $_POST['seo_title_style'] ) : 'dynamic_ctr';
 	$seo_title_prompt  = isset( $_POST['seo_title_prompt'] ) ? wp_unslash( $_POST['seo_title_prompt'] ) : '';
+	$url_slug_style    = isset( $_POST['url_slug_style'] ) ? sanitize_text_field( $_POST['url_slug_style'] ) : 'default';
 	$seo_desc_prompt   = isset( $_POST['seo_desc_prompt'] ) ? wp_unslash( $_POST['seo_desc_prompt'] ) : '';
 	$update_data = array(
 		'name'              => sanitize_text_field( $_POST['campaign_name'] ),
@@ -48,6 +49,7 @@ if ( isset( $_POST['aaag_campaign_edit_submit'] ) && check_admin_referer( 'campa
 		'generate_seo_meta' => $generate_seo_meta,
 		'seo_title_style'   => $seo_title_style,
 		'seo_title_prompt'  => $seo_title_prompt,
+		'url_slug_style'    => $url_slug_style,
 		'seo_desc_prompt'   => $seo_desc_prompt
 	);
 	AAAG_Campaign::update( $id, $update_data );
@@ -488,6 +490,23 @@ $campaigns = AAAG_Campaign::get_all();
 									</p>
 									<span style="font-size: 11px; color: #0284c7; font-weight: 600;">📏 Batas Google: 120–155 Karakter</span>
 								</div>
+							</div>
+							
+							<!-- URL Slug Section -->
+							<?php
+							$camp_url_slug = isset( $edit_camp->url_slug_style ) && ! empty( $edit_camp->url_slug_style ) ? $edit_camp->url_slug_style : 'default';
+							?>
+							<div class="aaag-form-group" style="margin-top: 15px; border-top: 1px dashed #cbd5e1; padding-top: 15px;">
+								<label for="url_slug_style" class="aaag-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin: 0 0 6px 0; display: block;">
+									🔗 Format URL (Slug) Artikel
+								</label>
+								<select name="url_slug_style" id="url_slug_style" class="aaag-select-full" style="background: #ffffff;">
+									<option value="default" <?php selected($camp_url_slug, 'default'); ?>>Default WordPress (Mengikuti Judul Artikel Asli)</option>
+									<option value="focus_keyword" <?php selected($camp_url_slug, 'focus_keyword'); ?>>Sesuai Focus Keyword (Sangat SEO Friendly, Padat & Ringkas)</option>
+									<option value="meta_title" <?php selected($camp_url_slug, 'meta_title'); ?>>Sesuai Judul Meta SEO (Bervariasi)</option>
+									<option value="random" <?php selected($camp_url_slug, 'random'); ?>>Random Alphanumeric (Contoh: x8k2m9)</option>
+								</select>
+								<p class="aaag-help-text" style="margin-top: 6px;">Tentukan bagaimana URL artikel akan dibentuk agar tidak terlihat seragam atau templated.</p>
 							</div>
 
 						</div>

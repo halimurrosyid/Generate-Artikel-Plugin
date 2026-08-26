@@ -28,6 +28,7 @@ class AAAG_DB {
 			generate_seo_meta tinyint(1) NOT NULL DEFAULT 0,
 			seo_title_style varchar(50) NOT NULL DEFAULT 'dynamic_ctr',
 			seo_title_prompt text NULL,
+			url_slug_style varchar(50) NOT NULL DEFAULT 'default',
 			seo_desc_prompt text NULL,
 			status varchar(20) NOT NULL DEFAULT 'active',
 			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -100,6 +101,7 @@ class AAAG_DB {
 		$seo_style_exists   = $wpdb->query( "SELECT seo_title_style FROM $campaigns_table LIMIT 1" ) !== false;
 		$seo_title_p_exists = $wpdb->query( "SELECT seo_title_prompt FROM $campaigns_table LIMIT 1" ) !== false;
 		$seo_desc_p_exists  = $wpdb->query( "SELECT seo_desc_prompt FROM $campaigns_table LIMIT 1" ) !== false;
+		$url_slug_exists    = $wpdb->query( "SELECT url_slug_style FROM $campaigns_table LIMIT 1" ) !== false;
 		$post_type_exists   = $wpdb->query( "SELECT post_type FROM $jobs_table LIMIT 1" ) !== false;
 		$post_status_exists = $wpdb->query( "SELECT post_status FROM $jobs_table LIMIT 1" ) !== false;
 		$min_words_exists   = $wpdb->query( "SELECT min_words FROM $jobs_table LIMIT 1" ) !== false;
@@ -129,6 +131,9 @@ class AAAG_DB {
 		}
 		if ( ! $seo_desc_p_exists ) {
 			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN seo_desc_prompt text NULL" );
+		}
+		if ( ! $url_slug_exists ) {
+			$wpdb->query( "ALTER TABLE $campaigns_table ADD COLUMN url_slug_style varchar(50) NOT NULL DEFAULT 'default'" );
 		}
 		if ( ! $job_author_exists ) {
 			$wpdb->query( "ALTER TABLE $jobs_table ADD COLUMN author_id bigint(20) unsigned NOT NULL DEFAULT 1" );

@@ -91,6 +91,23 @@ class AAAG_Post_Creator {
 			$post_data['edit_date']     = true;
 		}
 
+		// URL Slug logic
+		$campaign = AAAG_Campaign::get( $job->campaign_id );
+		$url_slug_style = ( $campaign && isset( $campaign->url_slug_style ) ) ? $campaign->url_slug_style : 'default';
+		
+		$custom_slug = '';
+		if ( $url_slug_style === 'meta_title' && ! empty( $meta_title ) ) {
+			$custom_slug = sanitize_title( $meta_title );
+		} elseif ( $url_slug_style === 'focus_keyword' && ! empty( $focus_kw ) ) {
+			$custom_slug = sanitize_title( $focus_kw );
+		} elseif ( $url_slug_style === 'random' ) {
+			$custom_slug = wp_generate_password( 8, false, false );
+		}
+		
+		if ( ! empty( $custom_slug ) ) {
+			$post_data['post_name'] = $custom_slug;
+		}
+
 		$post_id = wp_insert_post( $post_data, true );
 
 		if ( is_wp_error( $post_id ) ) {

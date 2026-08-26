@@ -37,8 +37,16 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.7.0
+- **Fitur Custom URL (Slug)**:
+  - Sekarang Anda bisa memilih format URL slug untuk artikel agar tidak terlihat seperti *template*. 
+  - Pilihan tersedia: Default (Judul Artikel), Focus Keyword (Optimal untuk SEO), Meta Title, atau Random Alphanumeric.
+  - Setting tersedia pada saat pembuatan maupun pengubahan (edit) Campaign.
+
+### v4.6.1
+- **Hotfix Dropdown**: Model sekarang langsung muncul segera setelah Anda mengisi dan menyimpan API Key (mengabaikan status _connected_).
+
 ### v4.6.0
-- **Perbaikan Dropdown Model Tidak Lengkap**:
   - Semua model (Claude 4.5 Haiku, Claude 4.6 Sonnet, Claude 5 Fable, dll.) sekarang **selalu tampil di dropdown** tanpa perlu menjalankan ulang Test Connection.
   - Sebelumnya dropdown hanya menampilkan model yang tersimpan di daftar verifikasi lama, menyebabkan model baru seperti Claude 4.5 Haiku tidak muncul.
 
