@@ -60,13 +60,11 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 		$current_schedule = null;
 		$current_date_ts = null;
 		
-		if ( $post_status === 'future' ) {
-			if ( $schedule_mode === 'daily' ) {
-				// Ambil tanggal mulai, default hari ini
-				$current_date_ts = !empty($schedule_date) ? strtotime(date('Y-m-d', strtotime($schedule_date))) : strtotime(date('Y-m-d'));
-			} elseif ( ! empty( $schedule_date ) ) {
-				$current_schedule = strtotime( $schedule_date );
-			}
+		if ( $schedule_mode === 'daily' ) {
+			// Ambil tanggal mulai, default hari ini
+			$current_date_ts = !empty($schedule_date) ? strtotime(date('Y-m-d', strtotime($schedule_date))) : strtotime(date('Y-m-d'));
+		} else {
+			$current_schedule = !empty($schedule_date) ? strtotime( $schedule_date ) : current_time('timestamp');
 		}
 		
 		$jobs_added = 0;

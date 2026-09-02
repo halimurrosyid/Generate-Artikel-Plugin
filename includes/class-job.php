@@ -154,4 +154,59 @@ class AAAG_Job {
 		}
 		return $wpdb->query( "UPDATE $table_name SET status = 'pending', attempts = 0, error_message = NULL $where" );
 	}
+
+	public static function reschedule_campaign_jobs( $campaign_id, $start_date = '', $schedule_mode = 'interval', $min_gap = 2, $max_gap = 6, $gap_unit = 'hours', $daily_min = 12, $daily_max = 14 ) {
+		global $wpdb;
+		$jobs_table = AAAG_DB::get_table_name('jobs');
+
+		$current_schedule = null;
+		$current_date_ts = null;
+
+		if ( empty( $start_date ) ) {
+			$start_date = current_time( 'Y-m-d H:i:s' );
+		}
+
+		if ( $schedule_mode === 'daily' ) {
+			$current_date_ts = strtotime( date( 'Y-m-d', strtotime( $start_date ) ) );
+		} else {
+			$current_schedule = strtotime( $start_date );
+		}
+
+		$where = "status IN ('pending', 'failed')";
+		if ( $campaign_id > 0 ) {
+			$where .= $wpdb->prepare( " AND campaign_id = %d", $campaign_id );
+		}
+
+		$jobs_to_update = $wpdb->get_results( "SELECT id FROM $jobs_table WHERE $where ORDER BY id ASC" );
+
+		$updated_count = 0;
+		foreach ( $jobs_to_update as $job ) {
+			$job_schedule_time = null;
+			if ( $schedule_mode === 'daily' && $current_date_ts ) {
+				$random_hour = rand( $daily_min, $daily_max );
+				$random_minute = rand( 0, 59 );
+				if ( $random_hour === $daily_max ) $random_minute = 0;
+				$job_schedule_time = date('Y-m-d', $current_date_ts) . ' ' . sprintf('%02d:%02d:00', $random_hour, $random_minute);
+				$current_date_ts += 86400;
+			} else {
+				$job_schedule_time = date( 'Y-m-d H:i:s', $current_schedule );
+				$gap_value = rand( $min_gap, $max_gap );
+				$multiplier = ( $gap_unit === 'minutes' ) ? 60 : 3600;
+				$current_schedule += ( $gap_value * $multiplier );
+			}
+
+			if ( $job_schedule_time ) {
+				$wpdb->update(
+					$jobs_table,
+					array( 'schedule_time' => $job_schedule_time ),
+					array( 'id' => $job->id ),
+					array( '%s' ),
+					array( '%d' )
+				);
+				$updated_count++;
+			}
+		}
+
+		return $updated_count;
+	}
 }

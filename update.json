@@ -1,5 +1,5 @@
 {
-  "version": "4.7.0",
+  "version": "4.7.3",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.7.0: Fitur Baru! Anda sekarang bisa mengatur Format URL (Slug) artikel (Pilihan: Sesuai Judul, Sesuai Focus Keyword, Sesuai Meta Title, atau Random Alphanumeric)."
+  "changelog": "v4.7.3: Perbaikan Reschedule Massal (Semua Campaign) & Auto-Initialize jadwal tayang untuk status Publish/Draft."
 }
