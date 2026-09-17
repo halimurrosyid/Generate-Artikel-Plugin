@@ -20,6 +20,18 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 	$prompt            = isset( $_POST['prompt'] ) ? wp_unslash( $_POST['prompt'] ) : '';
 	$knowledge_base    = isset( $_POST['knowledge_base'] ) ? wp_unslash( $_POST['knowledge_base'] ) : '';
 	
+	// Check if a document file (PDF, DOCX, XLSX, CSV, TXT) was attached on submit
+	if ( ! empty( $_FILES['kb_doc_file_input']['tmp_name'] ) && is_uploaded_file( $_FILES['kb_doc_file_input']['tmp_name'] ) ) {
+		try {
+			$file_text = AAAG_Document_Parser::parse_file( $_FILES['kb_doc_file_input']['tmp_name'], $_FILES['kb_doc_file_input']['name'] );
+			if ( ! empty( $file_text ) ) {
+				$knowledge_base = trim( $knowledge_base . "\n\n" . $file_text );
+			}
+		} catch ( Exception $e ) {
+			echo '<div class="notice notice-error"><p>Gagal membaca berkas Knowledge Base: ' . esc_html( $e->getMessage() ) . '</p></div>';
+		}
+	}
+	
 	$titles            = isset( $_POST['titles'] ) ? explode( "\n", sanitize_textarea_field( wp_unslash( $_POST['titles'] ) ) ) : array();
 	$post_type         = isset( $_POST['post_type'] ) ? sanitize_text_field( $_POST['post_type'] ) : 'post';
 	$post_status       = isset( $_POST['post_status'] ) ? sanitize_text_field( $_POST['post_status'] ) : 'draft';
@@ -60,13 +72,11 @@ if ( isset( $_POST['aaag_generate_submit'] ) && check_admin_referer( 'aaag_gener
 		$current_schedule = null;
 		$current_date_ts = null;
 		
-		if ( $post_status === 'future' ) {
-			if ( $schedule_mode === 'daily' ) {
-				// Ambil tanggal mulai, default hari ini
-				$current_date_ts = !empty($schedule_date) ? strtotime(date('Y-m-d', strtotime($schedule_date))) : strtotime(date('Y-m-d'));
-			} elseif ( ! empty( $schedule_date ) ) {
-				$current_schedule = strtotime( $schedule_date );
-			}
+		if ( $schedule_mode === 'daily' ) {
+			// Ambil tanggal mulai, default hari ini
+			$current_date_ts = !empty($schedule_date) ? strtotime(date('Y-m-d', strtotime($schedule_date))) : strtotime(date('Y-m-d'));
+		} else {
+			$current_schedule = !empty($schedule_date) ? strtotime( $schedule_date ) : current_time('timestamp');
 		}
 		
 		$jobs_added = 0;
@@ -136,7 +146,7 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 	<h1>Buat Campaign Artikel</h1>
 	<p class="description">Semua pengaturan untuk satu grup antrean (Campaign) diatur di halaman ini.</p>
 	
-	<form method="post" action="">
+	<form method="post" action="" enctype="multipart/form-data">
 		<?php wp_nonce_field( 'aaag_generate_action', 'aaag_generate_nonce' ); ?>
 		
 		<div class="aaag-dashboard-grid">
@@ -304,13 +314,36 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 
 					<!-- 4. Knowledge Base (Slate Card) -->
 					<div class="aaag-form-group" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--aaag-radius-md); padding: 20px; margin-bottom: 24px;">
-						<label for="knowledge_base" class="aaag-label" style="font-size: 14px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 6px;">
-							<span>📚 Knowledge Base / Referensi Tambahan (Opsional)</span>
-						</label>
+						<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 10px;">
+							<label for="knowledge_base" class="aaag-label" style="font-size: 14px; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 6px;">
+								<span>📚 Knowledge Base / Referensi Tambahan (Opsional)</span>
+							</label>
+
+							<div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+								<?php
+								$all_kbs = AAAG_Knowledge_Base::get_all();
+								if ( ! empty( $all_kbs ) ) :
+								?>
+									<select id="select_saved_kb" style="font-size: 12px; max-width: 220px; background: #ffffff; border-radius: 4px; padding: 4px 8px;">
+										<option value="">-- Impor KB Tersimpan --</option>
+										<?php foreach ( $all_kbs as $saved_kb ) : ?>
+											<option value="<?php echo esc_attr( $saved_kb->id ); ?>" data-content="<?php echo esc_attr( $saved_kb->content ); ?>"><?php echo esc_html( $saved_kb->name ); ?></option>
+										<?php endforeach; ?>
+									</select>
+								<?php endif; ?>
+
+								<input type="file" id="kb_doc_file_input" accept=".pdf,.docx,.doc,.xlsx,.csv,.txt,.md,.json" style="display: none;">
+								<button type="button" class="button button-small" id="btn_trigger_kb_doc_upload" style="background: #ffffff; border-color: #cbd5e1; font-weight: 600;">
+									📄 Upload Berkas (PDF / Word / Excel / TXT)
+								</button>
+							</div>
+						</div>
+
 						<p class="aaag-help-text" style="margin-top: 2px; margin-bottom: 12px; color: #64748b;">
-							AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.
+							Ketik secara manual, impor KB tersimpan, atau unggah dokumen (PDF, Word, Excel). AI akan membaca teks ini sebagai referensi mutlak saat menulis seluruh artikel dalam Campaign ini.
 						</p>
-						<textarea name="knowledge_base" id="knowledge_base" rows="4" class="large-text aaag-textarea-full" style="background: #ffffff; font-size: 13px;" placeholder="Masukkan referensi data, spesifikasi harga, aturan khusus, atau fakta yang wajib dimuat AI..."></textarea>
+
+						<textarea name="knowledge_base" id="knowledge_base" rows="5" class="large-text aaag-textarea-full" style="background: #ffffff; font-size: 13px;" placeholder="Masukkan referensi data, spesifikasi harga, aturan khusus, atau fakta yang wajib dimuat AI..."></textarea>
 					</div>
 
 					<!-- SEO Metadata Integration Box (Sky Card) -->
@@ -531,6 +564,78 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 			} else {
 				$('#seo_settings_fields').slideUp(200);
 			}
+		});
+
+		$('#select_saved_kb').on('change', function() {
+			var selectedOption = $(this).find('option:selected');
+			var content = selectedOption.data('content');
+			if (content) {
+				var current = $('#knowledge_base').val();
+				if (current.trim().length > 0) {
+					$('#knowledge_base').val(current + "\n\n" + content);
+				} else {
+					$('#knowledge_base').val(content);
+				}
+				Swal.fire('Impor Berhasil', 'Referensi "' + selectedOption.text() + '" dimasukkan ke Knowledge Base.', 'success');
+			}
+		});
+
+		$('#btn_trigger_kb_doc_upload').on('click', function(e) {
+			e.preventDefault();
+			$('#kb_doc_file_input').click();
+		});
+
+		$('#kb_doc_file_input').on('change', function() {
+			var fileInput = this;
+			if (!fileInput.files.length) return;
+
+			var file = fileInput.files[0];
+
+			Swal.fire({
+				title: 'Mengekstrak Dokumen...',
+				text: 'Membaca isi berkas ' + file.name + ' (PDF/Word/Excel/TXT)...',
+				allowOutsideClick: false,
+				didOpen: () => { Swal.showLoading(); }
+			});
+
+			var formData = new FormData();
+			formData.append('action', 'aaag_parse_document');
+			formData.append('nonce', aaagAjax.nonce);
+			formData.append('kb_file', file);
+
+			$.ajax({
+				url: aaagAjax.ajaxurl,
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(response) {
+					if (response.success) {
+						var currentVal = $('#knowledge_base').val();
+						var newText = response.data.text;
+						if (currentVal.trim().length > 0) {
+							$('#knowledge_base').val(currentVal + "\n\n" + newText);
+						} else {
+							$('#knowledge_base').val(newText);
+						}
+
+						$('#btn_trigger_kb_doc_upload').text('✅ Berkas Terpasang: ' + response.data.name).css({'background': '#dcfce7', 'border-color': '#86efac', 'color': '#166534'});
+
+						Swal.fire({
+							title: 'Teks Berhasil Dimuat!',
+							text: 'Seluruh isi berkas "' + response.data.name + '" telah otomatis dimasukkan ke dalam kolom Knowledge Base di bawah ini.',
+							icon: 'success',
+							timer: 3000,
+							showConfirmButton: false
+						});
+					} else {
+						Swal.fire('Gagal Membaca Berkas', response.data, 'error');
+					}
+				},
+				error: function() {
+					Swal.fire('Error', 'Gagal memproses file pada server.', 'error');
+				}
+			});
 		});
 	});
 	</script>

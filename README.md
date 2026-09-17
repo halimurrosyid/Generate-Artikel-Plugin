@@ -37,6 +37,11 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.8.0
+- **Dukungan Ekstraksi Dokumen Knowledge Base**:
+  - Knowledge Base kini mendukung impor dan ekstraksi teks otomatis dari berkas dokumen **PDF, Word (.docx), Excel (.xlsx / .csv), TXT, dan MD**.
+  - Dilengkapi fitur *Live Text Extraction Preview* (AJAX) dan *Drag & Drop Upload Zone*.
+
 ### v4.7.0
 - **Fitur Custom URL (Slug)**:
   - Sekarang Anda bisa memilih format URL slug untuk artikel agar tidak terlihat seperti *template*. 

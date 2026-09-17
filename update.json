@@ -1,5 +1,5 @@
 {
-  "version": "4.7.0",
+  "version": "4.8.0",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.7.0: Fitur Baru! Anda sekarang bisa mengatur Format URL (Slug) artikel (Pilihan: Sesuai Judul, Sesuai Focus Keyword, Sesuai Meta Title, atau Random Alphanumeric)."
+  "changelog": "v4.8.0: Fitur Baru! Knowledge Base kini mendukung impor & ekstraksi teks otomatis dari berkas PDF, DOCX (Word), XLSX/CSV (Excel), TXT, dan MD secara langsung."
 }

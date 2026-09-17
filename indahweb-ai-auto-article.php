@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AI Auto Article Generator
  * Description: Generates automatic articles using Anthropic Claude API based on provided titles, templates, and knowledge bases.
- * Version: 4.7.0
+ * Version: 4.8.0
  * Author: Mujaddid Halimurrosyid
  * Author URI: https://indahweb.com
  * Requires PHP: 8.0
@@ -20,7 +20,7 @@ if ( ! defined( 'AAAG_PLUGIN_URL' ) ) {
 	define( 'AAAG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 }
 if ( ! defined( 'AAAG_VERSION' ) ) {
-	define( 'AAAG_VERSION', '4.7.0' );
+	define( 'AAAG_VERSION', '4.8.0' );
 }
 
 // Include core classes
@@ -30,6 +30,7 @@ require_once AAAG_PLUGIN_DIR . 'includes/class-activator.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-settings.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-template.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-knowledge-base.php';
+require_once AAAG_PLUGIN_DIR . 'includes/class-document-parser.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-job.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-campaign.php';
 require_once AAAG_PLUGIN_DIR . 'includes/class-queue.php';

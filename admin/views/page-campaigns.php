@@ -63,58 +63,16 @@ if ( isset( $_POST['aaag_campaign_edit_submit'] ) && check_admin_referer( 'campa
 	
 	// Handle Reschedule
 	if ( isset($_POST['reschedule_jobs']) && $_POST['reschedule_jobs'] == '1' ) {
-		global $wpdb;
-		$jobs_table = AAAG_DB::get_table_name('jobs');
-		
-		$schedule_date     = isset( $_POST['schedule_date'] ) ? sanitize_text_field( $_POST['schedule_date'] ) : ''; // Y-m-d\TH:i
+		$schedule_date     = isset( $_POST['schedule_date'] ) ? sanitize_text_field( $_POST['schedule_date'] ) : '';
 		$schedule_mode     = isset( $_POST['schedule_mode'] ) ? sanitize_text_field( $_POST['schedule_mode'] ) : 'interval';
 		$min_gap           = isset( $_POST['min_gap'] ) ? absint( $_POST['min_gap'] ) : 2;
 		$max_gap           = isset( $_POST['max_gap'] ) ? absint( $_POST['max_gap'] ) : 6;
 		$gap_unit          = isset( $_POST['gap_unit'] ) ? sanitize_text_field( $_POST['gap_unit'] ) : 'hours';
 		$daily_min         = isset( $_POST['daily_min'] ) ? absint( $_POST['daily_min'] ) : 12;
 		$daily_max         = isset( $_POST['daily_max'] ) ? absint( $_POST['daily_max'] ) : 14;
-		
-		$current_schedule = null;
-		$current_date_ts = null;
-		
-		if ( $schedule_mode === 'daily' ) {
-			$current_date_ts = !empty($schedule_date) ? strtotime(date('Y-m-d', strtotime($schedule_date))) : strtotime(date('Y-m-d'));
-		} elseif ( ! empty( $schedule_date ) ) {
-			$current_schedule = strtotime( $schedule_date );
-		}
-		
-		// Fetch all pending/failed jobs in order of their ID
-		$jobs_to_update = $wpdb->get_results( $wpdb->prepare("SELECT id FROM $jobs_table WHERE campaign_id = %d AND status IN ('pending', 'failed') ORDER BY id ASC", $id) );
-		
-		$updated_count = 0;
-		foreach ( $jobs_to_update as $job ) {
-			$job_schedule_time = null;
-			if ( $schedule_mode === 'daily' && $current_date_ts ) {
-				$random_hour = rand( $daily_min, $daily_max );
-				$random_minute = rand( 0, 59 );
-				if ( $random_hour === $daily_max ) $random_minute = 0;
-				$job_schedule_time = date('Y-m-d', $current_date_ts) . ' ' . sprintf('%02d:%02d:00', $random_hour, $random_minute);
-				$current_date_ts += 86400; // Maju 1 hari
-			} elseif ( $schedule_mode === 'interval' && $current_schedule ) {
-				$job_schedule_time = date( 'Y-m-d H:i:s', $current_schedule );
-				$gap_value = rand( $min_gap, $max_gap );
-				$multiplier = ( $gap_unit === 'minutes' ) ? 60 : 3600;
-				$current_schedule += ( $gap_value * $multiplier );
-			}
-			
-			if ( $job_schedule_time ) {
-				$wpdb->update(
-					$jobs_table,
-					array('schedule_time' => $job_schedule_time),
-					array('id' => $job->id),
-					array('%s'),
-					array('%d')
-				);
-				$updated_count++;
-			}
-		}
-		
-		$msg .= '<p><strong>' . $updated_count . ' Job berhasil diatur ulang jadwalnya!</strong></p>';
+
+		$updated_count = AAAG_Job::reschedule_campaign_jobs( $id, $schedule_date, $schedule_mode, $min_gap, $max_gap, $gap_unit, $daily_min, $daily_max );
+		$msg .= '<p><strong>' . intval( $updated_count ) . ' Job berhasil diatur ulang jadwalnya!</strong></p>';
 	}
 	
 	echo '<div class="notice notice-success">' . $msg . '</div>';

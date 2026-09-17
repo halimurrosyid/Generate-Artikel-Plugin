@@ -20,6 +20,19 @@ if ( isset( $_GET['action'] ) && $_GET['action'] == 'reset_all_failed' ) {
 	}
 }
 
+// Handle Quick Reschedule for Campaign
+if ( isset( $_POST['aaag_quick_reschedule_submit'] ) && check_admin_referer( 'quick_reschedule_action', 'quick_reschedule_nonce' ) ) {
+	$resched_campaign_id = isset( $_POST['resched_campaign_id'] ) ? absint( $_POST['resched_campaign_id'] ) : 0;
+	$start_date          = isset( $_POST['resched_start_date'] ) ? sanitize_text_field( $_POST['resched_start_date'] ) : '';
+	$schedule_mode       = isset( $_POST['resched_mode'] ) ? sanitize_text_field( $_POST['resched_mode'] ) : 'interval';
+	$min_gap             = isset( $_POST['resched_min_gap'] ) ? absint( $_POST['resched_min_gap'] ) : 8;
+	$max_gap             = isset( $_POST['resched_max_gap'] ) ? absint( $_POST['resched_max_gap'] ) : 9;
+	$gap_unit            = isset( $_POST['resched_gap_unit'] ) ? sanitize_text_field( $_POST['resched_gap_unit'] ) : 'hours';
+
+	$updated_count = AAAG_Job::reschedule_campaign_jobs( $resched_campaign_id, $start_date, $schedule_mode, $min_gap, $max_gap, $gap_unit );
+	echo '<div class="notice notice-success"><p>Berhasil menjadwalkan ulang ' . intval( $updated_count ) . ' artikel pending mulai dari ' . esc_html( date( 'd-m-Y H:i', strtotime( $start_date ) ) ) . '.</p></div>';
+}
+
 // Handle Bulk Actions
 if ( isset( $_POST['aaag_bulk_action_submit'] ) && check_admin_referer( 'aaag_bulk_jobs_nonce', 'aaag_bulk_jobs_nonce_field' ) ) {
 	$bulk_action = isset( $_POST['bulk_action'] ) ? sanitize_text_field( $_POST['bulk_action'] ) : '';
@@ -92,6 +105,10 @@ $count_skipped    = AAAG_Job::count_all( $campaign_id, 'skipped' );
 				<input type="submit" name="aaag_bulk_action_submit" class="button button-primary" value="Terapkan" onclick="return confirm('Apakah Anda yakin ingin menerapkan tindakan massal pada item terpilih?');">
 
 				<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=aaag-jobs&action=reset_all_failed&campaign_id=' . $campaign_id), 'reset_all_failed_action' ); ?>" class="button button-secondary" style="background: #e2e8f0; color: #475569; border-color: #cbd5e1; margin-left: 10px;" onclick="return confirm('Reset semua job yang gagal menjadi pending?');">Reset Semua Gagal</a>
+
+				<button type="button" id="btn_toggle_quick_reschedule" class="button button-secondary" style="background: #e0f2fe; color: #0369a1; border-color: #bae6fd; margin-left: 5px;">
+					📅 Jadwalkan Ulang (Reschedule)
+				</button>
 				
 				<?php if ( $campaign_id > 0 ) : ?>
 					<a href="<?php echo admin_url('admin.php?page=aaag-jobs'); ?>" class="button">&laquo; Tampilkan Semua Campaign</a>
@@ -113,6 +130,71 @@ $count_skipped    = AAAG_Job::count_all( $campaign_id, 'skipped' );
 					?>
 				</div>
 			<?php endif; ?>
+		</div>
+
+		<!-- Panel Quick Reschedule -->
+		<div id="panel_quick_reschedule" style="display: none; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+			<h3 style="margin-top: 0; margin-bottom: 8px; font-size: 15px; color: #0f172a; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+				<span>📅 Penjadwalan Ulang Artikel (Reschedule Queue)</span>
+			</h3>
+			<p style="margin-top: 0; margin-bottom: 16px; font-size: 13px; color: #475569;">
+				Sistem akan menghitung ulang dan memajukan jadwal artikel <strong>Pending / Failed</strong> di Campaign <?php echo $campaign_id > 0 ? '#' . $campaign_id : ''; ?> mulai dari waktu terdekat hari ini secara rapi.
+			</p>
+			
+			<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+				<?php if ( empty( $campaign_id ) ) : ?>
+					<div style="flex: 1; min-width: 200px;">
+						<label style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155;">Pilih Campaign Target</label>
+						<select name="resched_campaign_id" required style="width: 100%; border-radius: 4px;">
+							<option value="0">⚡ Semua Campaign (Reschedule All)</option>
+							<?php
+							$all_camps = AAAG_Campaign::get_all();
+							foreach ( $all_camps as $c ) {
+								echo '<option value="' . esc_attr($c->id) . '">' . esc_html($c->name) . ' (#' . $c->id . ')</option>';
+							}
+							?>
+						</select>
+					</div>
+				<?php else : ?>
+					<input type="hidden" name="resched_campaign_id" value="<?php echo esc_attr( $campaign_id ); ?>">
+				<?php endif; ?>
+
+				<div style="flex: 1; min-width: 220px;">
+					<label style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155;">Mulai Tanggal & Jam Pertama</label>
+					<input type="datetime-local" name="resched_start_date" value="<?php echo esc_attr( current_time( 'Y-m-d\TH:i' ) ); ?>" required style="width: 100%; border-radius: 4px;">
+				</div>
+
+				<div style="flex: 1; min-width: 180px;">
+					<label style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155;">Metode Penjadwalan</label>
+					<select name="resched_mode" id="quick_resched_mode" style="width: 100%; border-radius: 4px;">
+						<option value="interval">Berdasarkan Jarak (Interval)</option>
+						<option value="daily">1 Artikel Sehari (Jam Diacak)</option>
+					</select>
+				</div>
+
+				<div id="quick_resched_interval_wrap" style="display: flex; gap: 8px; flex: 2; min-width: 280px;">
+					<div style="flex: 1;">
+						<label style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155;">Min Jarak</label>
+						<input type="number" name="resched_min_gap" value="8" min="1" style="width: 100%; border-radius: 4px;">
+					</div>
+					<div style="flex: 1;">
+						<label style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155;">Max Jarak</label>
+						<input type="number" name="resched_max_gap" value="9" min="1" style="width: 100%; border-radius: 4px;">
+					</div>
+					<div style="flex: 1;">
+						<label style="display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155;">Satuan</label>
+						<select name="resched_gap_unit" style="width: 100%; border-radius: 4px;">
+							<option value="hours">Jam</option>
+							<option value="minutes">Menit</option>
+						</select>
+					</div>
+				</div>
+
+				<div style="margin-top: 10px;">
+					<?php wp_nonce_field( 'quick_reschedule_action', 'quick_reschedule_nonce' ); ?>
+					<input type="submit" name="aaag_quick_reschedule_submit" class="button button-primary" value="🚀 Terapkan Reschedule Sekarang" onclick="return confirm('Apakah Anda yakin ingin mengatur ulang jadwal artikel pending mulai tanggal yang dipilih?');">
+				</div>
+			</div>
 		</div>
 		
 		<table class="wp-list-table widefat fixed striped">
@@ -195,6 +277,19 @@ $count_skipped    = AAAG_Job::count_all( $campaign_id, 'skipped' );
 	jQuery(document).ready(function($) {
 		$('#cb-select-all-top').on('change', function() {
 			$('.aaag-job-checkbox').prop('checked', $(this).is(':checked'));
+		});
+
+		$('#btn_toggle_quick_reschedule').on('click', function(e) {
+			e.preventDefault();
+			$('#panel_quick_reschedule').slideToggle(200);
+		});
+
+		$('#quick_resched_mode').on('change', function() {
+			if ($(this).val() === 'daily') {
+				$('#quick_resched_interval_wrap').hide();
+			} else {
+				$('#quick_resched_interval_wrap').show();
+			}
 		});
 	});
 	</script>

@@ -9,6 +9,7 @@ class AAAG_Admin_Menu {
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_aaag_test_connection', array( __CLASS__, 'ajax_test_connection' ) );
 		add_action( 'wp_ajax_aaag_run_job', array( __CLASS__, 'ajax_run_job' ) );
+		add_action( 'wp_ajax_aaag_parse_document', array( __CLASS__, 'ajax_parse_document' ) );
 	}
 
 	public static function add_menu_pages() {
@@ -47,6 +48,15 @@ class AAAG_Admin_Menu {
 			'manage_options',
 			'aaag-jobs',
 			array( __CLASS__, 'render_page_jobs' )
+		);
+
+		add_submenu_page(
+			'aaag-generate',
+			'Knowledge Base',
+			'Knowledge Base',
+			'manage_options',
+			'aaag-knowledge-base',
+			array( __CLASS__, 'render_page_knowledge_base' )
 		);
 
 		add_submenu_page(
@@ -92,6 +102,10 @@ class AAAG_Admin_Menu {
 
 	public static function render_page_jobs() {
 		require_once AAAG_PLUGIN_DIR . 'admin/views/page-jobs.php';
+	}
+
+	public static function render_page_knowledge_base() {
+		require_once AAAG_PLUGIN_DIR . 'admin/views/page-knowledge-base.php';
 	}
 
 	public static function render_page_campaigns() {
@@ -150,6 +164,34 @@ class AAAG_Admin_Menu {
 			wp_send_json_success( 'Job processed successfully.' );
 		} else {
 			wp_send_json_error( 'Job failed to process or is already processing/completed.' );
+		}
+	}
+
+	public static function ajax_parse_document() {
+		check_ajax_referer( 'aaag_ajax_nonce', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( 'Unauthorized' );
+		}
+
+		if ( empty( $_FILES['kb_file'] ) || empty( $_FILES['kb_file']['tmp_name'] ) ) {
+			wp_send_json_error( 'Tidak ada file yang diunggah.' );
+		}
+
+		$file = $_FILES['kb_file'];
+		try {
+			$text = AAAG_Document_Parser::parse_file( $file['tmp_name'], $file['name'] );
+			$suggested_title = pathinfo( $file['name'], PATHINFO_FILENAME );
+			$suggested_title = str_replace( array( '-', '_' ), ' ', $suggested_title );
+			$suggested_title = ucwords( trim( $suggested_title ) );
+
+			wp_send_json_success( array(
+				'text'  => $text,
+				'title' => $suggested_title,
+				'name'  => $file['name'],
+				'size'  => size_format( $file['size'] )
+			) );
+		} catch ( Exception $e ) {
+			wp_send_json_error( $e->getMessage() );
 		}
 	}
 }
