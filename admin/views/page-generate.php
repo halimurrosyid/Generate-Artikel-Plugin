@@ -191,9 +191,12 @@ $default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menar
 								);
 
 								$gemini_names = array(
-									'gemini-2.5-flash'      => 'Gemini 2.5 Flash (Generasi Terbaru & Sangat Cepat)',
+									'gemini-3.8-flash'      => 'Gemini 3.8 Flash (Generasi Terbaru & Super Cepat)',
+									'gemini-3.5-flash'      => 'Gemini 3.5 Flash (Sangat Cepat & Pintar)',
+									'gemini-3.1-pro'        => 'Gemini 3.1 Pro (Penalaran Mendalam / Advanced Reasoning)',
+									'gemini-2.5-flash'      => 'Gemini 2.5 Flash (Cepat & Stabil)',
 									'gemini-2.5-pro'        => 'Gemini 2.5 Pro (Sangat Pintar & Analitis)',
-									'gemini-2.0-flash'      => 'Gemini 2.0 Flash (Cepat & Stabil)',
+									'gemini-2.0-flash'      => 'Gemini 2.0 Flash (Stabil)',
 									'gemini-2.0-flash-lite' => 'Gemini 2.0 Flash Lite (Super Hemat & Ringan)',
 									'gemini-1.5-flash'      => 'Gemini 1.5 Flash (Stabil & Teruji)',
 									'gemini-1.5-pro'        => 'Gemini 1.5 Pro (Konteks Panjang)'

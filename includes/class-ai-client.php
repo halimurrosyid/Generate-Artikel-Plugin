@@ -186,56 +186,92 @@ class AAAG_AI_Client {
 			throw new Exception( 'Gemini API Key is missing. Silakan isi di menu Settings.' );
 		}
 
-		// Google Gemini API URL
-		$url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$api_key}";
-		
-		$body = array(
-			'contents' => array(
-				array(
-					'parts' => array(
-						array( 'text' => $prompt )
-					)
-				)
-			),
-			'generationConfig' => array(
-				'temperature' => $temperature,
-				'maxOutputTokens' => $max_tokens
-			)
-		);
+		// Fallback chain: requested model first, then same-family variants only
+		$models_to_try = array( $model );
 
-		$args = array(
-			'body'        => wp_json_encode( $body ),
-			'headers'     => array(
-				'Content-Type' => 'application/json',
-			),
-			'timeout'     => 120,
-			'data_format' => 'body',
-		);
-
-		$response = wp_remote_post( $url, $args );
-
-		if ( is_wp_error( $response ) ) {
-			throw new Exception( 'WP HTTP Error: ' . $response->get_error_message() );
+		if ( strpos( $model, 'flash' ) !== false ) {
+			$models_to_try[] = 'gemini-3.8-flash';
+			$models_to_try[] = 'gemini-3.5-flash';
+			$models_to_try[] = 'gemini-2.5-flash';
+			$models_to_try[] = 'gemini-2.0-flash';
+			$models_to_try[] = 'gemini-1.5-flash';
+		} elseif ( strpos( $model, 'pro' ) !== false ) {
+			$models_to_try[] = 'gemini-3.1-pro';
+			$models_to_try[] = 'gemini-2.5-pro';
+			$models_to_try[] = 'gemini-1.5-pro';
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
-		$data          = json_decode( $response_body, true );
+		$models_to_try = array_values( array_unique( $models_to_try ) );
 
-		if ( $response_code !== 200 ) {
+		$last_error_code = 0;
+		$last_error_msg  = '';
+
+		foreach ( $models_to_try as $try_model ) {
+			// Google Gemini API URL
+			$url = "https://generativelanguage.googleapis.com/v1beta/models/{$try_model}:generateContent?key={$api_key}";
+			
+			$body = array(
+				'contents' => array(
+					array(
+						'parts' => array(
+							array( 'text' => $prompt )
+						)
+					)
+				),
+				'generationConfig' => array(
+					'temperature'     => $temperature,
+					'maxOutputTokens' => $max_tokens
+				)
+			);
+
+			$args = array(
+				'body'        => wp_json_encode( $body ),
+				'headers'     => array(
+					'Content-Type' => 'application/json',
+				),
+				'timeout'     => 120,
+				'data_format' => 'body',
+			);
+
+			$response = wp_remote_post( $url, $args );
+
+			if ( is_wp_error( $response ) ) {
+				$last_error_msg = 'WP HTTP Error: ' . $response->get_error_message();
+				continue;
+			}
+
+			$response_code = wp_remote_retrieve_response_code( $response );
+			$response_body = wp_remote_retrieve_body( $response );
+			$data          = json_decode( $response_body, true );
+
+			if ( $response_code === 200 ) {
+				if ( ! isset( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
+					throw new Exception( 'Invalid API response format from Gemini.' );
+				}
+
+				if ( isset( $data['candidates'][0]['finishReason'] ) && $data['candidates'][0]['finishReason'] === 'MAX_TOKENS' ) {
+					throw new Exception( 'Generation terpotong karena mencapai batas Max Tokens Gemini.' );
+				}
+
+				if ( $try_model !== $model ) {
+					AAAG_Logger::log( "Model Gemini '$model' (404) otomatis dialihkan & sukses diproses menggunakan model aktif: '$try_model'" );
+				}
+
+				return $data['candidates'][0]['content']['parts'][0]['text'];
+			}
+
+			// If model is not enabled for this API account (404), try next model in fallback chain
+			if ( $response_code === 404 ) {
+				$last_error_code = 404;
+				$last_error_msg  = isset( $data['error']['message'] ) ? $data['error']['message'] : "model: $try_model";
+				continue;
+			}
+
 			$error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : 'Unknown API Error';
 			throw new Exception( "Gemini API Error ($response_code): $error_msg" );
 		}
 
-		if ( ! isset( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
-			throw new Exception( 'Invalid API response format from Gemini.' );
-		}
-
-		if ( isset( $data['candidates'][0]['finishReason'] ) && $data['candidates'][0]['finishReason'] === 'MAX_TOKENS' ) {
-			throw new Exception( 'Generation terpotong karena mencapai batas Max Tokens Gemini.' );
-		}
-
-		return $data['candidates'][0]['content']['parts'][0]['text'];
+		throw new Exception( "Gemini API Error ($last_error_code): $last_error_msg" );
 	}
 
 
@@ -432,6 +468,9 @@ class AAAG_AI_Client {
 			}
 			
 			$all_supported = array(
+				'gemini-3.8-flash'      => 'Gemini 3.8 Flash',
+				'gemini-3.5-flash'      => 'Gemini 3.5 Flash',
+				'gemini-3.1-pro'        => 'Gemini 3.1 Pro',
 				'gemini-2.5-flash'      => 'Gemini 2.5 Flash',
 				'gemini-2.5-pro'        => 'Gemini 2.5 Pro',
 				'gemini-2.0-flash'      => 'Gemini 2.0 Flash',
@@ -458,7 +497,7 @@ class AAAG_AI_Client {
 					$verified = array();
 					$labels   = array();
 					foreach ( $all_supported as $mid => $lbl ) {
-						if ( in_array( $mid, $available_ids, true ) ) {
+						if ( in_array( $mid, $available_ids, true ) || in_array( $mid . '-001', $available_ids, true ) || in_array( $mid . '-preview', $available_ids, true ) ) {
 							$verified[] = $mid;
 							$labels[]   = $lbl;
 						}

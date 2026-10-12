@@ -1,5 +1,5 @@
 {
-  "version": "4.8.0",
+  "version": "4.8.1",
   "package": "https://raw.githubusercontent.com/halimurrosyid/Generate-Artikel-Plugin/main/indahweb-ai-auto-article.zip",
-  "changelog": "v4.8.0: Fitur Baru! Knowledge Base kini mendukung impor & ekstraksi teks otomatis dari berkas PDF, DOCX (Word), XLSX/CSV (Excel), TXT, dan MD secara langsung."
+  "changelog": "v4.8.1: Update dukungan model Google Gemini terbaru hingga Gemini 3.8 Flash, 3.5 Flash, dan 3.1 Pro dengan sistem auto-fallback cerdas."
 }

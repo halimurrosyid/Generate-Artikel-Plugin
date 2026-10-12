@@ -37,6 +37,13 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.8.1
+- **Dukungan Model Google Gemini Generasi Terbaru (Gemini 3.8 Flash, 3.5 Flash, 3.1 Pro)**:
+  - Menambahkan dukungan model **Gemini 3.8 Flash** (generasi AI 2026 super cepat & hemat token).
+  - Menambahkan model **Gemini 3.5 Flash** dan **Gemini 3.1 Pro** ke dalam pilihan model AI.
+  - Mengimplementasikan sistem **Auto-Fallback & Failover Cerdas** untuk keluarga model Gemini (Flash & Pro family), mencegah kegagalan antrean background cron jika terjadi 404 dari API tier pengguna.
+  - Memperbarui mekanisme *Test Gemini Connection* agar otomatis mengenali dan memverifikasi model generasi terbaru.
+
 ### v4.8.0
 - **Dukungan Ekstraksi Dokumen Knowledge Base**:
   - Knowledge Base kini mendukung impor dan ekstraksi teks otomatis dari berkas dokumen **PDF, Word (.docx), Excel (.xlsx / .csv), TXT, dan MD**.
