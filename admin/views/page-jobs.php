@@ -250,7 +250,7 @@ $count_skipped    = AAAG_Job::count_all( $campaign_id, 'skipped' );
 									<?php 
 									if ( $job->status === 'completed' ) {
 										global $wpdb;
-										$post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_ai_article_job_id' AND meta_value = %d LIMIT 1", $job->id ) );
+										$post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE (meta_key = '_aaag_job_id' OR meta_key = '_ai_article_job_id') AND meta_value = %d LIMIT 1", $job->id ) );
 										if ( $post_id ) {
 											echo '<a href="' . get_edit_post_link( $post_id ) . '" class="button" target="_blank" style="margin: 0;">Edit</a>';
 											$preview_url = get_permalink( $post_id );

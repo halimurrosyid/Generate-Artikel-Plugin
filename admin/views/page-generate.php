@@ -139,7 +139,7 @@ foreach ( $raw_post_types as $pt ) {
 	}
 }
 
-$default_prompt = "Tulislah artikel SEO yang sangat lengkap, mendalam, dan menarik tentang: {{title}}.\n\nPanjang artikel harus di antara {{min_words}} hingga {{max_words}} kata.\n\nGunakan format HTML (H2, H3, ul, li). Gunakan bahasa Indonesia yang luwes dan natural.\n\nFokuskan pada intent pembaca dan berikan solusi nyata.";
+$default_prompt = "Tulislah artikel SEO yang mendalam, berbobot, dan mengalir alami layaknya ditulis oleh jurnalis atau praktisi ahli manusia tentang: {{title}}.\n\nPanjang artikel harus di antara {{min_words}} hingga {{max_words}} kata.\n\nGunakan struktur HTML semantik (H2, H3, p, ul, li, strong). Buka artikel langsung dengan hook/masalah nyata pembaca tanpa kalimat klise robotik. Sajikan pembahasan yang kaya wawasan dan solusi konkret.";
 
 ?>
 <div class="wrap aaag-wrap">

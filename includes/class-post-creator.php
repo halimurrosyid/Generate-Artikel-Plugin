@@ -65,6 +65,9 @@ class AAAG_Post_Creator {
 		// Clean up literal \n that might be left over if Claude double-escaped
 		$actual_content = str_replace(array('\n', '\r', '\\n', '\\r'), "\n", $actual_content);
 
+		// Comprehensive Anti-AI Artifact & Trace Sanitization (Zero AI Footprint)
+		$actual_content = self::clean_ai_artifacts( $actual_content );
+
 		// Determine author ID safely
 		$author_id = 0;
 		if ( isset( $job->author_id ) && absint( $job->author_id ) > 0 ) {
@@ -114,12 +117,9 @@ class AAAG_Post_Creator {
 			throw new Exception( 'Failed to insert post: ' . $post_id->get_error_message() );
 		}
 
-		update_post_meta( $post_id, '_ai_article_generated', 1 );
-		if ( ! empty( $ai_model ) ) {
-			update_post_meta( $post_id, '_ai_article_model', sanitize_text_field( $ai_model ) );
-		}
+		// Associate with job ID internally without leaving any detectable AI footprint
+		update_post_meta( $post_id, '_aaag_job_id', $job->id );
 		update_post_meta( $post_id, '_ai_article_job_id', $job->id );
-		update_post_meta( $post_id, '_ai_article_generated_at', current_time( 'mysql' ) );
 
 		// Set Categories & Tags
 		if (!empty($tags)) {
@@ -160,5 +160,74 @@ class AAAG_Post_Creator {
 		}
 
 		return $post_id;
+	}
+
+	/**
+	 * Thoroughly cleans AI artifacts and footprints from generated article content.
+	 * Removes code blocks, preambles, conversational closings, and converts stray Markdown to semantic HTML.
+	 *
+	 * @param string $content
+	 * @return string
+	 */
+	public static function clean_ai_artifacts( $content ) {
+		if ( empty( $content ) || ! is_string( $content ) ) {
+			return $content;
+		}
+
+		// 1. Remove markdown code fences and backticks wrapper
+		$content = preg_replace( '/^```(?:html|markdown|json)?\s*/i', '', trim( $content ) );
+		$content = preg_replace( '/\s*```$/', '', $content );
+		$content = preg_replace( '/^`{1,3}|`{1,3}$/', '', $content );
+
+		// 2. Remove document structural tags if AI enclosed full page
+		$content = preg_replace( '/<\!DOCTYPE[^>]*>/i', '', $content );
+		$content = preg_replace( '/<\/?(?:html|head|body)[^>]*>/i', '', $content );
+
+		// 3. Remove conversational opening preambles
+		$content = preg_replace( '/^<(?:p|div|span)[^>]*>[\s\r\n]*(?:Tentu(?:kan)?|Baik(?:lah)?|Berikut\s+(?:ini\s+)?adalah|Here\s+(?:is|are)|Sure,?|Certainly,?|Here\'s|Berikut\s+artikel).*?<\/(?:p|div|span)>\s*/is', '', $content );
+		$content = preg_replace( '/^(?:Tentu(?:kan)?|Baik(?:lah)?|Berikut\s+(?:ini\s+)?adalah|Here\s+(?:is|are)|Sure,?|Certainly,?|Here\'s|Berikut\s+artikel)[^\n<]*?(?::|\n+)\s*/is', '', $content );
+
+		// 4. Remove conversational closings, AI sign-offs, and disclaimers at end
+		$content = preg_replace( '/<(?:p|div|span)[^>]*>[\s\r\n]*(?:Semoga\s+artikel\s+ini\s+(?:bermanfaat|membantu).*?|I\s+hope\s+this\s+(?:article\s+)?helps.*?|Feel\s+free\s+to\s+ask.*?|Jika\s+(?:Anda\s+)?memiliki\s+pertanyaan.*?|Jangan\s+ragu\s+untuk\s+bertanya.*?)<\/(?:p|div|span)>\s*$/is', '', $content );
+		$content = preg_replace( '/<(?:p|div|span)[^>]*>[\s\r\n]*(?:Catatan|Disclaimer|Note)\s*:\s*.*?(?:AI|kecerdasan\s+buatan|language\s+model|asisten).*?<\/(?:p|div|span)>\s*$/is', '', $content );
+		$content = preg_replace( '/(?:Semoga\s+artikel\s+ini\s+(?:bermanfaat|membantu).*?|I\s+hope\s+this\s+(?:article\s+)?helps.*?|Feel\s+free\s+to\s+ask.*?)\s*$/is', '', $content );
+		$content = preg_replace( '/(?:Catatan|Disclaimer|Note)\s*:\s*.*?(?:AI|kecerdasan\s+buatan|language\s+model|asisten).*?\s*$/is', '', $content );
+
+		// 5. Convert stray Markdown Headings to Semantic HTML
+		$content = preg_replace( '/^####\s+(.+)$/m', '<h4>$1</h4>', $content );
+		$content = preg_replace( '/^###\s+(.+)$/m', '<h3>$1</h3>', $content );
+		$content = preg_replace( '/^##\s+(.+)$/m', '<h2>$1</h2>', $content );
+		$content = preg_replace( '/^#\s+(.+)$/m', '<h1>$1</h1>', $content );
+
+		// 6. Convert stray Markdown formatting into HTML
+		// Bold: **text** -> <strong>text</strong>
+		$content = preg_replace( '/\*\*(.*?)\*\*/', '<strong>$1</strong>', $content );
+		// Italic: *text* (excluding already formatted or bullet stars)
+		$content = preg_replace( '/(?<!\*)\*([^\*\s\r\n][^\*]*[^\*\s\r\n])\*(?!\*)/', '<em>$1</em>', $content );
+
+		// 7. Convert stray Markdown bullet lists to HTML lists
+		$content = preg_replace_callback( '/((?:^[ \t]*[-*]\s+[^\r\n]+(?:\r?\n|$))+)/m', function( $matches ) {
+			$lines = explode( "\n", trim( $matches[1] ) );
+			$items = '';
+			foreach ( $lines as $line ) {
+				$item = preg_replace( '/^[ \t]*[-*]\s+/', '', trim( $line ) );
+				if ( ! empty( $item ) ) {
+					$items .= "  <li>" . $item . "</li>\n";
+				}
+			}
+			return "<ul>\n" . $items . "</ul>\n";
+		}, $content );
+
+		// 8. Clean up template placeholder artifacts if echoed literally (e.g., {{title}}, {{min_words}}, etc.)
+		$content = preg_replace( '/\{\{[a-zA-Z0-9_-]+\}\}/', '', $content );
+
+		// 9. Clean up double-escaped quotes or backslashes
+		$content = str_replace( array( '\\"', "\\'" ), array( '"', "'" ), $content );
+
+		// 10. Clean up empty HTML paragraphs and tags
+		$content = preg_replace( '/<p>\s*(?:&nbsp;|\s)*<\/p>/i', '', $content );
+		$content = preg_replace( '/<div>\s*(?:&nbsp;|\s)*<\/div>/i', '', $content );
+
+		return trim( $content );
 	}
 }

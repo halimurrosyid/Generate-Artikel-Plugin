@@ -37,6 +37,13 @@ Plugin WordPress untuk meng-generate artikel secara otomatis menggunakan Anthrop
 
 ## Riwayat Versi (Changelog)
 
+### v4.8.2
+- **Zero AI Footprint & Pembersihan Artefak AI Total**:
+  - **Sanitasi Konten Otomatis**: Memfilter dan membuang semua kode pembungkus markdown (````html````, ````), tag `<html><body>`, serta pembuka/penutup basa-basi percakapan AI (*"Tentu, berikut adalah..."*, *"Semoga artikel ini membantu..."*, disclaimer AI).
+  - **Konversi Otomatis Elemen Markdown Mentah**: Secara otomatis mengonversi heading mentah `###`, `##` menjadi tag HTML `<h2>`, `<h3>`, bold `**teks**` menjadi `<strong>teks</strong>`, dan list bullet `-` menjadi `<ul><li>...</li></ul>` semantik murni.
+  - **Pemberantasan Jejak Metadata AI**: Menghapus meta key database yang menandai AI (`_ai_article_generated`, `_ai_article_model`, `_ai_article_generated_at`) sehingga database dan audit SEO bersih tanpa jejak.
+  - **Instruksi Anti-AI Cliché & Human Writing**: Memperketat prompt internal dengan pedoman gaya jurnalis manusia profesional, variasi kalimat natural (*burstiness* & *perplexity*), dan melarang pembuka klise robotik.
+
 ### v4.8.1
 - **Dukungan Model Google Gemini Generasi Terbaru (Gemini 3.8 Flash, 3.5 Flash, 3.1 Pro)**:
   - Menambahkan dukungan model **Gemini 3.8 Flash** (generasi AI 2026 super cepat & hemat token).

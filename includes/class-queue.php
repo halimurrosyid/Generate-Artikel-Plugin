@@ -319,6 +319,13 @@ class AAAG_Queue {
 		$advanced_instruction .= '  "tags": ["tag1", "tag2", "tag3"], ' . "\n";
 		$advanced_instruction .= '  "category": "Select ONE most relevant category from this list: \n' . $cats_text . '"' . "\n";
 		$advanced_instruction .= "}\n\n";
+		$advanced_instruction .= "STRICT HUMAN WRITING & ZERO AI FOOTPRINT GUIDELINES (ANTI-AI ARTIFACTS):\n";
+		$advanced_instruction .= "- ZERO CONVERSATIONAL FILLER: Never start with preambles like 'Tentu, ini artikel...', 'Berikut artikel...', 'Sure, here is...', etc. Begin directly with the article heading (<h2>) or introductory story/hook.\n";
+		$advanced_instruction .= "- ZERO CLOSING FILLER OR SIGN-OFF: Never end with phrases like 'Semoga artikel ini bermanfaat...', 'I hope this helps...', or contact prompts. Conclude organically with deep insights.\n";
+		$advanced_instruction .= "- NO AI IDENTITY OR DISCLAIMERS: Never mention being an AI, assistant, ChatGPT, Claude, or Gemini. Never include notes or disclaimers like 'Catatan: Artikel ini dibuat oleh AI...'.\n";
+		$advanced_instruction .= "- AVOID ROBOTIC CLICHÉS: Never use overused AI cliché openings such as 'Di era digital yang serba cepat ini...', 'Dalam lanskap yang terus berkembang...', 'Di zaman modern saat ini...'. Hook readers immediately with real-world context, thought-provoking questions, or relatable scenarios.\n";
+		$advanced_instruction .= "- CLEAN SEMANTIC HTML ONLY: Inside the 'content' value, output strictly valid HTML tags (<p>, <h2>, <h3>, <ul>, <ol>, <li>, <strong>, <em>, <blockquote>, <table>). NEVER leave raw markdown symbols like '###', '##', '**text**', or bullet '*'.\n";
+		$advanced_instruction .= "- NATURAL BURSTINESS & PERPLEXITY: Emulate an experienced human journalist. Vary sentence lengths and paragraph rhythms dynamically so the text reads authentically and bypasses AI detection naturally.\n\n";
 		$advanced_instruction .= "CRITICAL SEO GUIDELINES:\n";
 		$advanced_instruction .= "- Synchronization: The generated meta_title and meta_description MUST directly reflect and be 100% synchronized with the generated article content.\n";
 		$advanced_instruction .= "- If meta_title is generated, ensure character length is strictly 50-60 chars (never exceed 60).\n";
